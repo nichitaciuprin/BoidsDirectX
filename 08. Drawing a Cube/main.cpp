@@ -136,7 +136,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
                                 L"08. Drawing a Cube",
                                 WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                                 CW_USEDEFAULT, CW_USEDEFAULT,
-                                initialWidth, 
+                                initialWidth,
                                 initialHeight,
                                 0, 0, hInstance, 0);
 
@@ -158,16 +158,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
         #endif
 
-        HRESULT hResult = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE, 
-                                            0, creationFlags, 
-                                            featureLevels, ARRAYSIZE(featureLevels), 
-                                            D3D11_SDK_VERSION, &baseDevice, 
+        HRESULT hResult = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE,
+                                            0, creationFlags,
+                                            featureLevels, ARRAYSIZE(featureLevels),
+                                            D3D11_SDK_VERSION, &baseDevice,
                                             0, &baseDeviceContext);
         if(FAILED(hResult)){
             MessageBoxA(0, "D3D11CreateDevice() failed", "Fatal Error", MB_OK);
             return GetLastError();
         }
-        
+
         // Get 1.1 interface of D3D11 Device and Context
         hResult = baseDevice->QueryInterface(__uuidof(ID3D11Device1), (void**)&d3d11Device);
         assert(SUCCEEDED(hResult));
@@ -220,7 +220,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
             assert(SUCCEEDED(hResult));
             dxgiAdapter->Release();
         }
-        
+
         DXGI_SWAP_CHAIN_DESC1 d3d11SwapChainDesc = {};
         d3d11SwapChainDesc.Width = 0; // use window width
         d3d11SwapChainDesc.Height = 0; // use window height
@@ -332,17 +332,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 
         uint16_t indices[] = {
             0, 6, 4,
-            0, 2, 6, 
-            0, 3, 2, 
-            0, 1, 3, 
-            2, 7, 6, 
-            2, 3, 7, 
-            4, 6, 7, 
-            4, 7, 5, 
-            0, 4, 5, 
-            0, 5, 1, 
-            1, 5, 7, 
-            1, 7, 3  
+            0, 2, 6,
+            0, 3, 2,
+            0, 1, 3,
+            2, 7, 6,
+            2, 3, 7,
+            4, 6, 7,
+            4, 7, 5,
+            0, 4, 5,
+            0, 5, 1,
+            1, 5, 7,
+            1, 7, 3
         };
         stride = 3 * sizeof(float);
         // numVerts = sizeof(vertexData) / stride;
@@ -475,7 +475,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 
             HRESULT res = d3d11SwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
             assert(SUCCEEDED(res));
-            
+
             win32CreateD3D11RenderTargets(d3d11Device, d3d11SwapChain, &d3d11FrameBufferView, &depthBufferView);
             perspectiveMat = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
 
@@ -501,7 +501,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
                 cameraPos.y += CAM_MOVE_AMOUNT;
             if(global_keyIsDown[GameActionLowerCam])
                 cameraPos.y -= CAM_MOVE_AMOUNT;
-            
+
             const float CAM_TURN_SPEED = M_PI; // in radians per second
             const float CAM_TURN_AMOUNT = CAM_TURN_SPEED * dt;
             if(global_keyIsDown[GameActionTurnCamLeft])
@@ -514,20 +514,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
                 cameraPitch -= CAM_TURN_AMOUNT;
 
             // Wrap yaw to avoid floating-point errors if we turn too far
-            while(cameraYaw >= 2*M_PI) 
+            while(cameraYaw >= 2*M_PI)
                 cameraYaw -= 2*M_PI;
-            while(cameraYaw <= -2*M_PI) 
+            while(cameraYaw <= -2*M_PI)
                 cameraYaw += 2*M_PI;
 
             // Clamp pitch to stop camera flipping upside down
-            if(cameraPitch > degreesToRadians(85)) 
+            if(cameraPitch > degreesToRadians(85))
                 cameraPitch = degreesToRadians(85);
-            if(cameraPitch < -degreesToRadians(85)) 
+            if(cameraPitch < -degreesToRadians(85))
                 cameraPitch = -degreesToRadians(85);
         }
 
         // Calculate view matrix from camera data
-        // 
+        //
         // float4x4 viewMat = inverse(rotateXMat(cameraPitch) * rotateYMat(cameraYaw) * translationMat(cameraPos));
         // NOTE: We can simplify this calculation to avoid inverse()!
         // Applying the rule inverse(A*B) = inverse(B) * inverse(A) gives:
@@ -539,7 +539,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 
         // Spin the cube
         float4x4 modelMat = rotateXMat(-0.2f * (float)(M_PI * currentTimeInSeconds)) * rotateYMat(0.1f * (float)(M_PI * currentTimeInSeconds)) ;
-        
+
         // Calculate model-view-projection matrix to send to shader
         float4x4 modelViewProj = modelMat * viewMat * perspectiveMat;
 
@@ -552,7 +552,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
         d3d11DeviceContext->ClearRenderTargetView(d3d11FrameBufferView, backgroundColor);
-        
+
         d3d11DeviceContext->ClearDepthStencilView(depthBufferView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
         D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (FLOAT)windowWidth, (FLOAT)windowHeight, 0.0f, 1.0f };
@@ -575,7 +575,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
         d3d11DeviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
         d3d11DeviceContext->DrawIndexed(numIndices, 0, 0);
-    
+
         d3d11SwapChain->Present(1, 0);
     }
 
