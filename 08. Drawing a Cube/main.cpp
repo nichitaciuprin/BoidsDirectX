@@ -12,10 +12,11 @@
 
 #include "3DMaths.h"
 
-static bool global_windowDidResize = false;
+bool global_windowDidResize = false;
 
 // Input
-enum GameAction {
+enum GameAction
+{
     GameActionMoveCamFwd,
     GameActionMoveCamBack,
     GameActionMoveCamLeft,
@@ -29,8 +30,7 @@ enum GameAction {
     GameActionCount
 };
 bool global_keyIsDown[GameActionCount] = {};
-
-bool win32CreateD3D11RenderTargets(ID3D11Device1* d3d11Device, IDXGISwapChain1* swapChain, ID3D11RenderTargetView** d3d11FrameBufferView, ID3D11DepthStencilView** depthBufferView)
+bool win32CreateD3D11RenderTargets(ID3D11Device* d3d11Device, IDXGISwapChain1* swapChain, ID3D11RenderTargetView** d3d11FrameBufferView, ID3D11DepthStencilView** depthBufferView)
 {
     ID3D11Texture2D* d3d11FrameBuffer;
     HRESULT hResult = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
@@ -108,7 +108,7 @@ void ShowMessageBox(_In_opt_ LPCSTR lpText)
 {
     MessageBoxA(nullptr, lpText, nullptr, MB_OK);
 }
-HWND CreateWindow2(HINSTANCE hInstance)
+int CreateWindow2(HINSTANCE hInstance, HWND* outHWND)
 {
     WNDCLASSEXW winClass = {};
     winClass.cbSize = sizeof(WNDCLASSEXW);
@@ -123,7 +123,7 @@ HWND CreateWindow2(HINSTANCE hInstance)
     if(!RegisterClassExW(&winClass))
     {
         ShowMessageBox("RegisterClassEx failed");
-        return NULL;
+        return GetLastError();
     }
 
     RECT initialRect = { 0, 0, 1024, 768 };
@@ -146,47 +146,81 @@ HWND CreateWindow2(HINSTANCE hInstance)
     if(!hwnd)
     {
         ShowMessageBox("CreateWindowEx failed");
-        return NULL;
+        return GetLastError();
     }
 
-    return hwnd;
+    *outHWND = hwnd;
+
+    return 0;
 }
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nShowCmd*/)
+int CreateDeviceAndContext(ID3D11Device** outDevice, ID3D11DeviceContext** outContext)
 {
-    HWND hwnd = CreateWindow2(hInstance);
-    if (hwnd == NULL) return 1;
+    D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
+    UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+
+    #if defined(DEBUG_BUILD)
+    creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+    #endif
+
+    HRESULT hResult = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE,
+                                        0, creationFlags,
+                                        featureLevels, ARRAYSIZE(featureLevels),
+                                        D3D11_SDK_VERSION, outDevice, 0, outContext);
+    if(FAILED(hResult))
+    {
+        ShowMessageBox("D3D11CreateDevice() failed");
+        return GetLastError();
+    }
+}
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
+{
+    UNREFERENCED_PARAMETER(hInstance);
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(lpCmdLine);
+    UNREFERENCED_PARAMETER(nCmdShow);
+
+    HWND hwnd;
+    if(CreateWindow2(hInstance,&hwnd)) return 0;
 
     // Create D3D11 Device and Context
-    ID3D11Device1* d3d11Device;
-    ID3D11DeviceContext1* d3d11DeviceContext;
-    {
-        ID3D11Device* baseDevice;
-        ID3D11DeviceContext* baseDeviceContext;
-        D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
-        UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-        #if defined(DEBUG_BUILD)
-        creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
-        #endif
 
-        HRESULT hResult = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE,
-                                            0, creationFlags,
-                                            featureLevels, ARRAYSIZE(featureLevels),
-                                            D3D11_SDK_VERSION, &baseDevice,
-                                            0, &baseDeviceContext);
-        if(FAILED(hResult)){
-            MessageBoxA(0, "D3D11CreateDevice() failed", "Fatal Error", MB_OK);
-            return GetLastError();
-        }
+    ID3D11Device* d3d11Device;
+    ID3D11DeviceContext* d3d11DeviceContext;
 
-        // Get 1.1 interface of D3D11 Device and Context
-        hResult = baseDevice->QueryInterface(__uuidof(ID3D11Device1), (void**)&d3d11Device);
-        assert(SUCCEEDED(hResult));
-        baseDevice->Release();
+    CreateDeviceAndContext(&d3d11Device,&d3d11DeviceContext);
 
-        hResult = baseDeviceContext->QueryInterface(__uuidof(ID3D11DeviceContext1), (void**)&d3d11DeviceContext);
-        assert(SUCCEEDED(hResult));
-        baseDeviceContext->Release();
-    }
+
+    // ID3D11Device1* d3d11Device;
+    // ID3D11DeviceContext1* d3d11DeviceContext;
+    // {
+    //     ID3D11Device* baseDevice;
+    //     ID3D11DeviceContext* baseDeviceContext;
+    //     D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
+    //     UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+    //     #if defined(DEBUG_BUILD)
+    //     creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+    //     #endif
+
+    //     HRESULT hResult = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE,
+    //                                         0, creationFlags,
+    //                                         featureLevels, ARRAYSIZE(featureLevels),
+    //                                         D3D11_SDK_VERSION, &baseDevice,
+    //                                         0, &baseDeviceContext);
+    //     if(FAILED(hResult)){
+    //         MessageBoxA(0, "D3D11CreateDevice() failed", "Fatal Error", MB_OK);
+    //         return GetLastError();
+    //     }
+
+    //     // Get 1.1 interface of D3D11 Device and Context
+    //     hResult = baseDevice->QueryInterface(__uuidof(ID3D11Device1), (void**)&d3d11Device);
+    //     assert(SUCCEEDED(hResult));
+    //     baseDevice->Release();
+
+    //     hResult = baseDeviceContext->QueryInterface(__uuidof(ID3D11DeviceContext1), (void**)&d3d11DeviceContext);
+    //     assert(SUCCEEDED(hResult));
+    //     baseDeviceContext->Release();
+    // }
+
 
 #ifdef DEBUG_BUILD
     // Set up debug layer to break on D3D11 errors
