@@ -6,15 +6,12 @@
 #pragma comment(lib, "d3d11.lib")
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3dcompiler.lib")
-
 #include <assert.h>
 #include <stdint.h>
-
 #include "3DMaths.h"
 
 bool global_windowDidResize = false;
 
-// Input
 enum GameAction
 {
     GameActionMoveCamFwd,
@@ -29,33 +26,8 @@ enum GameAction
     GameActionLowerCam,
     GameActionCount
 };
+
 bool global_keyIsDown[GameActionCount] = {};
-bool win32CreateD3D11RenderTargets(ID3D11Device* d3d11Device, IDXGISwapChain1* swapChain, ID3D11RenderTargetView** d3d11FrameBufferView, ID3D11DepthStencilView** depthBufferView)
-{
-    ID3D11Texture2D* d3d11FrameBuffer;
-    HRESULT hResult = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
-    assert(SUCCEEDED(hResult));
-
-    hResult = d3d11Device->CreateRenderTargetView(d3d11FrameBuffer, 0, d3d11FrameBufferView);
-    assert(SUCCEEDED(hResult));
-
-    D3D11_TEXTURE2D_DESC depthBufferDesc;
-    d3d11FrameBuffer->GetDesc(&depthBufferDesc);
-
-    d3d11FrameBuffer->Release();
-
-    depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-    ID3D11Texture2D* depthBuffer;
-    d3d11Device->CreateTexture2D(&depthBufferDesc, nullptr, &depthBuffer);
-
-    d3d11Device->CreateDepthStencilView(depthBuffer, nullptr, depthBufferView);
-
-    depthBuffer->Release();
-
-    return true;
-}
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     LRESULT result = 0;
@@ -107,6 +79,32 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 void ShowMessageBox(_In_opt_ LPCSTR lpText)
 {
     MessageBoxA(nullptr, lpText, nullptr, MB_OK);
+}
+bool CreateRenderTargets(ID3D11Device* d3d11Device, IDXGISwapChain1* swapChain, ID3D11RenderTargetView** d3d11FrameBufferView, ID3D11DepthStencilView** depthBufferView)
+{
+    ID3D11Texture2D* d3d11FrameBuffer;
+    HRESULT hResult = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
+    assert(SUCCEEDED(hResult));
+
+    hResult = d3d11Device->CreateRenderTargetView(d3d11FrameBuffer, 0, d3d11FrameBufferView);
+    assert(SUCCEEDED(hResult));
+
+    D3D11_TEXTURE2D_DESC depthBufferDesc;
+    d3d11FrameBuffer->GetDesc(&depthBufferDesc);
+
+    d3d11FrameBuffer->Release();
+
+    depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+    ID3D11Texture2D* depthBuffer;
+    d3d11Device->CreateTexture2D(&depthBufferDesc, nullptr, &depthBuffer);
+
+    d3d11Device->CreateDepthStencilView(depthBuffer, nullptr, depthBufferView);
+
+    depthBuffer->Release();
+
+    return true;
 }
 int CreateWindow2(HINSTANCE hInstance, HWND* outHWND)
 {
@@ -213,6 +211,98 @@ int CreateSwapChain(ID3D11Device* d3d11Device, HWND hwnd, IDXGISwapChain1** d3d1
 
     return 0;
 }
+void EnableDebug(ID3D11Device* device)
+{
+    ID3D11Debug *d3dDebug = nullptr;
+    device->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug);
+    if (d3dDebug)
+    {
+        ID3D11InfoQueue *d3dInfoQueue = nullptr;
+        if (SUCCEEDED(d3dDebug->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&d3dInfoQueue)))
+        {
+            d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
+            d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+            d3dInfoQueue->Release();
+        }
+        d3dDebug->Release();
+    }
+}
+int CompileShadersAndInputs(ID3D11Device* d3d11Device, ID3D11VertexShader** vertexShader, ID3D11PixelShader** pixelShader, ID3D11InputLayout** inputLayout)
+{
+    UINT shaderCompileFlags = 0;
+    // Compiling with this flag allows debugging shaders with Visual Studio
+    #if defined(DEBUG_BUILD)
+    shaderCompileFlags |= D3DCOMPILE_DEBUG;
+    #endif
+
+    ID3DBlob* vsBlob;
+    ID3DBlob* psBlob;
+    ID3DBlob* shaderCompileErrorsBlob;
+
+    {
+        HRESULT hResult = D3DCompileFromFile(L"shaders.hlsl", nullptr, nullptr, "vs_main", "vs_5_0", shaderCompileFlags, 0, &vsBlob, &shaderCompileErrorsBlob);
+        if(FAILED(hResult))
+        {
+            const char* errorString = NULL;
+            if(hResult == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+            {
+                errorString = "Could not compile shader; file not found";
+            }
+            else if(shaderCompileErrorsBlob)
+            {
+                errorString = (const char*)shaderCompileErrorsBlob->GetBufferPointer();
+                shaderCompileErrorsBlob->Release();
+            }
+            ShowMessageBox(errorString);
+            return 1;
+        }
+
+        hResult = d3d11Device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, vertexShader);
+        assert(SUCCEEDED(hResult));
+    }
+
+    {
+        HRESULT hResult = D3DCompileFromFile(L"shaders.hlsl", nullptr, nullptr, "ps_main", "ps_5_0", shaderCompileFlags, 0, &psBlob, &shaderCompileErrorsBlob);
+        if(FAILED(hResult))
+        {
+            const char* errorString = NULL;
+            if(hResult == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+            {
+                errorString = "Could not compile shader; file not found";
+            }
+            else if(shaderCompileErrorsBlob)
+            {
+                errorString = (const char*)shaderCompileErrorsBlob->GetBufferPointer();
+                shaderCompileErrorsBlob->Release();
+            }
+            MessageBoxA(0, errorString, "Shader Compiler Error", MB_ICONERROR | MB_OK);
+            return 1;
+        }
+
+        hResult = d3d11Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, pixelShader);
+        assert(SUCCEEDED(hResult));
+    }
+
+    
+    {
+        D3D11_INPUT_ELEMENT_DESC inputElementDesc;
+        inputElementDesc.SemanticName = "POS";
+        inputElementDesc.SemanticIndex = 0;
+        inputElementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+        inputElementDesc.InputSlot = 0;
+        inputElementDesc.AlignedByteOffset = 0;
+        inputElementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+        inputElementDesc.InstanceDataStepRate = 0;
+
+        D3D11_INPUT_ELEMENT_DESC inputElementDescArray[] = { inputElementDesc };
+
+        HRESULT hResult = d3d11Device->CreateInputLayout(inputElementDescArray, ARRAYSIZE(inputElementDescArray), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), inputLayout);
+        assert(SUCCEEDED(hResult));
+    }
+
+    vsBlob->Release();
+    psBlob->Release();
+}
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     UNREFERENCED_PARAMETER(hInstance);
@@ -225,99 +315,23 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     ID3D11Device* d3d11Device;
     ID3D11DeviceContext* d3d11DeviceContext;
+    if(CreateDeviceAndContext(&d3d11Device,&d3d11DeviceContext)) return 0;
 
-    CreateDeviceAndContext(&d3d11Device,&d3d11DeviceContext);
-
-#ifdef DEBUG_BUILD
-    // Set up debug layer to break on D3D11 errors
-    ID3D11Debug *d3dDebug = nullptr;
-    d3d11Device->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug);
-    if (d3dDebug)
-    {
-        ID3D11InfoQueue *d3dInfoQueue = nullptr;
-        if (SUCCEEDED(d3dDebug->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&d3dInfoQueue)))
-        {
-            d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
-            d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
-            d3dInfoQueue->Release();
-        }
-        d3dDebug->Release();
-    }
-#endif
-
-    IDXGISwapChain1* d3d11SwapChain;
-    CreateSwapChain(d3d11Device,hwnd,&d3d11SwapChain);
-
-    // Create Render Target and Depth Buffer
-    ID3D11RenderTargetView* d3d11FrameBufferView;
-    ID3D11DepthStencilView* depthBufferView;
-    win32CreateD3D11RenderTargets(d3d11Device, d3d11SwapChain, &d3d11FrameBufferView, &depthBufferView);
-
-    UINT shaderCompileFlags = 0;
-    // Compiling with this flag allows debugging shaders with Visual Studio
-    #if defined(DEBUG_BUILD)
-    shaderCompileFlags |= D3DCOMPILE_DEBUG;
+    #ifdef DEBUG_BUILD
+    EnableDebug();
     #endif
 
-    // Create Vertex Shader
-    ID3DBlob* vsBlob;
-    ID3D11VertexShader* vertexShader;
-    {
-        ID3DBlob* shaderCompileErrorsBlob;
-        HRESULT hResult = D3DCompileFromFile(L"shaders.hlsl", nullptr, nullptr, "vs_main", "vs_5_0", shaderCompileFlags, 0, &vsBlob, &shaderCompileErrorsBlob);
-        if(FAILED(hResult))
-        {
-            const char* errorString = NULL;
-            if(hResult == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
-                errorString = "Could not compile shader; file not found";
-            else if(shaderCompileErrorsBlob){
-                errorString = (const char*)shaderCompileErrorsBlob->GetBufferPointer();
-                shaderCompileErrorsBlob->Release();
-            }
-            MessageBoxA(0, errorString, "Shader Compiler Error", MB_ICONERROR | MB_OK);
-            return 1;
-        }
+    IDXGISwapChain1* d3d11SwapChain;
+    if(CreateSwapChain(d3d11Device,hwnd,&d3d11SwapChain)) return 0;
 
-        hResult = d3d11Device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &vertexShader);
-        assert(SUCCEEDED(hResult));
-    }
+    ID3D11RenderTargetView* d3d11FrameBufferView;
+    ID3D11DepthStencilView* depthBufferView;
+    CreateRenderTargets(d3d11Device, d3d11SwapChain, &d3d11FrameBufferView, &depthBufferView);
 
-    // Create Pixel Shader
-    ID3D11PixelShader* pixelShader;
-    {
-        ID3DBlob* psBlob;
-        ID3DBlob* shaderCompileErrorsBlob;
-        HRESULT hResult = D3DCompileFromFile(L"shaders.hlsl", nullptr, nullptr, "ps_main", "ps_5_0", shaderCompileFlags, 0, &psBlob, &shaderCompileErrorsBlob);
-        if(FAILED(hResult))
-        {
-            const char* errorString = NULL;
-            if(hResult == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
-                errorString = "Could not compile shader; file not found";
-            else if(shaderCompileErrorsBlob){
-                errorString = (const char*)shaderCompileErrorsBlob->GetBufferPointer();
-                shaderCompileErrorsBlob->Release();
-            }
-            MessageBoxA(0, errorString, "Shader Compiler Error", MB_ICONERROR | MB_OK);
-            return 1;
-        }
-
-        hResult = d3d11Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &pixelShader);
-        assert(SUCCEEDED(hResult));
-        psBlob->Release();
-    }
-
-    // Create Input Layout
     ID3D11InputLayout* inputLayout;
-    {
-        D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
-        {
-            { "POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-        };
-
-        HRESULT hResult = d3d11Device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout);
-        assert(SUCCEEDED(hResult));
-        vsBlob->Release();
-    }
+    ID3D11VertexShader* vertexShader;
+    ID3D11PixelShader* pixelShader;
+    CompileShadersAndInputs(d3d11Device,&vertexShader,&pixelShader,&inputLayout);
 
     // Create Vertex and Index Buffer
     ID3D11Buffer* vertexBuffer;
@@ -484,7 +498,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             HRESULT res = d3d11SwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
             assert(SUCCEEDED(res));
 
-            win32CreateD3D11RenderTargets(d3d11Device, d3d11SwapChain, &d3d11FrameBufferView, &depthBufferView);
+            CreateRenderTargets(d3d11Device, d3d11SwapChain, &d3d11FrameBufferView, &depthBufferView);
             perspectiveMat = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
 
             global_windowDidResize = false;
