@@ -166,11 +166,52 @@ int CreateDeviceAndContext(ID3D11Device** outDevice, ID3D11DeviceContext** outCo
                                         0, creationFlags,
                                         featureLevels, ARRAYSIZE(featureLevels),
                                         D3D11_SDK_VERSION, outDevice, 0, outContext);
-    if(FAILED(hResult))
-    {
-        ShowMessageBox("D3D11CreateDevice() failed");
-        return GetLastError();
-    }
+    assert(SUCCEEDED(hResult));
+    return GetLastError();
+}
+int CreateSwapChain(ID3D11Device* d3d11Device, HWND hwnd, IDXGISwapChain1** d3d11SwapChain)
+{
+    HRESULT hResult;
+    IDXGIFactory2* dxgiFactory;
+    IDXGIDevice1* dxgiDevice;
+
+    hResult = d3d11Device->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
+    assert(SUCCEEDED(hResult));
+
+    IDXGIAdapter* dxgiAdapter;
+    hResult = dxgiDevice->GetAdapter(&dxgiAdapter);
+    assert(SUCCEEDED(hResult));
+    dxgiDevice->Release();
+
+    DXGI_ADAPTER_DESC adapterDesc;
+    dxgiAdapter->GetDesc(&adapterDesc);
+
+    OutputDebugStringA("Graphics Device: ");
+    OutputDebugStringW(adapterDesc.Description);
+
+    hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory);
+    assert(SUCCEEDED(hResult));
+    dxgiAdapter->Release();
+
+    DXGI_SWAP_CHAIN_DESC1 d3d11SwapChainDesc = {};
+    d3d11SwapChainDesc.Width = 0; // use window width
+    d3d11SwapChainDesc.Height = 0; // use window height
+    d3d11SwapChainDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+    d3d11SwapChainDesc.SampleDesc.Count = 1;
+    d3d11SwapChainDesc.SampleDesc.Quality = 0;
+    d3d11SwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    d3d11SwapChainDesc.BufferCount = 2;
+    d3d11SwapChainDesc.Scaling = DXGI_SCALING_STRETCH;
+    d3d11SwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+    d3d11SwapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
+    d3d11SwapChainDesc.Flags = 0;
+
+    hResult = dxgiFactory->CreateSwapChainForHwnd(d3d11Device, hwnd, &d3d11SwapChainDesc, 0, 0, d3d11SwapChain);
+    assert(SUCCEEDED(hResult));
+
+    dxgiFactory->Release();
+
+    return 0;
 }
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
@@ -182,45 +223,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     HWND hwnd;
     if(CreateWindow2(hInstance,&hwnd)) return 0;
 
-    // Create D3D11 Device and Context
-
     ID3D11Device* d3d11Device;
     ID3D11DeviceContext* d3d11DeviceContext;
 
     CreateDeviceAndContext(&d3d11Device,&d3d11DeviceContext);
-
-
-    // ID3D11Device1* d3d11Device;
-    // ID3D11DeviceContext1* d3d11DeviceContext;
-    // {
-    //     ID3D11Device* baseDevice;
-    //     ID3D11DeviceContext* baseDeviceContext;
-    //     D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
-    //     UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-    //     #if defined(DEBUG_BUILD)
-    //     creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
-    //     #endif
-
-    //     HRESULT hResult = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE,
-    //                                         0, creationFlags,
-    //                                         featureLevels, ARRAYSIZE(featureLevels),
-    //                                         D3D11_SDK_VERSION, &baseDevice,
-    //                                         0, &baseDeviceContext);
-    //     if(FAILED(hResult)){
-    //         MessageBoxA(0, "D3D11CreateDevice() failed", "Fatal Error", MB_OK);
-    //         return GetLastError();
-    //     }
-
-    //     // Get 1.1 interface of D3D11 Device and Context
-    //     hResult = baseDevice->QueryInterface(__uuidof(ID3D11Device1), (void**)&d3d11Device);
-    //     assert(SUCCEEDED(hResult));
-    //     baseDevice->Release();
-
-    //     hResult = baseDeviceContext->QueryInterface(__uuidof(ID3D11DeviceContext1), (void**)&d3d11DeviceContext);
-    //     assert(SUCCEEDED(hResult));
-    //     baseDeviceContext->Release();
-    // }
-
 
 #ifdef DEBUG_BUILD
     // Set up debug layer to break on D3D11 errors
@@ -239,50 +245,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
 #endif
 
-    // Create Swap Chain
     IDXGISwapChain1* d3d11SwapChain;
-    {
-        // Get DXGI Factory (needed to create Swap Chain)
-        IDXGIFactory2* dxgiFactory;
-        {
-            IDXGIDevice1* dxgiDevice;
-            HRESULT hResult = d3d11Device->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
-            assert(SUCCEEDED(hResult));
-
-            IDXGIAdapter* dxgiAdapter;
-            hResult = dxgiDevice->GetAdapter(&dxgiAdapter);
-            assert(SUCCEEDED(hResult));
-            dxgiDevice->Release();
-
-            DXGI_ADAPTER_DESC adapterDesc;
-            dxgiAdapter->GetDesc(&adapterDesc);
-
-            OutputDebugStringA("Graphics Device: ");
-            OutputDebugStringW(adapterDesc.Description);
-
-            hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory);
-            assert(SUCCEEDED(hResult));
-            dxgiAdapter->Release();
-        }
-
-        DXGI_SWAP_CHAIN_DESC1 d3d11SwapChainDesc = {};
-        d3d11SwapChainDesc.Width = 0; // use window width
-        d3d11SwapChainDesc.Height = 0; // use window height
-        d3d11SwapChainDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
-        d3d11SwapChainDesc.SampleDesc.Count = 1;
-        d3d11SwapChainDesc.SampleDesc.Quality = 0;
-        d3d11SwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        d3d11SwapChainDesc.BufferCount = 2;
-        d3d11SwapChainDesc.Scaling = DXGI_SCALING_STRETCH;
-        d3d11SwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-        d3d11SwapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-        d3d11SwapChainDesc.Flags = 0;
-
-        HRESULT hResult = dxgiFactory->CreateSwapChainForHwnd(d3d11Device, hwnd, &d3d11SwapChainDesc, 0, 0, &d3d11SwapChain);
-        assert(SUCCEEDED(hResult));
-
-        dxgiFactory->Release();
-    }
+    CreateSwapChain(d3d11Device,hwnd,&d3d11SwapChain);
 
     // Create Render Target and Depth Buffer
     ID3D11RenderTargetView* d3d11FrameBufferView;
