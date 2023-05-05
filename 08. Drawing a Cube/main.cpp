@@ -28,7 +28,7 @@ enum GameAction {
     GameActionLowerCam,
     GameActionCount
 };
-static bool global_keyIsDown[GameActionCount] = {};
+bool global_keyIsDown[GameActionCount] = {};
 
 bool win32CreateD3D11RenderTargets(ID3D11Device1* d3d11Device, IDXGISwapChain1* swapChain, ID3D11RenderTargetView** d3d11FrameBufferView, ID3D11DepthStencilView** depthBufferView)
 {
@@ -56,7 +56,6 @@ bool win32CreateD3D11RenderTargets(ID3D11Device1* d3d11Device, IDXGISwapChain1* 
 
     return true;
 }
-
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     LRESULT result = 0;
@@ -105,46 +104,57 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     }
     return result;
 }
+void ShowMessageBox(_In_opt_ LPCSTR lpText)
+{
+    MessageBoxA(nullptr, lpText, nullptr, MB_OK);
+}
+HWND CreateWindow2(HINSTANCE hInstance)
+{
+    WNDCLASSEXW winClass = {};
+    winClass.cbSize = sizeof(WNDCLASSEXW);
+    winClass.style = CS_HREDRAW | CS_VREDRAW;
+    winClass.lpfnWndProc = &WndProc;
+    winClass.hInstance = hInstance;
+    winClass.hIcon = LoadIconW(0, IDI_APPLICATION);
+    winClass.hCursor = LoadCursorW(0, IDC_ARROW);
+    winClass.lpszClassName = L"MyWindowClass";
+    winClass.hIconSm = LoadIconW(0, IDI_APPLICATION);
 
+    if(!RegisterClassExW(&winClass))
+    {
+        ShowMessageBox("RegisterClassEx failed");
+        return NULL;
+    }
+
+    RECT initialRect = { 0, 0, 1024, 768 };
+    AdjustWindowRectEx(&initialRect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_OVERLAPPEDWINDOW);
+    LONG initialWidth = initialRect.right - initialRect.left;
+    LONG initialHeight = initialRect.bottom - initialRect.top;
+
+    HWND hwnd = CreateWindowExW
+    (
+        WS_EX_OVERLAPPEDWINDOW,
+        winClass.lpszClassName,
+        L"08. Drawing a Cube",
+        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+        CW_USEDEFAULT, CW_USEDEFAULT,
+        initialWidth,
+        initialHeight,
+        0, 0, hInstance, 0
+    );
+
+    if(!hwnd)
+    {
+        ShowMessageBox("CreateWindowEx failed");
+        return NULL;
+    }
+
+    return hwnd;
+}
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nShowCmd*/)
 {
-    // Open a window
-    HWND hwnd;
-    {
-        WNDCLASSEXW winClass = {};
-        winClass.cbSize = sizeof(WNDCLASSEXW);
-        winClass.style = CS_HREDRAW | CS_VREDRAW;
-        winClass.lpfnWndProc = &WndProc;
-        winClass.hInstance = hInstance;
-        winClass.hIcon = LoadIconW(0, IDI_APPLICATION);
-        winClass.hCursor = LoadCursorW(0, IDC_ARROW);
-        winClass.lpszClassName = L"MyWindowClass";
-        winClass.hIconSm = LoadIconW(0, IDI_APPLICATION);
-
-        if(!RegisterClassExW(&winClass)) {
-            MessageBoxA(0, "RegisterClassEx failed", "Fatal Error", MB_OK);
-            return GetLastError();
-        }
-
-        RECT initialRect = { 0, 0, 1024, 768 };
-        AdjustWindowRectEx(&initialRect, WS_OVERLAPPEDWINDOW, FALSE, WS_EX_OVERLAPPEDWINDOW);
-        LONG initialWidth = initialRect.right - initialRect.left;
-        LONG initialHeight = initialRect.bottom - initialRect.top;
-
-        hwnd = CreateWindowExW(WS_EX_OVERLAPPEDWINDOW,
-                                winClass.lpszClassName,
-                                L"08. Drawing a Cube",
-                                WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                                CW_USEDEFAULT, CW_USEDEFAULT,
-                                initialWidth,
-                                initialHeight,
-                                0, 0, hInstance, 0);
-
-        if(!hwnd) {
-            MessageBoxA(0, "CreateWindowEx failed", "Fatal Error", MB_OK);
-            return GetLastError();
-        }
-    }
+    HWND hwnd = CreateWindow2(hInstance);
+    if (hwnd == NULL) return 1;
 
     // Create D3D11 Device and Context
     ID3D11Device1* d3d11Device;
