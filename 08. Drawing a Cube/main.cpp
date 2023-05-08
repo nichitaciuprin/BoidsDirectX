@@ -303,6 +303,65 @@ int CompileShadersAndInputs(ID3D11Device* d3d11Device, ID3D11VertexShader** vert
     vsBlob->Release();
     psBlob->Release();
 }
+int CreateVertexBuffer(ID3D11Device* d3d11Device, ID3D11Buffer** vertexBuffer)
+{
+    float vertexData[] =
+    {
+        -0.5f,-0.5f,-0.5f,
+        -0.5f,-0.5f, 0.5f,
+        -0.5f, 0.5f,-0.5f,
+        -0.5f, 0.5f, 0.5f,
+         0.5f,-0.5f,-0.5f,
+         0.5f,-0.5f, 0.5f,
+         0.5f, 0.5f,-0.5f,
+         0.5f, 0.5f, 0.5f
+    };
+
+    D3D11_BUFFER_DESC vertexBufferDesc = {};
+    vertexBufferDesc.ByteWidth = sizeof(vertexData);
+    vertexBufferDesc.Usage     = D3D11_USAGE_IMMUTABLE;
+    vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA vertexSubresourceData = { vertexData };
+
+    HRESULT hResult = d3d11Device->CreateBuffer(&vertexBufferDesc, &vertexSubresourceData, vertexBuffer);
+    assert(SUCCEEDED(hResult));
+
+    return 0;
+}
+int indexCount;
+int CreateIndexBuffer(ID3D11Device* d3d11Device, ID3D11Buffer** indexBuffer)
+{
+    uint16_t indices[] =
+    {
+        0, 6, 4,
+        0, 2, 6,
+        0, 3, 2,
+        0, 1, 3,
+        2, 7, 6,
+        2, 3, 7,
+        4, 6, 7,
+        4, 7, 5,
+        0, 4, 5,
+        0, 5, 1,
+        1, 5, 7,
+        1, 7, 3
+    };
+
+    indexCount = sizeof(indices) / sizeof(indices[0]);
+
+    D3D11_BUFFER_DESC indexBufferDesc = {};
+    indexBufferDesc.ByteWidth = sizeof(indices);
+    indexBufferDesc.Usage     = D3D11_USAGE_IMMUTABLE;
+    indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA indexSubresourceData = { indices };
+
+    HRESULT hResult = d3d11Device->CreateBuffer(&indexBufferDesc, &indexSubresourceData, indexBuffer);
+    assert(SUCCEEDED(hResult));
+
+    return 0;
+}
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     UNREFERENCED_PARAMETER(hInstance);
@@ -311,18 +370,18 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     UNREFERENCED_PARAMETER(nCmdShow);
 
     HWND hwnd;
-    if(CreateWindow2(hInstance,&hwnd)) return 0;
+    if(CreateWindow2(hInstance,&hwnd)) return 1;
 
     ID3D11Device* d3d11Device;
     ID3D11DeviceContext* d3d11DeviceContext;
-    if(CreateDeviceAndContext(&d3d11Device,&d3d11DeviceContext)) return 0;
+    if(CreateDeviceAndContext(&d3d11Device,&d3d11DeviceContext)) return 1;
 
     #ifdef DEBUG_BUILD
     EnableDebug();
     #endif
 
     IDXGISwapChain1* d3d11SwapChain;
-    if(CreateSwapChain(d3d11Device,hwnd,&d3d11SwapChain)) return 0;
+    if(CreateSwapChain(d3d11Device,hwnd,&d3d11SwapChain)) return 1;
 
     ID3D11RenderTargetView* d3d11FrameBufferView;
     ID3D11DepthStencilView* depthBufferView;
@@ -335,62 +394,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     // Create Vertex and Index Buffer
     ID3D11Buffer* vertexBuffer;
+    if(CreateVertexBuffer(d3d11Device,&vertexBuffer)) return 1;
+
     ID3D11Buffer* indexBuffer;
-    // UINT numVerts;
-    UINT numIndices;
-    UINT stride;
-    UINT offset;
-    {
-        float vertexData[] = { // x, y, z
-            -0.5f,-0.5f, -0.5f,
-            -0.5f,-0.5f,  0.5f,
-            -0.5f, 0.5f, -0.5f,
-            -0.5f, 0.5f,  0.5f,
-            0.5f,-0.5f, -0.5f,
-            0.5f,-0.5f,  0.5f,
-            0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f,  0.5f
-        };
+    if(CreateIndexBuffer(d3d11Device,&indexBuffer)) return 1;
 
-        uint16_t indices[] = {
-            0, 6, 4,
-            0, 2, 6,
-            0, 3, 2,
-            0, 1, 3,
-            2, 7, 6,
-            2, 3, 7,
-            4, 6, 7,
-            4, 7, 5,
-            0, 4, 5,
-            0, 5, 1,
-            1, 5, 7,
-            1, 7, 3
-        };
-        stride = 3 * sizeof(float);
-        // numVerts = sizeof(vertexData) / stride;
-        offset = 0;
-        numIndices = sizeof(indices) / sizeof(indices[0]);
-
-        D3D11_BUFFER_DESC vertexBufferDesc = {};
-        vertexBufferDesc.ByteWidth = sizeof(vertexData);
-        vertexBufferDesc.Usage     = D3D11_USAGE_IMMUTABLE;
-        vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-        D3D11_SUBRESOURCE_DATA vertexSubresourceData = { vertexData };
-
-        HRESULT hResult = d3d11Device->CreateBuffer(&vertexBufferDesc, &vertexSubresourceData, &vertexBuffer);
-        assert(SUCCEEDED(hResult));
-
-        D3D11_BUFFER_DESC indexBufferDesc = {};
-        indexBufferDesc.ByteWidth = sizeof(indices);
-        indexBufferDesc.Usage     = D3D11_USAGE_IMMUTABLE;
-        indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-
-        D3D11_SUBRESOURCE_DATA indexSubresourceData = { indices };
-
-        hResult = d3d11Device->CreateBuffer(&indexBufferDesc, &indexSubresourceData, &indexBuffer);
-        assert(SUCCEEDED(hResult));
-    }
+    UINT stride = 3 * sizeof(float);
+    UINT offset = 0;
 
     // Create Constant Buffer
     struct Constants
@@ -596,7 +606,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         d3d11DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
         d3d11DeviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
-        d3d11DeviceContext->DrawIndexed(numIndices, 0, 0);
+        d3d11DeviceContext->DrawIndexed(indexCount, 0, 0);
 
         d3d11SwapChain->Present(1, 0);
     }

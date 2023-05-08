@@ -24,5 +24,5 @@ VS_Output vs_main(VS_Input input)
 
 float4 ps_main(VS_Output input) : SV_Target
 {
-    return float4(abs(input.color), 1.0); 
+    return float4(abs(input.color), 1.0);
 }
