@@ -26,6 +26,10 @@ enum GameAction
     GameActionLowerCam,
     GameActionCount
 };
+struct Constants
+{
+    float4x4 modelViewProj;
+};
 
 bool global_keyIsDown[GameActionCount] = {};
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -303,6 +307,7 @@ int CompileShadersAndInputs(ID3D11Device* d3d11Device, ID3D11VertexShader** vert
     vsBlob->Release();
     psBlob->Release();
 }
+int indexCount;
 int CreateVertexBuffer(ID3D11Device* d3d11Device, ID3D11Buffer** vertexBuffer)
 {
     float vertexData[] =
@@ -329,7 +334,6 @@ int CreateVertexBuffer(ID3D11Device* d3d11Device, ID3D11Buffer** vertexBuffer)
 
     return 0;
 }
-int indexCount;
 int CreateIndexBuffer(ID3D11Device* d3d11Device, ID3D11Buffer** indexBuffer)
 {
     uint16_t indices[] =
@@ -362,6 +366,77 @@ int CreateIndexBuffer(ID3D11Device* d3d11Device, ID3D11Buffer** indexBuffer)
 
     return 0;
 }
+int CreateConstantBuffer(ID3D11Device* d3d11Device, ID3D11Buffer** constantBuffer)
+{
+    D3D11_BUFFER_DESC constantBufferDesc = {};
+    // ByteWidth must be a multiple of 16, per the docs
+    constantBufferDesc.ByteWidth      = sizeof(Constants) + 0xf & 0xfffffff0;
+    constantBufferDesc.Usage          = D3D11_USAGE_DYNAMIC;
+    constantBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
+    constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+    HRESULT hResult = d3d11Device->CreateBuffer(&constantBufferDesc, nullptr, constantBuffer);
+    assert(SUCCEEDED(hResult));
+
+    return 0;
+}
+int CreateRasterizerState(ID3D11Device* d3d11Device, ID3D11RasterizerState** rasterizerState)
+{
+    D3D11_RASTERIZER_DESC rasterizerDesc = {};
+    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+    rasterizerDesc.CullMode = D3D11_CULL_BACK;
+    rasterizerDesc.FrontCounterClockwise = TRUE;
+
+    d3d11Device->CreateRasterizerState(&rasterizerDesc, rasterizerState);
+
+    return 0;
+}
+int CreateDepthStencilState(ID3D11Device* d3d11Device, ID3D11DepthStencilState** depthStencilState)
+{
+    D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+    depthStencilDesc.DepthEnable    = TRUE;
+    depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    depthStencilDesc.DepthFunc      = D3D11_COMPARISON_LESS;
+
+    d3d11Device->CreateDepthStencilState(&depthStencilDesc, depthStencilState);
+
+    return 0;
+}
+// void UpdateCamera(float deltaTime, float3* cameraPosition, float3* cameraForward, float* cameraPitch, float* cameraYaw)
+// {
+//     float3 camFwdXZ = normalise({cameraForward->x, 0, cameraForward->z});
+//     float3 cameraRightXZ = cross(camFwdXZ, {0, 1, 0});
+
+//     const float CAM_MOVE_SPEED = 5.f; // in metres per second
+//     const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * deltaTime;
+//     if(global_keyIsDown[GameActionMoveCamFwd])
+//         cameraPosition* = cameraPosition* + camFwdXZ * CAM_MOVE_AMOUNT;
+//     if(global_keyIsDown[GameActionMoveCamBack])  (cameraPosition*) -= camFwdXZ * CAM_MOVE_AMOUNT;
+//     if(global_keyIsDown[GameActionMoveCamLeft])  (cameraPosition*) -= cameraRightXZ * CAM_MOVE_AMOUNT;
+//     if(global_keyIsDown[GameActionMoveCamRight]) (cameraPosition*) += cameraRightXZ * CAM_MOVE_AMOUNT;
+
+//     if(global_keyIsDown[GameActionRaiseCam])     cameraPosition->y += CAM_MOVE_AMOUNT;
+//     if(global_keyIsDown[GameActionLowerCam])     cameraPosition->y -= CAM_MOVE_AMOUNT;
+
+//     const float CAM_TURN_SPEED = M_PI; // in radians per second
+//     const float CAM_TURN_AMOUNT = CAM_TURN_SPEED * deltaTime;
+//     if(global_keyIsDown[GameActionTurnCamLeft])   cameraYaw*   += CAM_TURN_AMOUNT;
+//     if(global_keyIsDown[GameActionTurnCamRight])  cameraYaw*   -= CAM_TURN_AMOUNT;
+//     if(global_keyIsDown[GameActionLookUp])        cameraPitch* += CAM_TURN_AMOUNT;
+//     if(global_keyIsDown[GameActionLookDown])      cameraPitch* -= CAM_TURN_AMOUNT;
+
+//     // Wrap yaw to avoid floating-point errors if we turn too far
+//     while(cameraYaw* >=  2*M_PI) cameraYaw* -= 2*M_PI;
+//     while(cameraYaw* <= -2*M_PI) cameraYaw* += 2*M_PI;
+
+//     // Clamp pitch to stop camera flipping upside down
+//     if(cameraPitch* >  degreesToRadians(85)) cameraPitch* = degreesToRadians(85);
+//     if(cameraPitch* < -degreesToRadians(85)) cameraPitch* = -degreesToRadians(85);
+
+//     float4x4 viewMat = translationMat(-cameraPosition*) * rotateYMat(-cameraYaw*) * rotateXMat(-cameraPitch*);
+//     // Update the forward vector we use for camera movement:
+//     cameraForward* = {-viewMat.m[2][0], -viewMat.m[2][1], -viewMat.m[2][2]};
+// }
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     UNREFERENCED_PARAMETER(hInstance);
@@ -392,60 +467,18 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     ID3D11PixelShader* pixelShader;
     CompileShadersAndInputs(d3d11Device,&vertexShader,&pixelShader,&inputLayout);
 
-    // Create Vertex and Index Buffer
     ID3D11Buffer* vertexBuffer;
-    if(CreateVertexBuffer(d3d11Device,&vertexBuffer)) return 1;
-
     ID3D11Buffer* indexBuffer;
-    if(CreateIndexBuffer(d3d11Device,&indexBuffer)) return 1;
-
-    UINT stride = 3 * sizeof(float);
-    UINT offset = 0;
-
-    // Create Constant Buffer
-    struct Constants
-    {
-        float4x4 modelViewProj;
-    };
-
     ID3D11Buffer* constantBuffer;
-    {
-        D3D11_BUFFER_DESC constantBufferDesc = {};
-        // ByteWidth must be a multiple of 16, per the docs
-        constantBufferDesc.ByteWidth      = sizeof(Constants) + 0xf & 0xfffffff0;
-        constantBufferDesc.Usage          = D3D11_USAGE_DYNAMIC;
-        constantBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
-        constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-        HRESULT hResult = d3d11Device->CreateBuffer(&constantBufferDesc, nullptr, &constantBuffer);
-        assert(SUCCEEDED(hResult));
-    }
+    if(CreateVertexBuffer(d3d11Device,&vertexBuffer)) return 1;
+    if(CreateIndexBuffer(d3d11Device,&indexBuffer)) return 1;
+    if(CreateConstantBuffer(d3d11Device,&constantBuffer)) return 1;
 
     ID3D11RasterizerState* rasterizerState;
-    {
-        D3D11_RASTERIZER_DESC rasterizerDesc = {};
-        rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-        rasterizerDesc.CullMode = D3D11_CULL_BACK;
-        rasterizerDesc.FrontCounterClockwise = TRUE;
-
-        d3d11Device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
-    }
+    if(CreateRasterizerState(d3d11Device,&rasterizerState)) return 1;
 
     ID3D11DepthStencilState* depthStencilState;
-    {
-        D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
-        depthStencilDesc.DepthEnable    = TRUE;
-        depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-        depthStencilDesc.DepthFunc      = D3D11_COMPARISON_LESS;
-
-        d3d11Device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
-    }
-
-    // Camera
-    float3 cameraPos = {0, 0, 2};
-    float3 cameraFwd = {0, 0, -1};
-    float cameraPitch = 0.f;
-    float cameraYaw = 0.f;
+    if(CreateDepthStencilState(d3d11Device,&depthStencilState)) return 1;
 
     float4x4 perspectiveMat = {};
     global_windowDidResize = true; // To force initial perspectiveMat calculation
@@ -463,20 +496,26 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
     double currentTimeInSeconds = 0.0;
 
+    // Camera
+    float3 cameraPos = {0, 0, 2};
+    float3 cameraFwd = {0, 0, -1};
+    float cameraPitch = 0;
+    float cameraYaw = 0;
+
     // Main Loop
     bool isRunning = true;
     while(isRunning)
     {
-        float dt;
+        float deltaTime;
         {
             double previousTimeInSeconds = currentTimeInSeconds;
             LARGE_INTEGER perfCount;
             QueryPerformanceCounter(&perfCount);
 
             currentTimeInSeconds = (double)(perfCount.QuadPart - startPerfCount) / (double)perfCounterFrequency;
-            dt = (float)(currentTimeInSeconds - previousTimeInSeconds);
-            if(dt > (1.f / 60.f))
-                dt = (1.f / 60.f);
+            deltaTime = (float)(currentTimeInSeconds - previousTimeInSeconds);
+            if(deltaTime > (1.f / 60.f))
+                deltaTime = (1.f / 60.f);
         }
 
         MSG msg = {};
@@ -520,30 +559,20 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             float3 cameraRightXZ = cross(camFwdXZ, {0, 1, 0});
 
             const float CAM_MOVE_SPEED = 5.f; // in metres per second
-            const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * dt;
-            if(global_keyIsDown[GameActionMoveCamFwd])
-                cameraPos += camFwdXZ * CAM_MOVE_AMOUNT;
-            if(global_keyIsDown[GameActionMoveCamBack])
-                cameraPos -= camFwdXZ * CAM_MOVE_AMOUNT;
-            if(global_keyIsDown[GameActionMoveCamLeft])
-                cameraPos -= cameraRightXZ * CAM_MOVE_AMOUNT;
-            if(global_keyIsDown[GameActionMoveCamRight])
-                cameraPos += cameraRightXZ * CAM_MOVE_AMOUNT;
-            if(global_keyIsDown[GameActionRaiseCam])
-                cameraPos.y += CAM_MOVE_AMOUNT;
-            if(global_keyIsDown[GameActionLowerCam])
-                cameraPos.y -= CAM_MOVE_AMOUNT;
+            const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * deltaTime;
+            if(global_keyIsDown[GameActionMoveCamFwd])   cameraPos += camFwdXZ * CAM_MOVE_AMOUNT;
+            if(global_keyIsDown[GameActionMoveCamBack])  cameraPos -= camFwdXZ * CAM_MOVE_AMOUNT;
+            if(global_keyIsDown[GameActionMoveCamLeft])  cameraPos -= cameraRightXZ * CAM_MOVE_AMOUNT;
+            if(global_keyIsDown[GameActionMoveCamRight]) cameraPos += cameraRightXZ * CAM_MOVE_AMOUNT;
+            if(global_keyIsDown[GameActionRaiseCam])     cameraPos.y += CAM_MOVE_AMOUNT;
+            if(global_keyIsDown[GameActionLowerCam])     cameraPos.y -= CAM_MOVE_AMOUNT;
 
             const float CAM_TURN_SPEED = M_PI; // in radians per second
-            const float CAM_TURN_AMOUNT = CAM_TURN_SPEED * dt;
-            if(global_keyIsDown[GameActionTurnCamLeft])
-                cameraYaw += CAM_TURN_AMOUNT;
-            if(global_keyIsDown[GameActionTurnCamRight])
-                cameraYaw -= CAM_TURN_AMOUNT;
-            if(global_keyIsDown[GameActionLookUp])
-                cameraPitch += CAM_TURN_AMOUNT;
-            if(global_keyIsDown[GameActionLookDown])
-                cameraPitch -= CAM_TURN_AMOUNT;
+            const float CAM_TURN_AMOUNT = CAM_TURN_SPEED * deltaTime;
+            if(global_keyIsDown[GameActionTurnCamLeft])   cameraYaw += CAM_TURN_AMOUNT;
+            if(global_keyIsDown[GameActionTurnCamRight])  cameraYaw -= CAM_TURN_AMOUNT;
+            if(global_keyIsDown[GameActionLookUp])        cameraPitch += CAM_TURN_AMOUNT;
+            if(global_keyIsDown[GameActionLookDown])      cameraPitch -= CAM_TURN_AMOUNT;
 
             // Wrap yaw to avoid floating-point errors if we turn too far
             while(cameraYaw >= 2*M_PI)
@@ -558,16 +587,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
                 cameraPitch = -degreesToRadians(85);
         }
 
-        // Calculate view matrix from camera data
-        //
-        // float4x4 viewMat = inverse(rotateXMat(cameraPitch) * rotateYMat(cameraYaw) * translationMat(cameraPos));
-        // NOTE: We can simplify this calculation to avoid inverse()!
-        // Applying the rule inverse(A*B) = inverse(B) * inverse(A) gives:
-        // float4x4 viewMat = inverse(translationMat(cameraPos)) * inverse(rotateYMat(cameraYaw)) * inverse(rotateXMat(cameraPitch));
-        // The inverse of a rotation/translation is a negated rotation/translation:
+        // UpdateCamera(&cameraPos,&cameraFwd,&cameraPitch,&cameraYaw)
+
         float4x4 viewMat = translationMat(-cameraPos) * rotateYMat(-cameraYaw) * rotateXMat(-cameraPitch);
         // Update the forward vector we use for camera movement:
-        cameraFwd = {-viewMat.m[2][0], -viewMat.m[2][1], -viewMat.m[2][2]};
+        // cameraFwd = {-viewMat.m[2][0], -viewMat.m[2][1], -viewMat.m[2][2]};
 
         // Spin the cube
         float4x4 modelMat = rotateXMat(-0.2f * (float)(M_PI * currentTimeInSeconds)) * rotateYMat(0.1f * (float)(M_PI * currentTimeInSeconds)) ;
@@ -602,6 +626,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         d3d11DeviceContext->PSSetShader(pixelShader, nullptr, 0);
 
         d3d11DeviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
+
+        UINT stride = 3 * sizeof(float);
+        UINT offset = 0;
 
         d3d11DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
         d3d11DeviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
