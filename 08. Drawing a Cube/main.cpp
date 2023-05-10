@@ -488,7 +488,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     ID3D11DepthStencilState* depthStencilState;
     if(CreateDepthStencilState(d3d11Device,&depthStencilState)) return 1;
 
-    float4x4 perspectiveMat = {};
+    float4x4 projMatrix = {};
     global_windowDidResize = true; // To force initial perspectiveMat calculation
 
     // Timing
@@ -558,20 +558,16 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             assert(SUCCEEDED(res));
 
             CreateRenderTargets(d3d11Device, d3d11SwapChain, &d3d11FrameBufferView, &depthBufferView);
-            perspectiveMat = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
+            projMatrix = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
 
             global_windowDidResize = false;
         }
 
         UpdateCamera(deltaTime,&camera);
 
-        float4x4 viewMat = translationMat(-camera.cameraPos) * rotateYMat(-camera.cameraYaw) * rotateXMat(-camera.cameraPitch);
-
-        // Spin the cube
-        float4x4 modelMat = rotateXMat(-0.2f * (float)(M_PI * currentTimeInSeconds)) * rotateYMat(0.1f * (float)(M_PI * currentTimeInSeconds)) ;
-
-        // Calculate model-view-projection matrix to send to shader
-        float4x4 modelViewProj = modelMat * viewMat * perspectiveMat;
+        float4x4 modelMatrix = rotateXMat(-0.2f * (float)(M_PI * currentTimeInSeconds)) * rotateYMat(0.1f * (float)(M_PI * currentTimeInSeconds)) ;
+        float4x4 viewMatrix = translationMat(-camera.cameraPos) * rotateYMat(-camera.cameraYaw) * rotateXMat(-camera.cameraPitch);
+        float4x4 modelViewProj = modelMatrix * viewMatrix * projMatrix;
 
         // Update constant buffer
         D3D11_MAPPED_SUBRESOURCE mappedSubresource;
