@@ -409,41 +409,42 @@ int CreateDepthStencilState(ID3D11Device* d3d11Device, ID3D11DepthStencilState**
 
     return 0;
 }
-// void UpdateCamera(float deltaTime, float3* cameraPosition, float3* cameraForward, float* cameraPitch, float* cameraYaw)
-// {
-//     float3 camFwdXZ = normalise({cameraForward->x, 0, cameraForward->z});
-//     float3 cameraRightXZ = cross(camFwdXZ, {0, 1, 0});
+void UpdateCamera(float deltaTime, Camera* camera)
+{
+    float3 camFwdXZ = normalise({camera->cameraFwd.x, 0, camera->cameraFwd.z});
+    float3 cameraRightXZ = cross(camFwdXZ, {0, 1, 0});
 
-//     const float CAM_MOVE_SPEED = 5.f; // in metres per second
-//     const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * deltaTime;
-//     if(global_keyIsDown[GameActionMoveCamFwd])
-//         cameraPosition* = cameraPosition* + camFwdXZ * CAM_MOVE_AMOUNT;
-//     if(global_keyIsDown[GameActionMoveCamBack])  (cameraPosition*) -= camFwdXZ * CAM_MOVE_AMOUNT;
-//     if(global_keyIsDown[GameActionMoveCamLeft])  (cameraPosition*) -= cameraRightXZ * CAM_MOVE_AMOUNT;
-//     if(global_keyIsDown[GameActionMoveCamRight]) (cameraPosition*) += cameraRightXZ * CAM_MOVE_AMOUNT;
+    const float CAM_MOVE_SPEED = 5.f; // in metres per second
+    const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * deltaTime;
+    if(global_keyIsDown[GameActionMoveCamFwd])   camera->cameraPos += camFwdXZ * CAM_MOVE_AMOUNT;
+    if(global_keyIsDown[GameActionMoveCamBack])  camera->cameraPos -= camFwdXZ * CAM_MOVE_AMOUNT;
+    if(global_keyIsDown[GameActionMoveCamLeft])  camera->cameraPos -= cameraRightXZ * CAM_MOVE_AMOUNT;
+    if(global_keyIsDown[GameActionMoveCamRight]) camera->cameraPos += cameraRightXZ * CAM_MOVE_AMOUNT;
+    if(global_keyIsDown[GameActionRaiseCam])     camera->cameraPos.y += CAM_MOVE_AMOUNT;
+    if(global_keyIsDown[GameActionLowerCam])     camera->cameraPos.y -= CAM_MOVE_AMOUNT;
 
-//     if(global_keyIsDown[GameActionRaiseCam])     cameraPosition->y += CAM_MOVE_AMOUNT;
-//     if(global_keyIsDown[GameActionLowerCam])     cameraPosition->y -= CAM_MOVE_AMOUNT;
+    const float CAM_TURN_SPEED = M_PI; // in radians per second
+    const float CAM_TURN_AMOUNT = CAM_TURN_SPEED * deltaTime;
+    if(global_keyIsDown[GameActionTurnCamLeft])   camera->cameraYaw += CAM_TURN_AMOUNT;
+    if(global_keyIsDown[GameActionTurnCamRight])  camera->cameraYaw -= CAM_TURN_AMOUNT;
+    if(global_keyIsDown[GameActionLookUp])        camera->cameraPitch += CAM_TURN_AMOUNT;
+    if(global_keyIsDown[GameActionLookDown])      camera->cameraPitch -= CAM_TURN_AMOUNT;
 
-//     const float CAM_TURN_SPEED = M_PI; // in radians per second
-//     const float CAM_TURN_AMOUNT = CAM_TURN_SPEED * deltaTime;
-//     if(global_keyIsDown[GameActionTurnCamLeft])   cameraYaw*   += CAM_TURN_AMOUNT;
-//     if(global_keyIsDown[GameActionTurnCamRight])  cameraYaw*   -= CAM_TURN_AMOUNT;
-//     if(global_keyIsDown[GameActionLookUp])        cameraPitch* += CAM_TURN_AMOUNT;
-//     if(global_keyIsDown[GameActionLookDown])      cameraPitch* -= CAM_TURN_AMOUNT;
+    // Wrap yaw to avoid floating-point errors if we turn too far
+    while(camera->cameraYaw >= 2*M_PI)
+        camera->cameraYaw -= 2*M_PI;
+    while(camera->cameraYaw <= -2*M_PI)
+        camera->cameraYaw += 2*M_PI;
 
-//     // Wrap yaw to avoid floating-point errors if we turn too far
-//     while(cameraYaw* >=  2*M_PI) cameraYaw* -= 2*M_PI;
-//     while(cameraYaw* <= -2*M_PI) cameraYaw* += 2*M_PI;
+    // Clamp pitch to stop camera flipping upside down
+    if(camera->cameraPitch > degreesToRadians(85))
+        camera->cameraPitch = degreesToRadians(85);
+    if(camera->cameraPitch < -degreesToRadians(85))
+        camera->cameraPitch = -degreesToRadians(85);
 
-//     // Clamp pitch to stop camera flipping upside down
-//     if(cameraPitch* >  degreesToRadians(85)) cameraPitch* = degreesToRadians(85);
-//     if(cameraPitch* < -degreesToRadians(85)) cameraPitch* = -degreesToRadians(85);
-
-//     float4x4 viewMat = translationMat(-cameraPosition*) * rotateYMat(-cameraYaw*) * rotateXMat(-cameraPitch*);
-//     // Update the forward vector we use for camera movement:
-//     cameraForward* = {-viewMat.m[2][0], -viewMat.m[2][1], -viewMat.m[2][2]};
-// }
+    float4x4 viewMat = translationMat(-camera->cameraPos) * rotateYMat(-camera->cameraYaw) * rotateXMat(-camera->cameraPitch);
+    camera->cameraFwd = {-viewMat.m[2][0], -viewMat.m[2][1], -viewMat.m[2][2]};
+}
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     UNREFERENCED_PARAMETER(hInstance);
@@ -562,45 +563,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             global_windowDidResize = false;
         }
 
-        // Update camera
-        {
-            float3 camFwdXZ = normalise({camera.cameraFwd.x, 0, camera.cameraFwd.z});
-            float3 cameraRightXZ = cross(camFwdXZ, {0, 1, 0});
-
-            const float CAM_MOVE_SPEED = 5.f; // in metres per second
-            const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * deltaTime;
-            if(global_keyIsDown[GameActionMoveCamFwd])   camera.cameraPos += camFwdXZ * CAM_MOVE_AMOUNT;
-            if(global_keyIsDown[GameActionMoveCamBack])  camera.cameraPos -= camFwdXZ * CAM_MOVE_AMOUNT;
-            if(global_keyIsDown[GameActionMoveCamLeft])  camera.cameraPos -= cameraRightXZ * CAM_MOVE_AMOUNT;
-            if(global_keyIsDown[GameActionMoveCamRight]) camera.cameraPos += cameraRightXZ * CAM_MOVE_AMOUNT;
-            if(global_keyIsDown[GameActionRaiseCam])     camera.cameraPos.y += CAM_MOVE_AMOUNT;
-            if(global_keyIsDown[GameActionLowerCam])     camera.cameraPos.y -= CAM_MOVE_AMOUNT;
-
-            const float CAM_TURN_SPEED = M_PI; // in radians per second
-            const float CAM_TURN_AMOUNT = CAM_TURN_SPEED * deltaTime;
-            if(global_keyIsDown[GameActionTurnCamLeft])   camera.cameraYaw += CAM_TURN_AMOUNT;
-            if(global_keyIsDown[GameActionTurnCamRight])  camera.cameraYaw -= CAM_TURN_AMOUNT;
-            if(global_keyIsDown[GameActionLookUp])        camera.cameraPitch += CAM_TURN_AMOUNT;
-            if(global_keyIsDown[GameActionLookDown])      camera.cameraPitch -= CAM_TURN_AMOUNT;
-
-            // Wrap yaw to avoid floating-point errors if we turn too far
-            while(camera.cameraYaw >= 2*M_PI)
-                camera.cameraYaw -= 2*M_PI;
-            while(camera.cameraYaw <= -2*M_PI)
-                camera.cameraYaw += 2*M_PI;
-
-            // Clamp pitch to stop camera flipping upside down
-            if(camera.cameraPitch > degreesToRadians(85))
-                camera.cameraPitch = degreesToRadians(85);
-            if(camera.cameraPitch < -degreesToRadians(85))
-                camera.cameraPitch = -degreesToRadians(85);
-        }
-
-        // UpdateCamera(&cameraPos,&cameraFwd,&cameraPitch,&cameraYaw)
+        UpdateCamera(deltaTime,&camera);
 
         float4x4 viewMat = translationMat(-camera.cameraPos) * rotateYMat(-camera.cameraYaw) * rotateXMat(-camera.cameraPitch);
-        // Update the forward vector we use for camera movement:
-        camera.cameraFwd = {-viewMat.m[2][0], -viewMat.m[2][1], -viewMat.m[2][2]};
 
         // Spin the cube
         float4x4 modelMat = rotateXMat(-0.2f * (float)(M_PI * currentTimeInSeconds)) * rotateYMat(0.1f * (float)(M_PI * currentTimeInSeconds)) ;
