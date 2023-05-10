@@ -534,8 +534,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     if(CreateDepthStencilState(d3d11Device,&depthStencilState)) return 1;
 
     long oldTime = GetTime();
-    bool isRunning = true;
-    while(isRunning)
+
+    while(true)
     {
         long newTime = GetTime();
         float deltaTime = GetDeltaTime(oldTime,newTime);
@@ -546,8 +546,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         MSG msg = {};
         while(PeekMessageW(&msg, 0, 0, 0, PM_REMOVE))
         {
-            if(msg.message == WM_QUIT)
-                isRunning = false;
+            if(msg.message == WM_QUIT) break;
             TranslateMessage(&msg);
             DispatchMessageW(&msg);
         }
