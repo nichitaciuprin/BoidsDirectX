@@ -45,8 +45,8 @@ int indexCount;
 bool windowWasResized = true; // To force initial perspectiveMat calculation
 Camera camera;
 float currentTimeInSeconds = 0;
-
 bool global_keyIsDown[GameActionCount] = {};
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     LRESULT result = 0;
@@ -478,6 +478,13 @@ float GetDeltaTime(long oldTime, long newTime)
 
     return diff/ticksPerSecond;
 }
+void GetWindowInfo(HWND hwnd, int* outWindowWidth, int* outWindowHeight)
+{
+    RECT clientRect;
+    GetClientRect(hwnd, &clientRect);
+    *outWindowWidth = clientRect.right - clientRect.left;
+    *outWindowHeight = clientRect.bottom - clientRect.top;
+}
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     UNREFERENCED_PARAMETER(hInstance);
@@ -549,14 +556,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
         // Get window dimensions
         int windowWidth, windowHeight;
-        float windowAspectRatio;
-        {
-            RECT clientRect;
-            GetClientRect(hwnd, &clientRect);
-            windowWidth = clientRect.right - clientRect.left;
-            windowHeight = clientRect.bottom - clientRect.top;
-            windowAspectRatio = (float)windowWidth / (float)windowHeight;
-        }
+        GetWindowInfo(hwnd,&windowWidth,&windowHeight);
 
         if(windowWasResized)
         {
@@ -568,6 +568,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             assert(SUCCEEDED(res));
 
             CreateRenderTargets(d3d11Device, d3d11SwapChain, &d3d11FrameBufferView, &depthBufferView);
+            float windowAspectRatio = (float)windowWidth / (float)windowHeight;
             projMatrix = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
 
             windowWasResized = false;
