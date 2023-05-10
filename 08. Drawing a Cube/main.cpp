@@ -47,14 +47,21 @@ float currentTimeInSeconds = 0;
 bool global_keyIsDown[GameActionCount] = {};
 
 HWND hwnd;
-ID3D11Device* device;
-ID3D11DeviceContext* deviceContext;
-IDXGISwapChain1* swapChain;
-ID3D11RenderTargetView* renderTargetView;
-ID3D11DepthStencilView* depthStencilView;
-ID3D11InputLayout* inputLayout;
-ID3D11VertexShader* vertexShader;
-ID3D11PixelShader* pixelShader;
+ID3D11Device*             device;
+ID3D11DeviceContext*      deviceContext;
+IDXGISwapChain1*          swapChain;
+ID3D11RenderTargetView*   renderTargetView;
+ID3D11DepthStencilView*   depthStencilView;
+ID3D11InputLayout*        inputLayout;
+ID3D11VertexShader*       vertexShader;
+ID3D11PixelShader*        pixelShader;
+ID3D11Buffer*             vertexBuffer;
+ID3D11Buffer*             indexBuffer;
+ID3D11Buffer*             constantBuffer;
+ID3D11RasterizerState*    rasterizerState;
+ID3D11DepthStencilState*  depthStencilState;
+
+
 
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -513,22 +520,12 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     #endif
 
     if(CreateSwapChain(device,hwnd,&swapChain)) return 1;
-
     if(CreateRenderTargets(device, swapChain, &renderTargetView, &depthStencilView)) return 1;
-
     if(CompileShadersAndInputs(device,&vertexShader,&pixelShader,&inputLayout)) return 1;
-
-    ID3D11Buffer* vertexBuffer;
-    ID3D11Buffer* indexBuffer;
-    ID3D11Buffer* constantBuffer;
     if(CreateVertexBuffer(device,&vertexBuffer)) return 1;
     if(CreateIndexBuffer(device,&indexBuffer)) return 1;
     if(CreateConstantBuffer(device,&constantBuffer)) return 1;
-
-    ID3D11RasterizerState* rasterizerState;
     if(CreateRasterizerState(device,&rasterizerState)) return 1;
-
-    ID3D11DepthStencilState* depthStencilState;
     if(CreateDepthStencilState(device,&depthStencilState)) return 1;
 
     long oldTime = GetTime();
