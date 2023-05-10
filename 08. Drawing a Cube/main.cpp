@@ -42,7 +42,7 @@ float4x4 viewMatrix = {};
 float4x4 projMatrix = {};
 float4x4 modelViewProj = {};
 int indexCount;
-bool global_windowDidResize = true; // To force initial perspectiveMat calculation
+bool windowWasResized = true; // To force initial perspectiveMat calculation
 Camera camera;
 float currentTimeInSeconds = 0;
 
@@ -87,7 +87,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         }
         case WM_SIZE:
         {
-            global_windowDidResize = true;
+            windowWasResized = true;
             break;
         }
         default:
@@ -562,7 +562,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             windowAspectRatio = (float)windowWidth / (float)windowHeight;
         }
 
-        if(global_windowDidResize)
+        if(windowWasResized)
         {
             d3d11DeviceContext->OMSetRenderTargets(0, 0, 0);
             d3d11FrameBufferView->Release();
@@ -574,7 +574,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             CreateRenderTargets(d3d11Device, d3d11SwapChain, &d3d11FrameBufferView, &depthBufferView);
             projMatrix = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
 
-            global_windowDidResize = false;
+            windowWasResized = false;
         }
 
         UpdateCamera(deltaTime,&camera);
@@ -595,15 +595,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
         d3d11DeviceContext->RSSetState(rasterizerState);
         d3d11DeviceContext->OMSetDepthStencilState(depthStencilState, 0);
-
         d3d11DeviceContext->OMSetRenderTargets(1, &d3d11FrameBufferView, depthBufferView);
-
         d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         d3d11DeviceContext->IASetInputLayout(inputLayout);
-
         d3d11DeviceContext->VSSetShader(vertexShader, nullptr, 0);
         d3d11DeviceContext->PSSetShader(pixelShader, nullptr, 0);
-
         d3d11DeviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
 
         UINT stride = 3 * sizeof(float);
@@ -611,9 +607,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
         d3d11DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
         d3d11DeviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-
         d3d11DeviceContext->DrawIndexed(indexCount, 0, 0);
-
         d3d11SwapChain->Present(1, 0);
     }
 
