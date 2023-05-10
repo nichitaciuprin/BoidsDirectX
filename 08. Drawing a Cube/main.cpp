@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include "3DMaths.h"
 
-
 enum GameAction
 {
     GameActionMoveCamFwd,
@@ -46,6 +45,17 @@ bool windowWasResized = true; // To force initial perspectiveMat calculation
 Camera camera;
 float currentTimeInSeconds = 0;
 bool global_keyIsDown[GameActionCount] = {};
+
+HWND hwnd;
+ID3D11Device* device;
+ID3D11DeviceContext* deviceContext;
+IDXGISwapChain1* swapChain;
+ID3D11RenderTargetView* renderTargetView;
+ID3D11DepthStencilView* depthStencilView;
+ID3D11InputLayout* inputLayout;
+ID3D11VertexShader* vertexShader;
+ID3D11PixelShader* pixelShader;
+
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -89,7 +99,7 @@ void ShowMessageBox(_In_opt_ LPCSTR lpText)
 {
     MessageBoxA(nullptr, lpText, nullptr, MB_OK);
 }
-bool CreateRenderTargets(ID3D11Device* d3d11Device, IDXGISwapChain1* swapChain, ID3D11RenderTargetView** d3d11FrameBufferView, ID3D11DepthStencilView** depthBufferView)
+int CreateRenderTargets(ID3D11Device* d3d11Device, IDXGISwapChain1* swapChain, ID3D11RenderTargetView** d3d11FrameBufferView, ID3D11DepthStencilView** depthBufferView)
 {
     ID3D11Texture2D* d3d11FrameBuffer;
     HRESULT hResult = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
@@ -113,7 +123,7 @@ bool CreateRenderTargets(ID3D11Device* d3d11Device, IDXGISwapChain1* swapChain, 
 
     depthBuffer->Release();
 
-    return true;
+    return 0;
 }
 int CreateWindow2(HINSTANCE hInstance, HWND* outHWND)
 {
@@ -292,7 +302,6 @@ int CompileShadersAndInputs(ID3D11Device* d3d11Device, ID3D11VertexShader** vert
         assert(SUCCEEDED(hResult));
     }
 
-    
     {
         D3D11_INPUT_ELEMENT_DESC inputElementDesc;
         inputElementDesc.SemanticName = "POS";
@@ -311,6 +320,8 @@ int CompileShadersAndInputs(ID3D11Device* d3d11Device, ID3D11VertexShader** vert
 
     vsBlob->Release();
     psBlob->Release();
+
+    return 0;
 }
 int CreateVertexBuffer(ID3D11Device* d3d11Device, ID3D11Buffer** vertexBuffer)
 {
@@ -494,41 +505,31 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     InitCamera(&camera);
 
-    HWND hwnd;
     if(CreateWindow2(hInstance,&hwnd)) return 1;
-
-    ID3D11Device* d3d11Device;
-    ID3D11DeviceContext* d3d11DeviceContext;
-    if(CreateDeviceAndContext(&d3d11Device,&d3d11DeviceContext)) return 1;
+    if(CreateDeviceAndContext(&device,&deviceContext)) return 1;
 
     #ifdef DEBUG_BUILD
     EnableDebug();
     #endif
 
-    IDXGISwapChain1* d3d11SwapChain;
-    if(CreateSwapChain(d3d11Device,hwnd,&d3d11SwapChain)) return 1;
+    if(CreateSwapChain(device,hwnd,&swapChain)) return 1;
 
-    ID3D11RenderTargetView* d3d11FrameBufferView;
-    ID3D11DepthStencilView* depthBufferView;
-    CreateRenderTargets(d3d11Device, d3d11SwapChain, &d3d11FrameBufferView, &depthBufferView);
+    if(CreateRenderTargets(device, swapChain, &renderTargetView, &depthStencilView)) return 1;
 
-    ID3D11InputLayout* inputLayout;
-    ID3D11VertexShader* vertexShader;
-    ID3D11PixelShader* pixelShader;
-    CompileShadersAndInputs(d3d11Device,&vertexShader,&pixelShader,&inputLayout);
+    if(CompileShadersAndInputs(device,&vertexShader,&pixelShader,&inputLayout)) return 1;
 
     ID3D11Buffer* vertexBuffer;
     ID3D11Buffer* indexBuffer;
     ID3D11Buffer* constantBuffer;
-    if(CreateVertexBuffer(d3d11Device,&vertexBuffer)) return 1;
-    if(CreateIndexBuffer(d3d11Device,&indexBuffer)) return 1;
-    if(CreateConstantBuffer(d3d11Device,&constantBuffer)) return 1;
+    if(CreateVertexBuffer(device,&vertexBuffer)) return 1;
+    if(CreateIndexBuffer(device,&indexBuffer)) return 1;
+    if(CreateConstantBuffer(device,&constantBuffer)) return 1;
 
     ID3D11RasterizerState* rasterizerState;
-    if(CreateRasterizerState(d3d11Device,&rasterizerState)) return 1;
+    if(CreateRasterizerState(device,&rasterizerState)) return 1;
 
     ID3D11DepthStencilState* depthStencilState;
-    if(CreateDepthStencilState(d3d11Device,&depthStencilState)) return 1;
+    if(CreateDepthStencilState(device,&depthStencilState)) return 1;
 
     long oldTime = GetTime();
 
@@ -560,14 +561,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
         if(windowWasResized)
         {
-            d3d11DeviceContext->OMSetRenderTargets(0, 0, 0);
-            d3d11FrameBufferView->Release();
-            depthBufferView->Release();
+            deviceContext->OMSetRenderTargets(0, 0, 0);
+            renderTargetView->Release();
+            depthStencilView->Release();
 
-            HRESULT res = d3d11SwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+            HRESULT res = swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
             assert(SUCCEEDED(res));
 
-            CreateRenderTargets(d3d11Device, d3d11SwapChain, &d3d11FrameBufferView, &depthBufferView);
+            CreateRenderTargets(device, swapChain, &renderTargetView, &depthStencilView);
             float windowAspectRatio = (float)windowWidth / (float)windowHeight;
             projMatrix = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
 
@@ -581,32 +582,32 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         viewMatrix = translationMat(-camera.cameraPos) * rotateYMat(-camera.cameraYaw) * rotateXMat(-camera.cameraPitch);
         modelViewProj = modelMatrix * viewMatrix * projMatrix;
 
-        UpdateConstantBuffer(d3d11DeviceContext,constantBuffer,modelViewProj);
+        UpdateConstantBuffer(deviceContext,constantBuffer,modelViewProj);
 
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
-        d3d11DeviceContext->ClearRenderTargetView(d3d11FrameBufferView, backgroundColor);
+        deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
 
-        d3d11DeviceContext->ClearDepthStencilView(depthBufferView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+        deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
         D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (FLOAT)windowWidth, (FLOAT)windowHeight, 0.0f, 1.0f };
-        d3d11DeviceContext->RSSetViewports(1, &viewport);
+        deviceContext->RSSetViewports(1, &viewport);
 
-        d3d11DeviceContext->RSSetState(rasterizerState);
-        d3d11DeviceContext->OMSetDepthStencilState(depthStencilState, 0);
-        d3d11DeviceContext->OMSetRenderTargets(1, &d3d11FrameBufferView, depthBufferView);
-        d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        d3d11DeviceContext->IASetInputLayout(inputLayout);
-        d3d11DeviceContext->VSSetShader(vertexShader, nullptr, 0);
-        d3d11DeviceContext->PSSetShader(pixelShader, nullptr, 0);
-        d3d11DeviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
+        deviceContext->RSSetState(rasterizerState);
+        deviceContext->OMSetDepthStencilState(depthStencilState, 0);
+        deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+        deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        deviceContext->IASetInputLayout(inputLayout);
+        deviceContext->VSSetShader(vertexShader, nullptr, 0);
+        deviceContext->PSSetShader(pixelShader, nullptr, 0);
+        deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
 
         UINT stride = 3 * sizeof(float);
         UINT offset = 0;
 
-        d3d11DeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-        d3d11DeviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-        d3d11DeviceContext->DrawIndexed(indexCount, 0, 0);
-        d3d11SwapChain->Present(1, 0);
+        deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+        deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+        deviceContext->DrawIndexed(indexCount, 0, 0);
+        swapChain->Present(1, 0);
     }
 
     return 0;
