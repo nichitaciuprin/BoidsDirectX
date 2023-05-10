@@ -43,6 +43,8 @@ float4x4 projMatrix = {};
 float4x4 modelViewProj = {};
 int indexCount;
 bool global_windowDidResize = true; // To force initial perspectiveMat calculation
+Camera camera;
+float currentTimeInSeconds = 0;
 
 bool global_keyIsDown[GameActionCount] = {};
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -414,6 +416,16 @@ int CreateDepthStencilState(ID3D11Device* d3d11Device, ID3D11DepthStencilState**
 
     return 0;
 }
+void InitCamera(Camera* outCamera)
+{
+    camera =
+    {
+        { 0, 0, 2 },
+        { 0, 0,-1 },
+        0,
+        0
+    };
+}
 void UpdateCamera(float deltaTime, Camera* camera)
 {
     float3 camFwdXZ = normalise({camera->cameraFwd.x, 0, camera->cameraFwd.z});
@@ -483,6 +495,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     UNREFERENCED_PARAMETER(lpCmdLine);
     UNREFERENCED_PARAMETER(nCmdShow);
 
+    InitCamera(&camera);
+
     HWND hwnd;
     if(CreateWindow2(hInstance,&hwnd)) return 1;
 
@@ -519,42 +533,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     ID3D11DepthStencilState* depthStencilState;
     if(CreateDepthStencilState(d3d11Device,&depthStencilState)) return 1;
 
-    // Timing
-    LONGLONG startPerfCount = 0;
-    LONGLONG perfCounterFrequency = 0;
-    {
-        LARGE_INTEGER perfCount;
-        LARGE_INTEGER perfFreq;
-        QueryPerformanceCounter(&perfCount);
-        QueryPerformanceFrequency(&perfFreq);
-        startPerfCount = perfCount.QuadPart;
-        perfCounterFrequency = perfFreq.QuadPart;
-    }
-    double currentTimeInSeconds = 0.0;
-
-    Camera camera =
-    {
-        { 0, 0, 2 },
-        { 0, 0,-1 },
-        0,
-        0
-    };
-
-    // Main Loop
+    long oldTime = GetTime();
     bool isRunning = true;
     while(isRunning)
     {
-        float deltaTime;
-        {
-            double previousTimeInSeconds = currentTimeInSeconds;
-            LARGE_INTEGER perfCount;
-            QueryPerformanceCounter(&perfCount);
+        long newTime = GetTime();
+        float deltaTime = GetDeltaTime(oldTime,newTime);
+        oldTime = newTime;
 
-            currentTimeInSeconds = (double)(perfCount.QuadPart - startPerfCount) / (double)perfCounterFrequency;
-            deltaTime = (float)(currentTimeInSeconds - previousTimeInSeconds);
-            if(deltaTime > (1.f / 60.f))
-                deltaTime = (1.f / 60.f);
-        }
+        currentTimeInSeconds += deltaTime;
 
         MSG msg = {};
         while(PeekMessageW(&msg, 0, 0, 0, PM_REMOVE))
