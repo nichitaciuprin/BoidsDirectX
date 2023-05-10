@@ -450,6 +450,15 @@ void UpdateCamera(float deltaTime, Camera* camera)
     float4x4 viewMat = translationMat(-camera->cameraPos) * rotateYMat(-camera->cameraYaw) * rotateXMat(-camera->cameraPitch);
     camera->cameraFwd = {-viewMat.m[2][0], -viewMat.m[2][1], -viewMat.m[2][2]};
 }
+void UpdateConstantBuffer(ID3D11DeviceContext* d3d11DeviceContext, ID3D11Buffer* constantBuffer, float4x4 modelViewProj)
+{
+    // Update constant buffer
+    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
+    d3d11DeviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+    Constants* constants = (Constants*)(mappedSubresource.pData);
+    constants->modelViewProj = modelViewProj;
+    d3d11DeviceContext->Unmap(constantBuffer, 0);
+}
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     UNREFERENCED_PARAMETER(hInstance);
@@ -573,12 +582,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         viewMatrix = translationMat(-camera.cameraPos) * rotateYMat(-camera.cameraYaw) * rotateXMat(-camera.cameraPitch);
         modelViewProj = modelMatrix * viewMatrix * projMatrix;
 
-        // Update constant buffer
-        D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-        d3d11DeviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-        Constants* constants = (Constants*)(mappedSubresource.pData);
-        constants->modelViewProj = modelViewProj;
-        d3d11DeviceContext->Unmap(constantBuffer, 0);
+        UpdateConstantBuffer(d3d11DeviceContext,constantBuffer,modelViewProj);
 
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
         d3d11DeviceContext->ClearRenderTargetView(d3d11FrameBufferView, backgroundColor);
