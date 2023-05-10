@@ -503,6 +503,20 @@ void GetWindowInfo(HWND hwnd, int* outWindowWidth, int* outWindowHeight)
     *outWindowWidth = clientRect.right - clientRect.left;
     *outWindowHeight = clientRect.bottom - clientRect.top;
 }
+void HandleWindowMessages(HWND hwnd, bool* outWindowWasClosed)
+{
+    MSG msg = {};
+    *outWindowWasClosed = false;
+    while(PeekMessageW(&msg, 0, 0, 0, PM_REMOVE))
+    {
+        if(msg.message == WM_QUIT)
+        {
+            *outWindowWasClosed = true;
+        }
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
+    }
+}
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     UNREFERENCED_PARAMETER(hInstance);
@@ -542,17 +556,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         currentTimeInSeconds += deltaTime;
 
         bool mustExitLoop = false;
-        MSG msg = {};
-        while(PeekMessageW(&msg, 0, 0, 0, PM_REMOVE))
-        {
-            if(msg.message == WM_QUIT)
-                mustExitLoop = true;
-            TranslateMessage(&msg);
-            DispatchMessageW(&msg);
-        }
+        HandleWindowMessages(hwnd,&mustExitLoop);
         if (mustExitLoop) break;
 
-        // Get window dimensions
         int windowWidth, windowHeight;
         GetWindowInfo(hwnd,&windowWidth,&windowHeight);
 
@@ -578,17 +584,12 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         modelMatrix = rotateXMat(-0.2f * duno) * rotateYMat(0.1f * duno) ;
         viewMatrix = translationMat(-camera.cameraPos) * rotateYMat(-camera.cameraYaw) * rotateXMat(-camera.cameraPitch);
         modelViewProj = modelMatrix * viewMatrix * projMatrix;
-
         UpdateConstantBuffer(deviceContext,constantBuffer,modelViewProj);
-
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
         deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
-
         deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
         D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (FLOAT)windowWidth, (FLOAT)windowHeight, 0.0f, 1.0f };
         deviceContext->RSSetViewports(1, &viewport);
-
         deviceContext->RSSetState(rasterizerState);
         deviceContext->OMSetDepthStencilState(depthStencilState, 0);
         deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
@@ -597,10 +598,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         deviceContext->VSSetShader(vertexShader, nullptr, 0);
         deviceContext->PSSetShader(pixelShader, nullptr, 0);
         deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
-
         UINT stride = 3 * sizeof(float);
         UINT offset = 0;
-
         deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
         deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
         deviceContext->DrawIndexed(indexCount, 0, 0);
