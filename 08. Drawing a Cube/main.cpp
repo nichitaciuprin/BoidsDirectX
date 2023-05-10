@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include "3DMaths.h"
 
-bool global_windowDidResize = false;
 
 enum GameAction
 {
@@ -42,6 +41,8 @@ float4x4 modelMatrix = {};
 float4x4 viewMatrix = {};
 float4x4 projMatrix = {};
 float4x4 modelViewProj = {};
+int indexCount;
+bool global_windowDidResize = true; // To force initial perspectiveMat calculation
 
 bool global_keyIsDown[GameActionCount] = {};
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -319,7 +320,6 @@ int CompileShadersAndInputs(ID3D11Device* d3d11Device, ID3D11VertexShader** vert
     vsBlob->Release();
     psBlob->Release();
 }
-int indexCount;
 int CreateVertexBuffer(ID3D11Device* d3d11Device, ID3D11Buffer** vertexBuffer)
 {
     float vertexData[] =
@@ -459,6 +459,23 @@ void UpdateConstantBuffer(ID3D11DeviceContext* d3d11DeviceContext, ID3D11Buffer*
     constants->modelViewProj = modelViewProj;
     d3d11DeviceContext->Unmap(constantBuffer, 0);
 }
+long GetTime()
+{
+    LARGE_INTEGER ticks;
+    QueryPerformanceCounter(&ticks);
+    return (long)ticks.QuadPart;
+}
+float GetDeltaTime(long oldTime, long newTime)
+{
+    LARGE_INTEGER perfFreq;
+    QueryPerformanceFrequency(&perfFreq);
+    LONGLONG perfCounterFrequency = perfFreq.QuadPart;
+
+    double diff = newTime - oldTime;
+    double ticksPerSecond = perfCounterFrequency;
+
+    return diff/ticksPerSecond;
+}
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     UNREFERENCED_PARAMETER(hInstance);
@@ -502,17 +519,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     ID3D11DepthStencilState* depthStencilState;
     if(CreateDepthStencilState(d3d11Device,&depthStencilState)) return 1;
 
-    global_windowDidResize = true; // To force initial perspectiveMat calculation
-
     // Timing
     LONGLONG startPerfCount = 0;
     LONGLONG perfCounterFrequency = 0;
     {
         LARGE_INTEGER perfCount;
-        QueryPerformanceCounter(&perfCount);
-        startPerfCount = perfCount.QuadPart;
         LARGE_INTEGER perfFreq;
+        QueryPerformanceCounter(&perfCount);
         QueryPerformanceFrequency(&perfFreq);
+        startPerfCount = perfCount.QuadPart;
         perfCounterFrequency = perfFreq.QuadPart;
     }
     double currentTimeInSeconds = 0.0;
