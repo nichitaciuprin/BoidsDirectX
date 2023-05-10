@@ -58,26 +58,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
             bool isDown = (msg == WM_KEYDOWN);
             if(wparam == VK_ESCAPE)
                 DestroyWindow(hwnd);
-            else if(wparam == 'W')
-                global_keyIsDown[GameActionMoveCamFwd] = isDown;
-            else if(wparam == 'A')
-                global_keyIsDown[GameActionMoveCamLeft] = isDown;
-            else if(wparam == 'S')
-                global_keyIsDown[GameActionMoveCamBack] = isDown;
-            else if(wparam == 'D')
-                global_keyIsDown[GameActionMoveCamRight] = isDown;
-            else if(wparam == 'E')
-                global_keyIsDown[GameActionRaiseCam] = isDown;
-            else if(wparam == 'Q')
-                global_keyIsDown[GameActionLowerCam] = isDown;
-            else if(wparam == VK_UP)
-                global_keyIsDown[GameActionLookUp] = isDown;
-            else if(wparam == VK_LEFT)
-                global_keyIsDown[GameActionTurnCamLeft] = isDown;
-            else if(wparam == VK_DOWN)
-                global_keyIsDown[GameActionLookDown] = isDown;
-            else if(wparam == VK_RIGHT)
-                global_keyIsDown[GameActionTurnCamRight] = isDown;
+            else if(wparam == 'W')       global_keyIsDown[GameActionMoveCamFwd]    = isDown;
+            else if(wparam == 'A')       global_keyIsDown[GameActionMoveCamLeft]   = isDown;
+            else if(wparam == 'S')       global_keyIsDown[GameActionMoveCamBack]   = isDown;
+            else if(wparam == 'D')       global_keyIsDown[GameActionMoveCamRight]  = isDown;
+            else if(wparam == 'E')       global_keyIsDown[GameActionRaiseCam]      = isDown;
+            else if(wparam == 'Q')       global_keyIsDown[GameActionLowerCam]      = isDown;
+            else if(wparam == VK_UP)     global_keyIsDown[GameActionLookUp]        = isDown;
+            else if(wparam == VK_LEFT)   global_keyIsDown[GameActionTurnCamLeft]   = isDown;
+            else if(wparam == VK_DOWN)   global_keyIsDown[GameActionLookDown]      = isDown;
+            else if(wparam == VK_RIGHT)  global_keyIsDown[GameActionTurnCamRight]  = isDown;
             break;
         }
         case WM_DESTROY:
@@ -535,6 +525,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     long oldTime = GetTime();
 
+    // D3D11_VIEWPORT viewport = { 0.0f, 0.0f, 800, 600, 0.0f, 1.0f };
+    // d3d11DeviceContext->RSSetViewports(1, &viewport);
+
     while(true)
     {
         long newTime = GetTime();
@@ -543,13 +536,16 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
         currentTimeInSeconds += deltaTime;
 
+        bool mustExitLoop = false;
         MSG msg = {};
         while(PeekMessageW(&msg, 0, 0, 0, PM_REMOVE))
         {
-            if(msg.message == WM_QUIT) break;
+            if(msg.message == WM_QUIT)
+                mustExitLoop = true;
             TranslateMessage(&msg);
             DispatchMessageW(&msg);
         }
+        if (mustExitLoop) break;
 
         // Get window dimensions
         int windowWidth, windowHeight;
@@ -579,7 +575,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
         UpdateCamera(deltaTime,&camera);
 
-        modelMatrix = rotateXMat(-0.2f * (float)(M_PI * currentTimeInSeconds)) * rotateYMat(0.1f * (float)(M_PI * currentTimeInSeconds)) ;
+        float duno = M_PI * currentTimeInSeconds;
+        modelMatrix = rotateXMat(-0.2f * duno) * rotateYMat(0.1f * duno) ;
         viewMatrix = translationMat(-camera.cameraPos) * rotateYMat(-camera.cameraYaw) * rotateXMat(-camera.cameraPitch);
         modelViewProj = modelMatrix * viewMatrix * projMatrix;
 
