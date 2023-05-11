@@ -61,9 +61,10 @@ ID3D11Buffer*             constantBuffer;
 ID3D11RasterizerState*    rasterizerState;
 ID3D11DepthStencilState*  depthStencilState;
 
-
-
-
+bool FileExists(LPCWSTR file)
+{
+    return GetFileAttributes(file) != INVALID_FILE_ATTRIBUTES;
+}
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     LRESULT result = 0;
@@ -265,20 +266,16 @@ int CompileShadersAndInputs(ID3D11Device* d3d11Device, ID3D11VertexShader** vert
     ID3DBlob* psBlob;
     ID3DBlob* shaderCompileErrorsBlob;
 
+    auto fileName = L"shaders.hlsl";
+
+    assert(FileExists(fileName));
+
     {
-        HRESULT hResult = D3DCompileFromFile(L"shaders.hlsl", nullptr, nullptr, "vs_main", "vs_5_0", shaderCompileFlags, 0, &vsBlob, &shaderCompileErrorsBlob);
+        HRESULT hResult = D3DCompileFromFile(fileName, nullptr, nullptr, "vs_main", "vs_5_0", shaderCompileFlags, 0, &vsBlob, &shaderCompileErrorsBlob);
         if(FAILED(hResult))
         {
-            const char* errorString = NULL;
-            if(hResult == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
-            {
-                errorString = "Could not compile shader; file not found";
-            }
-            else if(shaderCompileErrorsBlob)
-            {
-                errorString = (const char*)shaderCompileErrorsBlob->GetBufferPointer();
-                shaderCompileErrorsBlob->Release();
-            }
+            const char* errorString = (const char*)shaderCompileErrorsBlob->GetBufferPointer();
+            shaderCompileErrorsBlob->Release();
             ShowMessageBox(errorString);
             return 1;
         }
@@ -288,20 +285,12 @@ int CompileShadersAndInputs(ID3D11Device* d3d11Device, ID3D11VertexShader** vert
     }
 
     {
-        HRESULT hResult = D3DCompileFromFile(L"shaders.hlsl", nullptr, nullptr, "ps_main", "ps_5_0", shaderCompileFlags, 0, &psBlob, &shaderCompileErrorsBlob);
+        HRESULT hResult = D3DCompileFromFile(fileName, nullptr, nullptr, "ps_main", "ps_5_0", shaderCompileFlags, 0, &psBlob, &shaderCompileErrorsBlob);
         if(FAILED(hResult))
         {
-            const char* errorString = NULL;
-            if(hResult == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
-            {
-                errorString = "Could not compile shader; file not found";
-            }
-            else if(shaderCompileErrorsBlob)
-            {
-                errorString = (const char*)shaderCompileErrorsBlob->GetBufferPointer();
-                shaderCompileErrorsBlob->Release();
-            }
-            MessageBoxA(0, errorString, "Shader Compiler Error", MB_ICONERROR | MB_OK);
+            const char* errorString = (const char*)shaderCompileErrorsBlob->GetBufferPointer();
+            shaderCompileErrorsBlob->Release();
+            ShowMessageBox(errorString);
             return 1;
         }
 

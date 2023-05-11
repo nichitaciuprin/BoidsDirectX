@@ -4,11 +4,13 @@ cbuffer constants : register(b0)
     float4x4 modelViewProj;
 };
 
-struct VS_Input {
+struct VS_Input
+{
     float3 pos : POS;
 };
 
-struct VS_Output {
+struct VS_Output
+{
     float4 pos : SV_POSITION;
     float3 color : COLOR;
 };

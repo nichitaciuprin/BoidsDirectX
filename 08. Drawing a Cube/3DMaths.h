@@ -1,6 +1,6 @@
 #pragma once
 
-#define _USE_MATH_DEFINES 
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 struct float2
@@ -109,7 +109,7 @@ inline float4x4 translationMat(float3 trans)
 
 inline float4x4 makePerspectiveMat(float aspectRatio, float fovYRadians, float zNear, float zFar)
 {
-    // float yScale = 1 / tanf(0.5f * fovYRadians); 
+    // float yScale = 1 / tanf(0.5f * fovYRadians);
     // NOTE: 1/tan(X) = tan(90degs - X), so we can avoid a divide
     // float yScale = tanf((0.5f * M_PI) - (0.5f * fovYRadians));
     float yScale = tanf(0.5f * ((float)M_PI - fovYRadians));
@@ -122,7 +122,7 @@ inline float4x4 makePerspectiveMat(float aspectRatio, float fovYRadians, float z
         xScale, 0, 0, 0,
         0, yScale, 0, 0,
         0, 0, zScale, zTranslation,
-        0, 0, -1, 0 
+        0, 0, -1, 0
     };
     return result;
 }
