@@ -549,7 +549,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
         if(windowWasResized)
         {
-            int windowWidth, windowHeight;
+            int windowWidth;
+            int windowHeight;
             GetWindowInfo(hwnd,&windowWidth,&windowHeight);
             float windowWidthF = windowWidth;
             float windowHeightF = windowHeight;
