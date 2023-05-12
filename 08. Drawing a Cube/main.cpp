@@ -533,6 +533,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     deviceContext->RSSetState(rasterizerState);
     deviceContext->OMSetDepthStencilState(depthStencilState, 0);
+    deviceContext->VSSetShader(vertexShader, nullptr, 0);
+    deviceContext->PSSetShader(pixelShader, nullptr, 0);
 
     long oldTime = GetTime();
 
@@ -587,8 +589,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         UINT stride = 3 * sizeof(float);
         UINT offset = 0;
         deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-        deviceContext->VSSetShader(vertexShader, nullptr, 0);
-        deviceContext->PSSetShader(pixelShader, nullptr, 0);
         deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
         deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         deviceContext->IASetInputLayout(inputLayout);
