@@ -540,7 +540,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         long newTime = GetTime();
         float deltaTime = GetDeltaTime(oldTime,newTime);
         oldTime = newTime;
-
         currentTimeInSeconds += deltaTime;
 
         bool mustExitLoop = false;
@@ -551,8 +550,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         {
             int windowWidth, windowHeight;
             GetWindowInfo(hwnd,&windowWidth,&windowHeight);
+            float windowWidthF = windowWidth;
+            float windowHeightF = windowHeight;
+            float windowAspectRatio = windowWidthF / windowHeightF;
 
-            D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (FLOAT)windowWidth, (FLOAT)windowHeight, 0.0f, 1.0f };
+            D3D11_VIEWPORT viewport = { 0.0f, 0.0f, windowWidthF, windowHeightF, 0.0f, 1.0f };
             deviceContext->RSSetViewports(1, &viewport);
 
             deviceContext->OMSetRenderTargets(0, 0, 0);
@@ -563,7 +565,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             assert(SUCCEEDED(res));
 
             CreateRenderTargets(device, swapChain, &renderTargetView, &depthStencilView);
-            float windowAspectRatio = (float)windowWidth / (float)windowHeight;
             projMatrix = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
 
             windowWasResized = false;
@@ -579,17 +580,19 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
         deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
         deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
         deviceContext->OMSetDepthStencilState(depthStencilState, 0);
         deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-        deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        deviceContext->IASetInputLayout(inputLayout);
         deviceContext->VSSetShader(vertexShader, nullptr, 0);
         deviceContext->PSSetShader(pixelShader, nullptr, 0);
         deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
+        deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        deviceContext->IASetInputLayout(inputLayout);
         UINT stride = 3 * sizeof(float);
         UINT offset = 0;
         deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
         deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+
         deviceContext->DrawIndexed(indexCount, 0, 0);
         swapChain->Present(1, 0);
     }
