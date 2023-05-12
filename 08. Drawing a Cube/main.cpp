@@ -550,11 +550,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         HandleWindowMessages(hwnd,&mustExitLoop);
         if (mustExitLoop) break;
 
-        int windowWidth, windowHeight;
-        GetWindowInfo(hwnd,&windowWidth,&windowHeight);
-
         if(windowWasResized)
         {
+            int windowWidth, windowHeight;
+            GetWindowInfo(hwnd,&windowWidth,&windowHeight);
+
+            D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (FLOAT)windowWidth, (FLOAT)windowHeight, 0.0f, 1.0f };
+            deviceContext->RSSetViewports(1, &viewport);
+
             deviceContext->OMSetRenderTargets(0, 0, 0);
             renderTargetView->Release();
             depthStencilView->Release();
@@ -579,8 +582,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
         deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
         deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-        D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (FLOAT)windowWidth, (FLOAT)windowHeight, 0.0f, 1.0f };
-        deviceContext->RSSetViewports(1, &viewport);
         deviceContext->OMSetDepthStencilState(depthStencilState, 0);
         deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
         deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
