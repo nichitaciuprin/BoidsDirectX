@@ -506,6 +506,29 @@ void HandleWindowMessages(HWND hwnd, bool* outWindowWasClosed)
         DispatchMessageW(&msg);
     }
 }
+void OnWindowResize(HWND hwnd, ID3D11DeviceContext* deviceContext, IDXGISwapChain1* swapChain, ID3D11RenderTargetView** renderTargetView, ID3D11DepthStencilView** depthStencilView)
+{
+    int windowWidth;
+    int windowHeight;
+    GetWindowInfo(hwnd,&windowWidth,&windowHeight);
+    float windowWidthF = windowWidth;
+    float windowHeightF = windowHeight;
+    float windowAspectRatio = windowWidthF / windowHeightF;
+
+    D3D11_VIEWPORT viewport = { 0.0f, 0.0f, windowWidthF, windowHeightF, 0.0f, 1.0f };
+    deviceContext->RSSetViewports(1, &viewport);
+
+    deviceContext->OMSetRenderTargets(0, 0, 0);
+
+    (*renderTargetView)->Release();
+    (*depthStencilView)->Release();
+
+    HRESULT res = swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+    assert(SUCCEEDED(res));
+
+    CreateRenderTargets(device, swapChain, renderTargetView, depthStencilView);
+    projMatrix = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
+}
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     UNREFERENCED_PARAMETER(hInstance);
@@ -535,6 +558,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     deviceContext->OMSetDepthStencilState(depthStencilState, 0);
     deviceContext->VSSetShader(vertexShader, nullptr, 0);
     deviceContext->PSSetShader(pixelShader, nullptr, 0);
+    deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
+    deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    deviceContext->IASetInputLayout(inputLayout);
 
     long oldTime = GetTime();
 
@@ -551,27 +577,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
         if(windowWasResized)
         {
-            int windowWidth;
-            int windowHeight;
-            GetWindowInfo(hwnd,&windowWidth,&windowHeight);
-            float windowWidthF = windowWidth;
-            float windowHeightF = windowHeight;
-            float windowAspectRatio = windowWidthF / windowHeightF;
-
-            D3D11_VIEWPORT viewport = { 0.0f, 0.0f, windowWidthF, windowHeightF, 0.0f, 1.0f };
-            deviceContext->RSSetViewports(1, &viewport);
-
-            deviceContext->OMSetRenderTargets(0, 0, 0);
-
-            renderTargetView->Release();
-            depthStencilView->Release();
-
-            HRESULT res = swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
-            assert(SUCCEEDED(res));
-
-            CreateRenderTargets(device, swapChain, &renderTargetView, &depthStencilView);
-            projMatrix = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
-
+            OnWindowResize(hwnd,deviceContext,swapChain,&renderTargetView,&depthStencilView);
             windowWasResized = false;
         }
 
@@ -589,9 +595,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         UINT stride = 3 * sizeof(float);
         UINT offset = 0;
         deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-        deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
-        deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        deviceContext->IASetInputLayout(inputLayout);
         deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
         deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
