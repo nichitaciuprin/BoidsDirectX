@@ -535,9 +535,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     long oldTime = GetTime();
 
-    // D3D11_VIEWPORT viewport = { 0.0f, 0.0f, 800, 600, 0.0f, 1.0f };
-    // d3d11DeviceContext->RSSetViewports(1, &viewport);
-
     while(true)
     {
         long newTime = GetTime();
