@@ -531,6 +531,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     if(CreateRasterizerState(device,&rasterizerState)) return 1;
     if(CreateDepthStencilState(device,&depthStencilState)) return 1;
 
+    deviceContext->RSSetState(rasterizerState);
+
     long oldTime = GetTime();
 
     // D3D11_VIEWPORT viewport = { 0.0f, 0.0f, 800, 600, 0.0f, 1.0f };
@@ -579,7 +581,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
         D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (FLOAT)windowWidth, (FLOAT)windowHeight, 0.0f, 1.0f };
         deviceContext->RSSetViewports(1, &viewport);
-        deviceContext->RSSetState(rasterizerState);
         deviceContext->OMSetDepthStencilState(depthStencilState, 0);
         deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
         deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
