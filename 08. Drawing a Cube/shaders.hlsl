@@ -6,25 +6,31 @@ cbuffer constants : register(b0)
 
 struct VS_Input
 {
-    float3 pos : POS;
+    float3 vertexPosition : POS;
 };
 
-struct VS_Output
+struct PS_Input
 {
-    float4 pos : SV_POSITION;
+    float4 screenSpace : SV_POSITION;
     float3 color : COLOR;
 };
 
-VS_Output vs_main(VS_Input input)
+float4 ToScreenSpace(float3 vertexPosition, float4x4 modelViewProj)
 {
-    VS_Output output;
-    output.pos = mul(float4(input.pos, 1.0f), modelViewProj);
-    // This is just a dumb bit of maths to color our unit cube nicely
-    output.color = input.pos + float3(0.5f, 0.5f, 0.5f);
+    return mul(float4(vertexPosition, 1.0f), modelViewProj);
+}
+
+PS_Input vs_main(VS_Input input)
+{
+    PS_Input output;
+    output.screenSpace = ToScreenSpace(input.vertexPosition,modelViewProj);
+    output.color = input.vertexPosition;
+    output.color += float3(0.5f, 0.5f, 0.5f);
+    output.color = abs(output.color);
     return output;
 }
 
-float4 ps_main(VS_Output input) : SV_Target
+float4 ps_main(PS_Input input) : SV_Target
 {
-    return float4(abs(input.color), 1.0);
+    return float4(input.color, 1.0);
 }
