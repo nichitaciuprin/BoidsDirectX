@@ -587,29 +587,40 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
         UpdateCamera(deltaTime,&camera);
 
-        float duno = M_PI * currentTimeInSeconds;
-        modelMatrix = rotateXMat(-0.2f * duno) * rotateYMat(0.1f * duno) ;
-        modelMatrix =
-        {
-            1,0,0,0,
-            0,1,0,0,
-            0,0,1,0,
-            0,0,0,1
-        };
+        // float duno = M_PI * currentTimeInSeconds;
+        // modelMatrix = rotateXMat(-0.2f * duno) * rotateYMat(0.1f * duno) ;
+        // modelMatrix =
+        // {
+        //     1,0,0,0,
+        //     0,1,0,0,
+        //     0,0,1,0,
+        //     0,0,0,1
+        // };
         viewMatrix = ToViewMatrix(&camera);
-        modelViewProj = modelMatrix * viewMatrix * projMatrix;
-        UpdateConstantBuffer(deviceContext,constantBuffer,modelViewProj);
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
         deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
         deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+        deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
         UINT stride = 3 * sizeof(float);
         UINT offset = 0;
-        deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-        deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-        deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+        for (size_t i = 0; i < 3; i++)
+        {
+            float test1 = ((float)i)/3;
+            modelMatrix =
+            {
+                1,0,0,0+test1,
+                0,1,0,0+test1,
+                0,0,1,0+test1,
+                0,0,0,1
+            };
+            modelViewProj = modelMatrix * viewMatrix * projMatrix;
+            UpdateConstantBuffer(deviceContext,constantBuffer,modelViewProj);
+            deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+            deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+            deviceContext->DrawIndexed(indexCount, 0, 0);
+        }
 
-        deviceContext->DrawIndexed(indexCount, 0, 0);
         swapChain->Present(1, 0);
     }
 
