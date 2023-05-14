@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include "3DMaths.h"
+#include "Math.h"
 
 enum GameAction
 {
@@ -31,9 +32,8 @@ struct Constants
 struct Camera
 {
     float3 cameraPos;
-    float3 cameraFwd;
-    float cameraPitch;
-    float cameraYaw;
+    float rot1;
+    float rot2;
 };
 
 float4x4 modelMatrix = {};
@@ -417,15 +417,24 @@ void InitCamera(Camera* outCamera)
 {
     camera =
     {
-        { 0, 0, 2 },
-        { 0, 0,-1 },
+        { 0, 0, -2 },
         0,
         0
     };
 }
+float4x4 ToViewMatrix(Camera* camera)
+{
+    return
+        translationMat(camera->cameraPos) *
+        rotateYMat(camera->rot1) *
+        rotateXMat(camera->rot2);
+}
 void UpdateCamera(float deltaTime, Camera* camera)
 {
-    float3 camFwdXZ = normalise({camera->cameraFwd.x, 0, camera->cameraFwd.z});
+    float4x4 viewMatrix = ToViewMatrix(camera);
+    float3 camFwdXZ = {viewMatrix.m[2][0], viewMatrix.m[2][1], viewMatrix.m[2][2]};
+
+    // float3 camFwdXZ = normalise({camera->cameraFwd.x, 0, camera->cameraFwd.z});
     float3 cameraRightXZ = cross(camFwdXZ, {0, 1, 0});
 
     const float CAM_MOVE_SPEED = 5.f; // in metres per second
@@ -439,25 +448,20 @@ void UpdateCamera(float deltaTime, Camera* camera)
 
     const float CAM_TURN_SPEED = M_PI; // in radians per second
     const float CAM_TURN_AMOUNT = CAM_TURN_SPEED * deltaTime;
-    if(global_keyIsDown[GameActionTurnCamLeft])   camera->cameraYaw += CAM_TURN_AMOUNT;
-    if(global_keyIsDown[GameActionTurnCamRight])  camera->cameraYaw -= CAM_TURN_AMOUNT;
-    if(global_keyIsDown[GameActionLookUp])        camera->cameraPitch += CAM_TURN_AMOUNT;
-    if(global_keyIsDown[GameActionLookDown])      camera->cameraPitch -= CAM_TURN_AMOUNT;
+    if(global_keyIsDown[GameActionTurnCamLeft])   camera->rot1 -= CAM_TURN_AMOUNT;
+    if(global_keyIsDown[GameActionTurnCamRight])  camera->rot1 += CAM_TURN_AMOUNT;
+    if(global_keyIsDown[GameActionLookUp])        camera->rot2 -= CAM_TURN_AMOUNT;
+    if(global_keyIsDown[GameActionLookDown])      camera->rot2 += CAM_TURN_AMOUNT;
 
     // Wrap yaw to avoid floating-point errors if we turn too far
-    while(camera->cameraYaw >= 2*M_PI)
-        camera->cameraYaw -= 2*M_PI;
-    while(camera->cameraYaw <= -2*M_PI)
-        camera->cameraYaw += 2*M_PI;
+    float M_PI2 = 2*M_PI;
+    while(camera->rot1 >=  M_PI2) camera->rot1 -= M_PI2;
+    while(camera->rot1 <= -M_PI2) camera->rot1 += M_PI2;
 
     // Clamp pitch to stop camera flipping upside down
-    if(camera->cameraPitch > degreesToRadians(85))
-        camera->cameraPitch = degreesToRadians(85);
-    if(camera->cameraPitch < -degreesToRadians(85))
-        camera->cameraPitch = -degreesToRadians(85);
-
-    float4x4 viewMat = translationMat(-camera->cameraPos) * rotateYMat(-camera->cameraYaw) * rotateXMat(-camera->cameraPitch);
-    camera->cameraFwd = {-viewMat.m[2][0], -viewMat.m[2][1], -viewMat.m[2][2]};
+    float degree = degreesToRadians(85);
+    if(camera->rot1 >  degree) camera->rot1 =  degree;
+    if(camera->rot2 < -degree) camera->rot2 = -degree;
 }
 void UpdateConstantBuffer(ID3D11DeviceContext* d3d11DeviceContext, ID3D11Buffer* constantBuffer, float4x4 modelViewProj)
 {
@@ -585,7 +589,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
         float duno = M_PI * currentTimeInSeconds;
         modelMatrix = rotateXMat(-0.2f * duno) * rotateYMat(0.1f * duno) ;
-        viewMatrix = translationMat(-camera.cameraPos) * rotateYMat(-camera.cameraYaw) * rotateXMat(-camera.cameraPitch);
+        modelMatrix =
+        {
+            1,0,0,0,
+            0,1,0,0,
+            0,0,1,0,
+            0,0,0,1
+        };
+        viewMatrix = ToViewMatrix(&camera); //translationMat(-camera.cameraPos) * rotateYMat(currentTimeInSeconds);
         modelViewProj = modelMatrix * viewMatrix * projMatrix;
         UpdateConstantBuffer(deviceContext,constantBuffer,modelViewProj);
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
