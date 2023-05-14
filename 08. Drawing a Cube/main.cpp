@@ -417,7 +417,7 @@ void InitCamera(Camera* outCamera)
 {
     camera =
     {
-        { 0, 0, -2 },
+        { 0, 0, 2 },
         0,
         0
     };
@@ -425,14 +425,14 @@ void InitCamera(Camera* outCamera)
 float4x4 ToViewMatrix(Camera* camera)
 {
     return
-        translationMat(camera->cameraPos) *
+        translationMat(-camera->cameraPos) *
         rotateYMat(camera->rot1) *
         rotateXMat(camera->rot2);
 }
 void UpdateCamera(float deltaTime, Camera* camera)
 {
     float4x4 viewMatrix = ToViewMatrix(camera);
-    float3 camFwdXZ = {viewMatrix.m[2][0], viewMatrix.m[2][1], viewMatrix.m[2][2]};
+    float3 camFwdXZ = {-viewMatrix.m[2][0], -viewMatrix.m[2][1], -viewMatrix.m[2][2]};
 
     // float3 camFwdXZ = normalise({camera->cameraFwd.x, 0, camera->cameraFwd.z});
     float3 cameraRightXZ = cross(camFwdXZ, {0, 1, 0});
@@ -460,12 +460,11 @@ void UpdateCamera(float deltaTime, Camera* camera)
 
     // Clamp pitch to stop camera flipping upside down
     float degree = degreesToRadians(85);
-    if(camera->rot1 >  degree) camera->rot1 =  degree;
+    if(camera->rot2 >  degree) camera->rot2 =  degree;
     if(camera->rot2 < -degree) camera->rot2 = -degree;
 }
 void UpdateConstantBuffer(ID3D11DeviceContext* d3d11DeviceContext, ID3D11Buffer* constantBuffer, float4x4 modelViewProj)
 {
-    // Update constant buffer
     D3D11_MAPPED_SUBRESOURCE mappedSubresource;
     d3d11DeviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
     Constants* constants = (Constants*)(mappedSubresource.pData);
