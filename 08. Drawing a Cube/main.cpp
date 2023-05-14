@@ -338,7 +338,8 @@ int CreateVertexBuffer(ID3D11Device* d3d11Device, ID3D11Buffer** vertexBuffer)
     vertexBufferDesc.Usage     = D3D11_USAGE_IMMUTABLE;
     vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-    D3D11_SUBRESOURCE_DATA vertexSubresourceData = { vertexData };
+    D3D11_SUBRESOURCE_DATA vertexSubresourceData = { };
+    vertexSubresourceData.pSysMem = vertexData;
 
     HRESULT hResult = d3d11Device->CreateBuffer(&vertexBufferDesc, &vertexSubresourceData, vertexBuffer);
     assert(SUCCEEDED(hResult));
@@ -595,7 +596,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             0,0,1,0,
             0,0,0,1
         };
-        viewMatrix = ToViewMatrix(&camera); //translationMat(-camera.cameraPos) * rotateYMat(currentTimeInSeconds);
+        viewMatrix = ToViewMatrix(&camera);
         modelViewProj = modelMatrix * viewMatrix * projMatrix;
         UpdateConstantBuffer(deviceContext,constantBuffer,modelViewProj);
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
