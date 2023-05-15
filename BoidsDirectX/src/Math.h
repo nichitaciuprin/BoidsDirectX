@@ -38,14 +38,14 @@ float MathPingPong(float value, float length)
 {
     // TODO. Maybe wrong negative number logic
     if (value < 0) { value = length + MathAbs(value); }
-    int whole = value/length;
+    int whole = (int)(value/length);
     float rem = fmodf(value,length);
     return whole % 2 == 0 ? rem : length-rem;
 }
 void MathPingPong2(float value, float length, float* valueNew, int* directionNew)
 {
     if (value < 0) { value = length + MathAbs(value); }
-    int whole = value/length;
+    int whole = (int)(value/length);
     float rem = fmodf(value,length);
     if (whole % 2 == 0)
     {

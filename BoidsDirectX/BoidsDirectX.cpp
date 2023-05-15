@@ -1,6 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-// #define UNICODE
+#define UNICODE
 #include <windows.h>
 
 #include <d3d11_1.h>
@@ -14,6 +14,7 @@
 #include "src/Math3D.h"
 
 #include "src/SubgenSingleton.h"
+#include "src/Window.h"
 
 enum GameAction
 {
@@ -475,7 +476,7 @@ void UpdateCamera(float deltaTime, Camera* camera)
     if(global_keyIsDown[GameActionRaiseCam])     camera->cameraPos.y += CAM_MOVE_AMOUNT;
     if(global_keyIsDown[GameActionLowerCam])     camera->cameraPos.y -= CAM_MOVE_AMOUNT;
 
-    const float CAM_TURN_SPEED = M_PI; // in radians per second
+    const float CAM_TURN_SPEED = (float)M_PI; // in radians per second
     const float CAM_TURN_AMOUNT = CAM_TURN_SPEED * deltaTime;
     if(global_keyIsDown[GameActionTurnCamLeft])   camera->rot1 -= CAM_TURN_AMOUNT;
     if(global_keyIsDown[GameActionTurnCamRight])  camera->rot1 += CAM_TURN_AMOUNT;
@@ -483,7 +484,7 @@ void UpdateCamera(float deltaTime, Camera* camera)
     if(global_keyIsDown[GameActionLookDown])      camera->rot2 += CAM_TURN_AMOUNT;
 
     // Wrap yaw to avoid floating-point errors if we turn too far
-    float M_PI2 = 2*M_PI;
+    float M_PI2 = 2*(float)M_PI;
     while(camera->rot1 >=  M_PI2) camera->rot1 -= M_PI2;
     while(camera->rot1 <= -M_PI2) camera->rot1 += M_PI2;
 
@@ -512,10 +513,10 @@ float GetDeltaTime(long oldTime, long newTime)
     QueryPerformanceFrequency(&perfFreq);
     LONGLONG perfCounterFrequency = perfFreq.QuadPart;
 
-    double diff = newTime - oldTime;
-    double ticksPerSecond = perfCounterFrequency;
+    double diff = (double)(newTime - oldTime);
+    double ticksPerSecond = (double)perfCounterFrequency;
 
-    return diff/ticksPerSecond;
+    return (float)(diff/ticksPerSecond);
 }
 void GetWindowInfo(HWND hwnd, int* outWindowWidth, int* outWindowHeight)
 {
@@ -543,8 +544,8 @@ void OnWindowResize(HWND hwnd, ID3D11DeviceContext* deviceContext, IDXGISwapChai
     int windowWidth;
     int windowHeight;
     GetWindowInfo(hwnd,&windowWidth,&windowHeight);
-    float windowWidthF = windowWidth;
-    float windowHeightF = windowHeight;
+    float windowWidthF = (float)windowWidth;
+    float windowHeightF = (float)windowHeight;
     float windowAspectRatio = windowWidthF / windowHeightF;
 
     D3D11_VIEWPORT viewport = { 0.0f, 0.0f, windowWidthF, windowHeightF, 0.0f, 1.0f };

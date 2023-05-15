@@ -3,6 +3,8 @@
         "*.rh": "cpp",
         "cmath": "cpp",
         "chrono": "cpp",
-        "xlocale": "cpp"
+        "xlocale": "cpp",
+        "xstring": "cpp",
+        "string": "cpp"
     }
 }
