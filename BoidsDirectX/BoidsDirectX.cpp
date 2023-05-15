@@ -2,10 +2,12 @@
 #define NOMINMAX
 #define UNICODE
 #include <windows.h>
+
 #include <d3d11_1.h>
-#pragma comment(lib, "d3d11.lib")
 #include <d3dcompiler.h>
+#pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
+
 #include <assert.h>
 #include <stdint.h>
 #include "src/Math.h"
@@ -61,6 +63,30 @@ ID3D11Buffer*             constantBuffer;
 ID3D11RasterizerState*    rasterizerState;
 ID3D11DepthStencilState*  depthStencilState;
 
+void GetCurentDirectoryPath(char* result)
+{
+    char buffer[MAX_PATH] = {};
+    GetCurrentDirectory(MAX_PATH, (LPWSTR)buffer);
+
+    int i = 0;
+    while (buffer[i*2] != '\0')
+    {
+        result[i] = buffer[i*2];
+        i++;
+    }
+}
+void GetExeFilePath(char* result)
+{
+    char buffer[MAX_PATH] = {};
+    GetModuleFileName(NULL, (LPWSTR)buffer, MAX_PATH);
+
+    int i = 0;
+    while (buffer[i*2] != '\0')
+    {
+        result[i] = buffer[i*2];
+        i++;
+    }
+}
 bool FileExists(LPCWSTR file)
 {
     return GetFileAttributes(file) != INVALID_FILE_ATTRIBUTES;

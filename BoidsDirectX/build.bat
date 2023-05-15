@@ -2,7 +2,8 @@
 
 set COMMON_COMPILER_FLAGS=/nologo /EHa- /GR- /fp:fast /Oi /W4 /Fm
 
-set DEBUG_FLAGS=/DDEBUG_BUILD /Od /MTd /Zi
+@REM set DEBUG_FLAGS=/DDEBUG_BUILD /Od /MTd /Zi
+set DEBUG_FLAGS=/Od /MTd /Zi
 set RELEASE_FLAGS =/O2
 
 set COMPILER_FLAGS=%COMMON_COMPILER_FLAGS% %DEBUG_FLAGS%
@@ -15,7 +16,7 @@ set BUILD_DIR=".\build"
 if not exist %BUILD_DIR% mkdir %BUILD_DIR%
 pushd %BUILD_DIR%
 
-cl %COMPILER_FLAGS% ../main.cpp /link %LINKER_FLAGS% %SYSTEM_LIBS%
+cl %COMPILER_FLAGS% ../BoidsDirectX.cpp /link %LINKER_FLAGS% %SYSTEM_LIBS%
 
 popd
 echo Done

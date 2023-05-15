@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "*.rh": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "chrono": "cpp",
+        "xlocale": "cpp"
     }
 }
