@@ -1,9 +1,6 @@
 #pragma once
 
-#include <stdlib.h>
 #include <math.h>
-
-#define MATH_M_PI_2 M_PI_2
 
 float MathAbs(float value)
 {
