@@ -160,7 +160,7 @@ int CreateWindow2(HINSTANCE hInstance, HWND* outHWND)
     (
         WS_EX_OVERLAPPEDWINDOW,
         winClass.lpszClassName,
-        L"08. Drawing a Cube",
+        L"BoidsDirectX",
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT,
         initialWidth,
