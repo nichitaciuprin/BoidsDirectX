@@ -13,6 +13,8 @@
 #include "src/Math.h"
 #include "src/Math3D.h"
 
+#include "src/SubgenSingleton.h"
+
 enum GameAction
 {
     GameActionMoveCamFwd,
