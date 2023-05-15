@@ -8,8 +8,8 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #include <assert.h>
 #include <stdint.h>
-#include "Math.h"
-#include "Math3D.h"
+#include "src/Math.h"
+#include "src/Math3D.h"
 
 enum GameAction
 {
