@@ -136,8 +136,8 @@ private:
     static bool classRegistered;
     static const LPCWSTR className;
     static const LPCWSTR iconName;
-    // const int defaultWidth = 800;
-    // const int defaultHeight = 600;
+    const int defaultWidth = 800;
+    const int defaultHeight = 600;
     // bool sizemove = false;
     // bool minimized = false;
     // bool fullscreen = false;
@@ -150,10 +150,6 @@ private:
     // MSG msg = {};
     // Matrix m_proj;
     // Matrix m_view;
-    // unique_ptr<DeviceResources> m_deviceResources;
-    // unique_ptr<GeometricPrimitive> m_shape;
-    // unique_ptr<GeometricPrimitive> m_box;
-    // unique_ptr<GeometricPrimitive> m_ground;
     HWND hwnd;
     ID3D11Device*             device;
     ID3D11DeviceContext*      deviceContext;
@@ -196,8 +192,6 @@ private:
     {
         auto window = GetInstance(hwnd);
 
-        // return DefWindowProc(hwnd, message, wParam, lParam);
-
         if (window == NULL)
             return DefWindowProc(hwnd, message, wParam, lParam);
 
@@ -205,76 +199,76 @@ private:
         // if (m_deviceResources == NULL)
         //     return DefWindowProc(hwnd, message, wParam, lParam);
 
-        // switch (message)
-        // {
-        //     case WM_DISPLAYCHANGE:
-        //         m_deviceResources->UpdateColorSpace();
-        //         break;
-        //     case WM_MOVE:
-        //         auto outputSize = m_deviceResources->GetOutputSize();
-        //         m_deviceResources->WindowSizeChanged(outputSize.right, outputSize.bottom);
-        //         break;
-        //     case WM_SIZE:
-        //         if (wParam == SIZE_MINIMIZED && !window->minimized)
-        //         {
-        //             window->minimized = true;
-        //         }
-        //         else if (window->minimized)
-        //         {
-        //             window->minimized = false;
-        //         }
-        //         else if (!window->sizemove)
-        //         {
-        //             window->OnWindowSizeChanged(LOWORD(lParam), HIWORD(lParam));
-        //         }
-        //         break;
-        //     case WM_EXITSIZEMOVE:
-        //         window->sizemove = false;
-        //         RECT rc;
-        //         GetClientRect(hwnd, &rc);
-        //         window->OnWindowSizeChanged(rc.right - rc.left, rc.bottom - rc.top);
-        //         break;
-        //     case WM_DESTROY:
-        //         window->windowClosed = true;
-        //         break;
-        //     case WM_SYSKEYDOWN:
-        //         switch (wParam)
-        //         {
-        //             case VK_RETURN: // Alt+Enter
-        //                 if (window->fullscreen)
-        //                     window->ToDefaultSize();
-        //                 else
-        //                     window->ToFullscreen();
-        //             default: break;
-        //         }
-        //         break;
-        //     case WM_MENUCHAR:
-        //         // Removes error sound during alt+enter
-        //         // A menu is active and the user presses a key that does not correspond
-        //         // to any mnemonic or accelerator key
-        //         return MAKELRESULT(0, MNC_CLOSE);
-        //     case WM_KEYDOWN:
-        //         switch (wParam)
-        //         {
-        //             case VK_ESCAPE: PostQuitMessage(0); break;
-        //             case 'W': window->key_w =  1.0f; break;
-        //             case 'A': window->key_a = -1.0f; break;
-        //             case 'S': window->key_s = -1.0f; break;
-        //             case 'D': window->key_d =  1.0f; break;
-        //             default: break;
-        //         }
-        //         break;
-        //     case WM_KEYUP:
-        //         switch (wParam)
-        //         {
-        //             case 'W': window->key_w = 0.0f; break;
-        //             case 'A': window->key_a = 0.0f; break;
-        //             case 'S': window->key_s = 0.0f; break;
-        //             case 'D': window->key_d = 0.0f; break;
-        //             default: break;
-        //         }
-        //         break;
-        // }
+        switch (message)
+        {
+            case WM_DISPLAYCHANGE:
+                // m_deviceResources->UpdateColorSpace();
+                break;
+            case WM_MOVE:
+                // auto outputSize = m_deviceResources->GetOutputSize();
+                // m_deviceResources->WindowSizeChanged(outputSize.right, outputSize.bottom);
+                break;
+            case WM_SIZE:
+                // if (wParam == SIZE_MINIMIZED && !window->minimized)
+                // {
+                //     window->minimized = true;
+                // }
+                // else if (window->minimized)
+                // {
+                //     window->minimized = false;
+                // }
+                // else if (!window->sizemove)
+                // {
+                //     window->OnWindowSizeChanged(LOWORD(lParam), HIWORD(lParam));
+                // }
+                break;
+            case WM_EXITSIZEMOVE:
+                // window->sizemove = false;
+                // RECT rc;
+                // GetClientRect(hwnd, &rc);
+                // window->OnWindowSizeChanged(rc.right - rc.left, rc.bottom - rc.top);
+                break;
+            case WM_DESTROY:
+                // window->windowClosed = true;
+                break;
+            case WM_SYSKEYDOWN:
+                // switch (wParam)
+                // {
+                //     case VK_RETURN: // Alt+Enter
+                //         if (window->fullscreen)
+                //             window->ToDefaultSize();
+                //         else
+                //             window->ToFullscreen();
+                //     default: break;
+                // }
+                break;
+            case WM_MENUCHAR:
+                // Removes error sound during alt+enter
+                // A menu is active and the user presses a key that does not correspond
+                // to any mnemonic or accelerator key
+                return MAKELRESULT(0, MNC_CLOSE);
+            case WM_KEYDOWN:
+                // switch (wParam)
+                // {
+                //     case VK_ESCAPE: PostQuitMessage(0); break;
+                //     case 'W': window->key_w =  1.0f; break;
+                //     case 'A': window->key_a = -1.0f; break;
+                //     case 'S': window->key_s = -1.0f; break;
+                //     case 'D': window->key_d =  1.0f; break;
+                //     default: break;
+                // }
+                break;
+            case WM_KEYUP:
+                // switch (wParam)
+                // {
+                //     case 'W': window->key_w = 0.0f; break;
+                //     case 'A': window->key_a = 0.0f; break;
+                //     case 'S': window->key_s = 0.0f; break;
+                //     case 'D': window->key_d = 0.0f; break;
+                //     default: break;
+                // }
+                break;
+        }
 
         return DefWindowProc(hwnd, message, wParam, lParam);
     }
