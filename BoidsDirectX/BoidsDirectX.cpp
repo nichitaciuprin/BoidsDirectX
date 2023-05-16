@@ -1,6 +1,8 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#ifndef UNICODE
 #define UNICODE
+#endif
 #include <windows.h>
 
 #include <d3d11_1.h>
@@ -66,30 +68,30 @@ ID3D11Buffer*             constantBuffer;
 ID3D11RasterizerState*    rasterizerState;
 ID3D11DepthStencilState*  depthStencilState;
 
-void GetCurentDirectoryPath(char* result)
-{
-    char buffer[MAX_PATH] = {};
-    GetCurrentDirectory(MAX_PATH, (LPWSTR)buffer);
+// void GetCurentDirectoryPath(char* result)
+// {
+//     wchar_t buffer[MAX_PATH] = {};
+//     GetCurrentDirectoryW(MAX_PATH, (LPWSTR)buffer);
 
-    int i = 0;
-    while (buffer[i*2] != '\0')
-    {
-        result[i] = buffer[i*2];
-        i++;
-    }
-}
-void GetExeFilePath(char* result)
-{
-    char buffer[MAX_PATH] = {};
-    GetModuleFileName(NULL, (LPWSTR)buffer, MAX_PATH);
+//     int i = 0;
+//     while (buffer[i*2] != '\0')
+//     {
+//         result[i] = buffer[i*2];
+//         i++;
+//     }
+// }
+// void GetExeFilePath(char* result)
+// {
+//     wchar_t buffer[MAX_PATH] = {};
+//     GetModuleFileName(NULL, (LPWSTR)buffer, MAX_PATH);
 
-    int i = 0;
-    while (buffer[i*2] != '\0')
-    {
-        result[i] = buffer[i*2];
-        i++;
-    }
-}
+//     int i = 0;
+//     while (buffer[i*2] != '\0')
+//     {
+//         result[i] = buffer[i*2];
+//         i++;
+//     }
+// }
 bool FileExists(LPCWSTR file)
 {
     return GetFileAttributes(file) != INVALID_FILE_ATTRIBUTES;
@@ -153,8 +155,11 @@ int CreateRenderTargets(ID3D11Device* d3d11Device, IDXGISwapChain1* swapChain, I
     depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-    ID3D11Texture2D* depthBuffer;
+    ID3D11Texture2D* depthBuffer = {};
     d3d11Device->CreateTexture2D(&depthBufferDesc, nullptr, &depthBuffer);
+
+    if (depthBuffer == nullptr)
+        return 1;
 
     d3d11Device->CreateDepthStencilView(depthBuffer, nullptr, depthBufferView);
 
