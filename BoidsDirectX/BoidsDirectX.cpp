@@ -105,34 +105,37 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         case WM_KEYUP:
         {
             bool isDown = (msg == WM_KEYDOWN);
-            if(wparam == VK_ESCAPE)
-                DestroyWindow(hwnd);
-            else if(wparam == 'W')       global_keyIsDown[GameActionMoveCamFwd]    = isDown;
-            else if(wparam == 'A')       global_keyIsDown[GameActionMoveCamLeft]   = isDown;
-            else if(wparam == 'S')       global_keyIsDown[GameActionMoveCamBack]   = isDown;
-            else if(wparam == 'D')       global_keyIsDown[GameActionMoveCamRight]  = isDown;
-            else if(wparam == 'E')       global_keyIsDown[GameActionRaiseCam]      = isDown;
-            else if(wparam == 'Q')       global_keyIsDown[GameActionLowerCam]      = isDown;
-            else if(wparam == VK_UP)     global_keyIsDown[GameActionLookUp]        = isDown;
-            else if(wparam == VK_LEFT)   global_keyIsDown[GameActionTurnCamLeft]   = isDown;
-            else if(wparam == VK_DOWN)   global_keyIsDown[GameActionLookDown]      = isDown;
-            else if(wparam == VK_RIGHT)  global_keyIsDown[GameActionTurnCamRight]  = isDown;
+
+            // if(wparam == VK_ESCAPE)
+            //     DestroyWindow(hwnd);
+            // else if(wparam == 'W')       global_keyIsDown[GameActionMoveCamFwd]    = isDown;
+            // else if(wparam == 'A')       global_keyIsDown[GameActionMoveCamLeft]   = isDown;
+            // else if(wparam == 'S')       global_keyIsDown[GameActionMoveCamBack]   = isDown;
+            // else if(wparam == 'D')       global_keyIsDown[GameActionMoveCamRight]  = isDown;
+            // else if(wparam == 'E')       global_keyIsDown[GameActionRaiseCam]      = isDown;
+            // else if(wparam == 'Q')       global_keyIsDown[GameActionLowerCam]      = isDown;
+            // else if(wparam == VK_UP)     global_keyIsDown[GameActionLookUp]        = isDown;
+            // else if(wparam == VK_LEFT)   global_keyIsDown[GameActionTurnCamLeft]   = isDown;
+            // else if(wparam == VK_DOWN)   global_keyIsDown[GameActionLookDown]      = isDown;
+            // else if(wparam == VK_RIGHT)  global_keyIsDown[GameActionTurnCamRight]  = isDown;
+
+            switch (wparam)
+            {
+                case VK_ESCAPE : { DestroyWindow(hwnd);                                break; }
+                case 'W'       : { global_keyIsDown[GameActionMoveCamFwd]    = isDown; break; }
+                case 'A'       : { global_keyIsDown[GameActionMoveCamLeft]   = isDown; break; }
+                case 'S'       : { global_keyIsDown[GameActionMoveCamBack]   = isDown; break; }
+                case 'D'       : { global_keyIsDown[GameActionMoveCamRight]  = isDown; break; }
+                case 'E'       : { global_keyIsDown[GameActionRaiseCam]      = isDown; break; }
+                case 'Q'       : { global_keyIsDown[GameActionLowerCam]      = isDown; break; }
+                case VK_UP     : { global_keyIsDown[GameActionLookUp]        = isDown; break; }
+                case VK_LEFT   : { global_keyIsDown[GameActionTurnCamLeft]   = isDown; break; }
+                case VK_DOWN   : { global_keyIsDown[GameActionLookDown]      = isDown; break; }
+                case VK_RIGHT  : { global_keyIsDown[GameActionTurnCamRight]  = isDown; break; }
+                default        : {                                                     break; }
+            }
+
             break;
-            // switch (wparam)
-            // {
-            //     case VK_ESCAPE : { DestroyWindow(hwnd);                                break; }
-            //     case 'W'       : { global_keyIsDown[GameActionMoveCamFwd]    = isDown; break; }
-            //     case 'A'       : { global_keyIsDown[GameActionMoveCamLeft]   = isDown; break; }
-            //     case 'S'       : { global_keyIsDown[GameActionMoveCamBack]   = isDown; break; }
-            //     case 'D'       : { global_keyIsDown[GameActionMoveCamRight]  = isDown; break; }
-            //     case 'E'       : { global_keyIsDown[GameActionRaiseCam]      = isDown; break; }
-            //     case 'Q'       : { global_keyIsDown[GameActionLowerCam]      = isDown; break; }
-            //     case VK_UP     : { global_keyIsDown[GameActionLookUp]        = isDown; break; }
-            //     case VK_LEFT   : { global_keyIsDown[GameActionTurnCamLeft]   = isDown; break; }
-            //     case VK_DOWN   : { global_keyIsDown[GameActionLookDown]      = isDown; break; }
-            //     case VK_RIGHT  : { global_keyIsDown[GameActionTurnCamRight]  = isDown; break; }
-            //     default        : {                                                     break; }
-            // }
         }
         case WM_DESTROY:
         {
