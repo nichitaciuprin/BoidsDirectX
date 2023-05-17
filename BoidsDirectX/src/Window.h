@@ -248,26 +248,26 @@ private:
                 // to any mnemonic or accelerator key
                 return MAKELRESULT(0, MNC_CLOSE);
             case WM_KEYDOWN:
-                // switch (wParam)
-                // {
-                //     case VK_ESCAPE: PostQuitMessage(0); break;
-                //     case 'W': window->key_w =  1.0f; break;
-                //     case 'A': window->key_a = -1.0f; break;
-                //     case 'S': window->key_s = -1.0f; break;
-                //     case 'D': window->key_d =  1.0f; break;
-                //     default: break;
-                // }
-                break;
             case WM_KEYUP:
-                // switch (wParam)
+            {
+                // bool isDown = (msg == WM_KEYDOWN);
+                // switch (wparam)
                 // {
-                //     case 'W': window->key_w = 0.0f; break;
-                //     case 'A': window->key_a = 0.0f; break;
-                //     case 'S': window->key_s = 0.0f; break;
-                //     case 'D': window->key_d = 0.0f; break;
-                //     default: break;
+                //     case VK_ESCAPE : { DestroyWindow(hwnd);                                break; }
+                //     case 'W'       : { global_keyIsDown[GameActionMoveCamFwd]    = isDown; break; }
+                //     case 'A'       : { global_keyIsDown[GameActionMoveCamLeft]   = isDown; break; }
+                //     case 'S'       : { global_keyIsDown[GameActionMoveCamBack]   = isDown; break; }
+                //     case 'D'       : { global_keyIsDown[GameActionMoveCamRight]  = isDown; break; }
+                //     case 'E'       : { global_keyIsDown[GameActionRaiseCam]      = isDown; break; }
+                //     case 'Q'       : { global_keyIsDown[GameActionLowerCam]      = isDown; break; }
+                //     case VK_UP     : { global_keyIsDown[GameActionLookUp]        = isDown; break; }
+                //     case VK_LEFT   : { global_keyIsDown[GameActionTurnCamLeft]   = isDown; break; }
+                //     case VK_DOWN   : { global_keyIsDown[GameActionLookDown]      = isDown; break; }
+                //     case VK_RIGHT  : { global_keyIsDown[GameActionTurnCamRight]  = isDown; break; }
+                //     default        : {                                                     break; }
                 // }
                 break;
+            }
         }
 
         return DefWindowProc(hwnd, message, wParam, lParam);

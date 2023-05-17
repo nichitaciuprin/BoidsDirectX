@@ -106,19 +106,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         {
             bool isDown = (msg == WM_KEYDOWN);
 
-            // if(wparam == VK_ESCAPE)
-            //     DestroyWindow(hwnd);
-            // else if(wparam == 'W')       global_keyIsDown[GameActionMoveCamFwd]    = isDown;
-            // else if(wparam == 'A')       global_keyIsDown[GameActionMoveCamLeft]   = isDown;
-            // else if(wparam == 'S')       global_keyIsDown[GameActionMoveCamBack]   = isDown;
-            // else if(wparam == 'D')       global_keyIsDown[GameActionMoveCamRight]  = isDown;
-            // else if(wparam == 'E')       global_keyIsDown[GameActionRaiseCam]      = isDown;
-            // else if(wparam == 'Q')       global_keyIsDown[GameActionLowerCam]      = isDown;
-            // else if(wparam == VK_UP)     global_keyIsDown[GameActionLookUp]        = isDown;
-            // else if(wparam == VK_LEFT)   global_keyIsDown[GameActionTurnCamLeft]   = isDown;
-            // else if(wparam == VK_DOWN)   global_keyIsDown[GameActionLookDown]      = isDown;
-            // else if(wparam == VK_RIGHT)  global_keyIsDown[GameActionTurnCamRight]  = isDown;
-
             switch (wparam)
             {
                 case VK_ESCAPE : { DestroyWindow(hwnd);                                break; }
