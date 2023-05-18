@@ -3,6 +3,7 @@
 #ifndef UNICODE
 #define UNICODE
 #endif
+
 #include <windows.h>
 #include <memory>
 #include <assert.h>
@@ -54,10 +55,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         window->HandleWindowMessages();
         if (window->IsWindowClosed()) break;
 
-        projMatrix = makePerspectiveMat(window->AspectRation(), degreesToRadians(84), 0.1f, 1000.f);
-
         if(windowWasResized)
         {
+            projMatrix = makePerspectiveMat(window->AspectRation(), degreesToRadians(84), 0.1f, 1000.f);
             D3D::OnWindowResize(window->ClientWidth(),window->ClientHeight());
             windowWasResized = false;
         }
