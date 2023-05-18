@@ -15,16 +15,19 @@
 class Window
 {
 public:
-    Window(HINSTANCE hInstance, int x, int y, int width, int height)
+    Window(HINSTANCE hInstance)
     {
+        windowClosed = false;
+
         MaybeRegisterClass(hInstance);
 
-        RECT rc = { x, y, width, height };
+        RECT rc = { 0, 0, defaultWidth, defaultHeight };
         AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
         auto width2 = rc.right - rc.left;
         auto height2 = rc.bottom - rc.top;
         m_hwnd = CreateWindowExW(0, className, className, WS_OVERLAPPEDWINDOW,
-                                 x, y, width2, height2, nullptr, nullptr, hInstance, nullptr);
+                                 CW_USEDEFAULT, CW_USEDEFAULT, width2, height2,
+                                 nullptr, nullptr, hInstance, nullptr);
         if (!m_hwnd) throw;
 
         ShowWindow(m_hwnd, SW_SHOWNORMAL);
@@ -34,6 +37,27 @@ public:
 
         InitD3D();
     }
+    void GetWindowInfo(int* outWindowWidth, int* outWindowHeight)
+    {
+        RECT clientRect;
+        GetClientRect(m_hwnd, &clientRect);
+        *outWindowWidth = clientRect.right - clientRect.left;
+        *outWindowHeight = clientRect.bottom - clientRect.top;
+    }
+    void HandleWindowMessages()
+    {
+        MSG msg = {};
+        while(PeekMessageW(&msg, 0, 0, 0, PM_REMOVE))
+        {
+            if(msg.message == WM_QUIT)
+            {
+                windowClosed = true;
+            }
+            TranslateMessage(&msg);
+            DispatchMessageW(&msg);
+        }
+    }
+    HWND GetHWND() { return m_hwnd; }
 
 private:
     static bool classRegistered;
@@ -42,6 +66,7 @@ private:
     const int defaultWidth = 800;
     const int defaultHeight = 600;
     HWND m_hwnd;
+    bool windowClosed;
     bool keydown_W = false;
     bool keydown_A = false;
     bool keydown_S = false;
@@ -95,6 +120,11 @@ private:
 
         switch (message)
         {
+            case WM_QUIT:
+            {
+                window->windowClosed = true;
+                break;
+            }
             case WM_SIZE: // Window size was changed
                 break;
             case WM_KEYDOWN:
