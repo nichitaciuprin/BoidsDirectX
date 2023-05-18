@@ -48,6 +48,46 @@ public:
 
         return 0;
     }
+    static void DrawBegin()
+    {
+        FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
+        deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
+        deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+        deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+    }
+    static void Draw(float4x4 modelViewProj)
+    {
+        UINT stride = 3 * sizeof(float);
+        UINT offset = 0;
+        deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+        deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+        UpdateConstantBuffer(modelViewProj);
+        deviceContext->DrawIndexed(indexCount, 0, 0);
+    }
+    static void DrawEnd()
+    {
+        swapChain->Present(1, 0);
+    }
+    static void OnWindowResize(int windowWidth, int windowHeight)
+    {
+        float windowWidthF = (float)windowWidth;
+        float windowHeightF = (float)windowHeight;
+        float windowAspectRatio = windowWidthF / windowHeightF;
+
+        D3D11_VIEWPORT viewport = { 0.0f, 0.0f, windowWidthF, windowHeightF, 0.0f, 1.0f };
+        deviceContext->RSSetViewports(1, &viewport);
+
+        deviceContext->OMSetRenderTargets(0, 0, 0);
+
+        renderTargetView->Release();
+        depthStencilView->Release();
+
+        HRESULT res = swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+        assert(SUCCEEDED(res));
+
+        CreateRenderTargets();
+        // projMatrix = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
+    }
     static void UpdateConstantBuffer(float4x4 modelViewProj)
     {
         D3D11_MAPPED_SUBRESOURCE mappedSubresource;
@@ -335,26 +375,7 @@ private:
         device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
         return 0;
     }
-    static void OnWindowResize(int windowWidth, int windowHeight)
-    {
-        float windowWidthF = (float)windowWidth;
-        float windowHeightF = (float)windowHeight;
-        float windowAspectRatio = windowWidthF / windowHeightF;
-
-        D3D11_VIEWPORT viewport = { 0.0f, 0.0f, windowWidthF, windowHeightF, 0.0f, 1.0f };
-        deviceContext->RSSetViewports(1, &viewport);
-
-        deviceContext->OMSetRenderTargets(0, 0, 0);
-
-        renderTargetView->Release();
-        depthStencilView->Release();
-
-        HRESULT res = swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
-        assert(SUCCEEDED(res));
-
-        CreateRenderTargets();
-        // projMatrix = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
-    }
+    
 };
 HWND                      D3D::hwnd = nullptr;
 ID3D11Device*             D3D::device = nullptr;

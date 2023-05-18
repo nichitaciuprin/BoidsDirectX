@@ -57,6 +57,13 @@ public:
             DispatchMessageW(&msg);
         }
     }
+    float AspectRation()
+    {
+        return (float)defaultWidth / (float)defaultHeight;
+    }
+    int ClientWidth() { return defaultWidth; }
+    int ClientHeight() { return defaultHeight; }
+    bool IsWindowClosed() { return this->windowClosed; }
     HWND GetHWND() { return m_hwnd; }
 
 private:
@@ -120,7 +127,7 @@ private:
 
         switch (message)
         {
-            case WM_QUIT:
+            case WM_CLOSE:
             {
                 window->windowClosed = true;
                 break;

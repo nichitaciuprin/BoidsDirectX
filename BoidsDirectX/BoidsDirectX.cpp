@@ -8,11 +8,6 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include <d3d11_1.h>
-#include <d3dcompiler.h>
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "d3dcompiler.lib")
-
 #include "src/Time.h"
 #include "src/Math.h"
 #include "src/Math3D.h"
@@ -47,63 +42,58 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     float currentTimeInSeconds = 0;
 
-    // long oldTime = GetTime();
+    long oldTime = GetTime();
 
-    // while(true)
-    // {
-    //     long newTime = GetTime();
-    //     float deltaTime = GetDeltaTime(oldTime,newTime);
-    //     oldTime = newTime;
-    //     currentTimeInSeconds += deltaTime;
+    while(true)
+    {
+        long newTime = GetTime();
+        float deltaTime = GetDeltaTime(oldTime,newTime);
+        oldTime = newTime;
+        currentTimeInSeconds += deltaTime;
 
-    //     bool mustExitLoop = false;
-    //     HandleWindowMessages(hwnd,&mustExitLoop);
-    //     if (mustExitLoop) break;
+        window->HandleWindowMessages();
+        if (window->IsWindowClosed()) break;
 
-    //     if(windowWasResized)
-    //     {
-    //         OnWindowResize(hwnd,deviceContext,swapChain,&renderTargetView,&depthStencilView);
-    //         windowWasResized = false;
-    //     }
+        projMatrix = makePerspectiveMat(window->AspectRation(), degreesToRadians(84), 0.1f, 1000.f);
 
-    //     UpdateCamera(deltaTime,&camera);
+        if(windowWasResized)
+        {
+            D3D::OnWindowResize(window->ClientWidth(),window->ClientHeight());
+            windowWasResized = false;
+        }
 
-    //     // float duno = M_PI * currentTimeInSeconds;
-    //     // modelMatrix = rotateXMat(-0.2f * duno) * rotateYMat(0.1f * duno) ;
-    //     // modelMatrix =
-    //     // {
-    //     //     1,0,0,0,
-    //     //     0,1,0,0,
-    //     //     0,0,1,0,
-    //     //     0,0,0,1
-    //     // };
-    //     viewMatrix = ToViewMatrix(&camera);
-    //     FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
-    //     deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
-    //     deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-    //     deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+        // UpdateCamera(&camera,deltaTime);
 
-    //     UINT stride = 3 * sizeof(float);
-    //     UINT offset = 0;
-    //     for (size_t i = 0; i < 3; i++)
-    //     {
-    //         float test1 = ((float)i)/3;
-    //         modelMatrix =
-    //         {
-    //             1,0,0,0+test1,
-    //             0,1,0,0+test1,
-    //             0,0,1,0+test1,
-    //             0,0,0,1
-    //         };
-    //         modelViewProj = modelMatrix * viewMatrix * projMatrix;
-    //         deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-    //         deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-    //         UpdateConstantBuffer(deviceContext,constantBuffer,modelViewProj);
-    //         deviceContext->DrawIndexed(indexCount, 0, 0);
-    //     }
+        // float duno = M_PI * currentTimeInSeconds;
+        // modelMatrix = rotateXMat(-0.2f * duno) * rotateYMat(0.1f * duno) ;
+        // modelMatrix =
+        // {
+        //     1,0,0,0,
+        //     0,1,0,0,
+        //     0,0,1,0,
+        //     0,0,0,1
+        // };
 
-    //     swapChain->Present(1, 0);
-    // }
+        viewMatrix = ToViewMatrix(&camera);
+        D3D::DrawBegin();
+
+        for (size_t i = 0; i < 3; i++)
+        {
+            float test1 = ((float)i)/3;
+            modelMatrix =
+            {
+                1,0,0,0+test1,
+                0,1,0,0+test1,
+                0,0,1,0+test1,
+                0,0,0,1
+            };
+            modelViewProj = modelMatrix * viewMatrix * projMatrix;
+
+            D3D::Draw(modelViewProj);
+        }
+
+        D3D::DrawEnd();
+    }
 
     return 0;
 }
