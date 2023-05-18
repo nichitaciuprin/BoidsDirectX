@@ -26,17 +26,16 @@ public:
 
         RECT rc = { x, y, width, height };
         AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-
         auto width2 = rc.right - rc.left;
         auto height2 = rc.bottom - rc.top;
-
         m_hwnd = CreateWindowExW(0, className, className, WS_OVERLAPPEDWINDOW,
-            x, y, width2, height2, nullptr, nullptr, hInstance, nullptr);
+                                 x, y, width2, height2, nullptr, nullptr, hInstance, nullptr);
         if (!m_hwnd) throw;
+
         ShowWindow(m_hwnd, SW_SHOWNORMAL);
         GetClientRect(m_hwnd, &rc);
 
-        // SetInstance(m_hwnd,this);
+        SetInstance(m_hwnd,this);
 
         // m_deviceResources = make_unique<DeviceResources>();
         // m_deviceResources->SetWindow(m_hwnd, width2, height2);
@@ -241,6 +240,9 @@ private:
         }
 
         return DefWindowProc(hwnd, message, wParam, lParam);
+    }
+    void InitD3D()
+    {
     }
     // void OnWindowSizeChanged(int width, int height)
     // {
