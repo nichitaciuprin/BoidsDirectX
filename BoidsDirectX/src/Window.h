@@ -53,6 +53,7 @@ public:
     }
     // void Update()
     // {
+    //     MSG msg = {};
     //     while (PeekMessage(&msg, m_hwnd, 0, 0, PM_REMOVE))
     //     {
     //         TranslateMessage(&msg);
@@ -138,32 +139,30 @@ private:
     static const LPCWSTR iconName;
     const int defaultWidth = 800;
     const int defaultHeight = 600;
-    // bool sizemove = false;
-    // bool minimized = false;
-    // bool fullscreen = false;
-    // bool windowClosed = false;
-    // float key_w = 0.0f;
-    // float key_a = 0.0f;
-    // float key_s = 0.0f;
-    // float key_d = 0.0f;
-    // HWND m_hwnd;
-    // MSG msg = {};
-    // Matrix m_proj;
-    // Matrix m_view;
-    HWND hwnd;
-    ID3D11Device*             device;
-    ID3D11DeviceContext*      deviceContext;
-    IDXGISwapChain1*          swapChain;
-    ID3D11RenderTargetView*   renderTargetView;
-    ID3D11DepthStencilView*   depthStencilView;
-    ID3D11InputLayout*        inputLayout;
-    ID3D11VertexShader*       vertexShader;
-    ID3D11PixelShader*        pixelShader;
-    ID3D11Buffer*             vertexBuffer;
-    ID3D11Buffer*             indexBuffer;
-    ID3D11Buffer*             constantBuffer;
-    ID3D11RasterizerState*    rasterizerState;
-    ID3D11DepthStencilState*  depthStencilState;
+    bool keydown_W = false;
+    bool keydown_A = false;
+    bool keydown_S = false;
+    bool keydown_D = false;
+    bool keydown_E = false;
+    bool keydown_Q = false;
+    bool keydown_VK_UP = false;
+    bool keydown_VK_LEFT = false;
+    bool keydown_VK_DOWN = false;
+    bool keydown_VK_RIGHT = false;
+    HWND                      m_hwnd;
+    ID3D11Device*             m_device;
+    ID3D11DeviceContext*      m_deviceContext;
+    IDXGISwapChain1*          m_swapChain;
+    ID3D11RenderTargetView*   m_renderTargetView;
+    ID3D11DepthStencilView*   m_depthStencilView;
+    ID3D11InputLayout*        m_inputLayout;
+    ID3D11VertexShader*       m_vertexShader;
+    ID3D11PixelShader*        m_pixelShader;
+    ID3D11Buffer*             m_vertexBuffer;
+    ID3D11Buffer*             m_indexBuffer;
+    ID3D11Buffer*             m_constantBuffer;
+    ID3D11RasterizerState*    m_rasterizerState;
+    ID3D11DepthStencilState*  m_depthStencilState;
     static void MaybeRegisterClass(HINSTANCE hInstance)
     {
         if (classRegistered) return;
@@ -222,50 +221,25 @@ private:
                 //     window->OnWindowSizeChanged(LOWORD(lParam), HIWORD(lParam));
                 // }
                 break;
-            case WM_EXITSIZEMOVE:
-                // window->sizemove = false;
-                // RECT rc;
-                // GetClientRect(hwnd, &rc);
-                // window->OnWindowSizeChanged(rc.right - rc.left, rc.bottom - rc.top);
-                break;
-            case WM_DESTROY:
-                // window->windowClosed = true;
-                break;
-            case WM_SYSKEYDOWN:
-                // switch (wParam)
-                // {
-                //     case VK_RETURN: // Alt+Enter
-                //         if (window->fullscreen)
-                //             window->ToDefaultSize();
-                //         else
-                //             window->ToFullscreen();
-                //     default: break;
-                // }
-                break;
-            case WM_MENUCHAR:
-                // Removes error sound during alt+enter
-                // A menu is active and the user presses a key that does not correspond
-                // to any mnemonic or accelerator key
-                return MAKELRESULT(0, MNC_CLOSE);
             case WM_KEYDOWN:
             case WM_KEYUP:
             {
-                // bool isDown = (msg == WM_KEYDOWN);
-                // switch (wparam)
-                // {
-                //     case VK_ESCAPE : { DestroyWindow(hwnd);                                break; }
-                //     case 'W'       : { global_keyIsDown[GameActionMoveCamFwd]    = isDown; break; }
-                //     case 'A'       : { global_keyIsDown[GameActionMoveCamLeft]   = isDown; break; }
-                //     case 'S'       : { global_keyIsDown[GameActionMoveCamBack]   = isDown; break; }
-                //     case 'D'       : { global_keyIsDown[GameActionMoveCamRight]  = isDown; break; }
-                //     case 'E'       : { global_keyIsDown[GameActionRaiseCam]      = isDown; break; }
-                //     case 'Q'       : { global_keyIsDown[GameActionLowerCam]      = isDown; break; }
-                //     case VK_UP     : { global_keyIsDown[GameActionLookUp]        = isDown; break; }
-                //     case VK_LEFT   : { global_keyIsDown[GameActionTurnCamLeft]   = isDown; break; }
-                //     case VK_DOWN   : { global_keyIsDown[GameActionLookDown]      = isDown; break; }
-                //     case VK_RIGHT  : { global_keyIsDown[GameActionTurnCamRight]  = isDown; break; }
-                //     default        : {                                                     break; }
-                // }
+                bool isDown = (message == WM_KEYDOWN);
+                switch (wParam)
+                {
+                    case VK_ESCAPE : { DestroyWindow(hwnd);               break; }
+                    case 'W'       : { window->keydown_W        = isDown; break; }
+                    case 'A'       : { window->keydown_A        = isDown; break; }
+                    case 'S'       : { window->keydown_S        = isDown; break; }
+                    case 'D'       : { window->keydown_D        = isDown; break; }
+                    case 'E'       : { window->keydown_E        = isDown; break; }
+                    case 'Q'       : { window->keydown_Q        = isDown; break; }
+                    case VK_UP     : { window->keydown_VK_UP    = isDown; break; }
+                    case VK_LEFT   : { window->keydown_VK_LEFT  = isDown; break; }
+                    case VK_DOWN   : { window->keydown_VK_DOWN  = isDown; break; }
+                    case VK_RIGHT  : { window->keydown_VK_RIGHT = isDown; break; }
+                    default        : {                                    break; }
+                }
                 break;
             }
         }
