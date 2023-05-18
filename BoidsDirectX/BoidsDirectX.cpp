@@ -9,12 +9,12 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include "src/Time.h"
-#include "src/Math.h"
-#include "src/Math3D.h"
-#include "src/SubgenSingleton.h"
-#include "src/Window.h"
-#include "src/D3D.h"
+#include "../Base/Time.h"
+#include "../Base/Math.h"
+#include "../Base/Math3D.h"
+#include "../Base/SubgenSingleton.h"
+#include "../Base/Window.h"
+#include "../Base/D3D.h"
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
