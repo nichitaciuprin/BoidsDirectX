@@ -66,14 +66,6 @@ public:
     bool IsWindowClosed() { return this->windowClosed; }
     HWND GetHWND() { return m_hwnd; }
 
-private:
-    static bool classRegistered;
-    static const LPCWSTR className;
-    static const LPCWSTR iconName;
-    const int defaultWidth = 800;
-    const int defaultHeight = 600;
-    HWND m_hwnd;
-    bool windowClosed;
     bool keydown_W = false;
     bool keydown_A = false;
     bool keydown_S = false;
@@ -84,6 +76,15 @@ private:
     bool keydown_VK_LEFT = false;
     bool keydown_VK_DOWN = false;
     bool keydown_VK_RIGHT = false;
+
+private:
+    static bool classRegistered;
+    static const LPCWSTR className;
+    static const LPCWSTR iconName;
+    const int defaultWidth = 800;
+    const int defaultHeight = 600;
+    HWND m_hwnd;
+    bool windowClosed;
     static void MaybeRegisterClass(HINSTANCE hInstance)
     {
         if (classRegistered) return;
@@ -127,7 +128,7 @@ private:
 
         switch (message)
         {
-            case WM_CLOSE:
+            case WM_DESTROY:
             {
                 window->windowClosed = true;
                 break;

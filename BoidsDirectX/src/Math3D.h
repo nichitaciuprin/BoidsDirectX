@@ -187,8 +187,8 @@ void UpdateCameraPosition(Camera* camera, float deltaTime, bool w, bool a, bool 
     const float CAM_MOVE_SPEED = 5.f; // in metres per second
     const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * deltaTime;
     if(w) camera->cameraPos   += camFwdXZ * CAM_MOVE_AMOUNT;
-    if(a) camera->cameraPos   -= camFwdXZ * CAM_MOVE_AMOUNT;
-    if(s) camera->cameraPos   -= cameraRightXZ * CAM_MOVE_AMOUNT;
+    if(s) camera->cameraPos   -= camFwdXZ * CAM_MOVE_AMOUNT;
+    if(a) camera->cameraPos   -= cameraRightXZ * CAM_MOVE_AMOUNT;
     if(d) camera->cameraPos   += cameraRightXZ * CAM_MOVE_AMOUNT;
     if(e) camera->cameraPos.y += CAM_MOVE_AMOUNT;
     if(q) camera->cameraPos.y -= CAM_MOVE_AMOUNT;

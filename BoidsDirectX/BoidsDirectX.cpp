@@ -62,17 +62,12 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             windowWasResized = false;
         }
 
-        // UpdateCamera(&camera,deltaTime);
+        UpdateCamera(&camera,deltaTime,
+                     window->keydown_VK_LEFT,window->keydown_VK_UP,window->keydown_VK_DOWN,window->keydown_VK_RIGHT,
+                     window->keydown_W,window->keydown_A,window->keydown_S,window->keydown_D,window->keydown_E,window->keydown_Q);
 
         // float duno = M_PI * currentTimeInSeconds;
         // modelMatrix = rotateXMat(-0.2f * duno) * rotateYMat(0.1f * duno) ;
-        // modelMatrix =
-        // {
-        //     1,0,0,0,
-        //     0,1,0,0,
-        //     0,0,1,0,
-        //     0,0,0,1
-        // };
 
         viewMatrix = ToViewMatrix(&camera);
         D3D::DrawBegin();
