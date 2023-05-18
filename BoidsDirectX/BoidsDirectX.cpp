@@ -5,98 +5,20 @@
 #endif
 #include <windows.h>
 #include <memory>
-
-#include <stdlib.h>
+#include <assert.h>
+#include <stdint.h>
 
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-#include <assert.h>
-#include <stdint.h>
+#include "src/Time.h"
 #include "src/Math.h"
 #include "src/Math3D.h"
-
 #include "src/SubgenSingleton.h"
-#include "src/Time.h"
 #include "src/Window.h"
 #include "src/D3D.h"
-
-struct Camera
-{
-    float3 cameraPos;
-    float rot1;
-    float rot2;
-};
-
-float4x4 modelMatrix = {};
-float4x4 viewMatrix = {};
-float4x4 projMatrix = {};
-float4x4 modelViewProj = {};
-bool windowWasResized = true; // To force initial perspectiveMat calculation
-Camera camera;
-float currentTimeInSeconds = 0;
-
-void InitCamera(Camera* outCamera)
-{
-    camera =
-    {
-        { 0, 0, 2 },
-        0,
-        0
-    };
-}
-float4x4 ToViewMatrix(Camera* camera)
-{
-    return
-        translationMat(-camera->cameraPos) *
-        rotateYMat(camera->rot1) *
-        rotateXMat(camera->rot2);
-}
-void UpdateCameraRotation(Camera* camera, float deltaTime, bool left, bool up, bool down, bool right)
-{
-    float speed = (float)M_PI; // in radians per second
-    float result = speed * deltaTime;
-    if(left)   camera->rot1 -= result;
-    if(up)     camera->rot2 -= result;
-    if(down)   camera->rot2 += result;
-    if(right)  camera->rot1 += result;
-
-    // Wrap yaw to avoid floating-point errors if we turn too far
-    float M_PI2 = 2*(float)M_PI;
-    while(camera->rot1 >=  M_PI2) camera->rot1 -= M_PI2;
-    while(camera->rot1 <= -M_PI2) camera->rot1 += M_PI2;
-
-    // Clamp pitch to stop camera flipping upside down
-    float degree = degreesToRadians(85);
-    if(camera->rot2 >  degree) camera->rot2 =  degree;
-    if(camera->rot2 < -degree) camera->rot2 = -degree;
-}
-void UpdateCameraPosition(Camera* camera, float deltaTime, bool w, bool a, bool s, bool d, bool e, bool q)
-{
-    float4x4 viewMatrix = ToViewMatrix(camera);
-    float3 camFwdXZ = {-viewMatrix.m[2][0], -viewMatrix.m[2][1], -viewMatrix.m[2][2]};
-
-    // float3 camFwdXZ = normalise({camera->cameraFwd.x, 0, camera->cameraFwd.z});
-    float3 cameraRightXZ = cross(camFwdXZ, {0, 1, 0});
-
-    const float CAM_MOVE_SPEED = 5.f; // in metres per second
-    const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * deltaTime;
-    if(w) camera->cameraPos   += camFwdXZ * CAM_MOVE_AMOUNT;
-    if(a) camera->cameraPos   -= camFwdXZ * CAM_MOVE_AMOUNT;
-    if(s) camera->cameraPos   -= cameraRightXZ * CAM_MOVE_AMOUNT;
-    if(d) camera->cameraPos   += cameraRightXZ * CAM_MOVE_AMOUNT;
-    if(e) camera->cameraPos.y += CAM_MOVE_AMOUNT;
-    if(q) camera->cameraPos.y -= CAM_MOVE_AMOUNT;
-}
-void UpdateCamera(Camera* camera, float deltaTime,
-bool left, bool up, bool down, bool right,
-bool w, bool a, bool s, bool d, bool e, bool q)
-{
-    UpdateCameraRotation(camera,deltaTime,left,up,down,right);
-    UpdateCameraPosition(camera,deltaTime,w,a,s,d,e,q);
-}
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
@@ -109,7 +31,22 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     D3D::Init(window->GetHWND());
 
-    // InitCamera(&camera);
+    float4x4 modelMatrix = {};
+    float4x4 viewMatrix = {};
+    float4x4 projMatrix = {};
+    float4x4 modelViewProj = {};
+
+    bool windowWasResized = true; // To force initial perspectiveMat calculation
+
+    Camera camera =
+    {
+        { 0, 0, 2 },
+        0,
+        0
+    };
+
+    float currentTimeInSeconds = 0;
+
     // long oldTime = GetTime();
 
     // while(true)

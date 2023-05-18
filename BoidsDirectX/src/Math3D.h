@@ -24,6 +24,13 @@ union float4x4
         return { m[0][i], m[1][i], m[2][i], m[3][i] };
     }
 };
+struct Camera
+{
+    float3 cameraPos;
+    float rot1;
+    float rot2;
+};
+
 inline float degreesToRadians(float degs)
 {
     return degs * ((float)M_PI / 180.0f);
@@ -139,4 +146,57 @@ inline float4x4 operator* (float4x4 a, float4x4 b)
         dot(a.row(2), b.cols[3]),
         dot(a.row(3), b.cols[3]),
     };
+}
+
+
+
+float4x4 ToViewMatrix(Camera* camera)
+{
+    return
+        translationMat(-camera->cameraPos) *
+        rotateYMat(camera->rot1) *
+        rotateXMat(camera->rot2);
+}
+void UpdateCameraRotation(Camera* camera, float deltaTime, bool left, bool up, bool down, bool right)
+{
+    float speed = (float)M_PI; // in radians per second
+    float result = speed * deltaTime;
+    if(left)   camera->rot1 -= result;
+    if(up)     camera->rot2 -= result;
+    if(down)   camera->rot2 += result;
+    if(right)  camera->rot1 += result;
+
+    // Wrap yaw to avoid floating-point errors if we turn too far
+    float M_PI2 = 2*(float)M_PI;
+    while(camera->rot1 >=  M_PI2) camera->rot1 -= M_PI2;
+    while(camera->rot1 <= -M_PI2) camera->rot1 += M_PI2;
+
+    // Clamp pitch to stop camera flipping upside down
+    float degree = degreesToRadians(85);
+    if(camera->rot2 >  degree) camera->rot2 =  degree;
+    if(camera->rot2 < -degree) camera->rot2 = -degree;
+}
+void UpdateCameraPosition(Camera* camera, float deltaTime, bool w, bool a, bool s, bool d, bool e, bool q)
+{
+    float4x4 viewMatrix = ToViewMatrix(camera);
+    float3 camFwdXZ = {-viewMatrix.m[2][0], -viewMatrix.m[2][1], -viewMatrix.m[2][2]};
+
+    // float3 camFwdXZ = normalise({camera->cameraFwd.x, 0, camera->cameraFwd.z});
+    float3 cameraRightXZ = cross(camFwdXZ, {0, 1, 0});
+
+    const float CAM_MOVE_SPEED = 5.f; // in metres per second
+    const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * deltaTime;
+    if(w) camera->cameraPos   += camFwdXZ * CAM_MOVE_AMOUNT;
+    if(a) camera->cameraPos   -= camFwdXZ * CAM_MOVE_AMOUNT;
+    if(s) camera->cameraPos   -= cameraRightXZ * CAM_MOVE_AMOUNT;
+    if(d) camera->cameraPos   += cameraRightXZ * CAM_MOVE_AMOUNT;
+    if(e) camera->cameraPos.y += CAM_MOVE_AMOUNT;
+    if(q) camera->cameraPos.y -= CAM_MOVE_AMOUNT;
+}
+void UpdateCamera(Camera* camera, float deltaTime,
+                  bool left, bool up, bool down, bool right,
+                  bool w, bool a, bool s, bool d, bool e, bool q)
+{
+    UpdateCameraRotation(camera,deltaTime,left,up,down,right);
+    UpdateCameraPosition(camera,deltaTime,w,a,s,d,e,q);
 }

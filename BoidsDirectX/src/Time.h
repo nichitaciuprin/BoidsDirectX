@@ -1,3 +1,5 @@
+#include <windows.h>
+
 long GetTime()
 {
     LARGE_INTEGER ticks;
