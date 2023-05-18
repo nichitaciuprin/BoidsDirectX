@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include "winuser.h"
-// #include <string.h>
+#include <string.h>
 #include <stdlib.h>
 #include <string>
 
@@ -20,25 +20,21 @@
 class Window
 {
 public:
-    Window(HINSTANCE hInstance, const std::string name, int x, int y, int width, int height)
+    Window(HINSTANCE hInstance, int x, int y, int width, int height)
     {
         MaybeRegisterClass(hInstance);
 
-        // RECT rc = { x, y, width, height };
-        // AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
+        RECT rc = { x, y, width, height };
+        AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
-        // auto width2 = rc.right - rc.left;
-        // auto height2 = rc.bottom - rc.top;
+        auto width2 = rc.right - rc.left;
+        auto height2 = rc.bottom - rc.top;
 
-        // auto wstringTemp = wstring(name.begin(), name.end());
-        // auto cstringTemp = wstringTemp.c_str();
-        // auto windowNameTemp = LPCWSTR(cstringTemp);
-
-        // m_hwnd = CreateWindowExW(0, className, windowNameTemp, WS_OVERLAPPEDWINDOW,
-        //     x, y, width2, height2, nullptr, nullptr, hInstance, nullptr);
-        // if (!m_hwnd) throw;
-        // ShowWindow(m_hwnd, SW_SHOWNORMAL);
-        // GetClientRect(m_hwnd, &rc);
+        m_hwnd = CreateWindowExW(0, className, className, WS_OVERLAPPEDWINDOW,
+            x, y, width2, height2, nullptr, nullptr, hInstance, nullptr);
+        if (!m_hwnd) throw;
+        ShowWindow(m_hwnd, SW_SHOWNORMAL);
+        GetClientRect(m_hwnd, &rc);
 
         // SetInstance(m_hwnd,this);
 
@@ -253,5 +249,5 @@ private:
     // }
 };
 bool Window::classRegistered = false;
-const LPCWSTR Window::className = L"MyWindow";
+const LPCWSTR Window::className = L"BoidsDirectX";
 const LPCWSTR Window::iconName = L"IDI_ICON";
