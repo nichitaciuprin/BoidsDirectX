@@ -1,1 +1,1 @@
-void InitWindow(int width, int height, const char *title);  // Initialize window and D3D context
+void InitWindow(int width, int height, const char* title);  // Initialize window and D3D context

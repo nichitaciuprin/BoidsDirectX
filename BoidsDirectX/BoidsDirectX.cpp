@@ -143,35 +143,6 @@ void ShowMessageBox(_In_opt_ LPCSTR lpText)
 {
     MessageBoxA(nullptr, lpText, nullptr, MB_OK);
 }
-int CreateRenderTargets(ID3D11Device* d3d11Device, IDXGISwapChain1* swapChain, ID3D11RenderTargetView** d3d11FrameBufferView, ID3D11DepthStencilView** depthBufferView)
-{
-    ID3D11Texture2D* d3d11FrameBuffer;
-    HRESULT hResult = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
-    assert(SUCCEEDED(hResult));
-
-    hResult = d3d11Device->CreateRenderTargetView(d3d11FrameBuffer, 0, d3d11FrameBufferView);
-    assert(SUCCEEDED(hResult));
-
-    D3D11_TEXTURE2D_DESC depthBufferDesc;
-    d3d11FrameBuffer->GetDesc(&depthBufferDesc);
-
-    d3d11FrameBuffer->Release();
-
-    depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-    ID3D11Texture2D* depthBuffer = {};
-    d3d11Device->CreateTexture2D(&depthBufferDesc, nullptr, &depthBuffer);
-
-    if (depthBuffer == nullptr)
-        return 1;
-
-    d3d11Device->CreateDepthStencilView(depthBuffer, nullptr, depthBufferView);
-
-    depthBuffer->Release();
-
-    return 0;
-}
 int CreateWindow2(HINSTANCE hInstance, HWND* outHWND)
 {
     WNDCLASSEXW winClass = {};
@@ -214,6 +185,35 @@ int CreateWindow2(HINSTANCE hInstance, HWND* outHWND)
     }
 
     *outHWND = hwnd;
+
+    return 0;
+}
+int CreateRenderTargets(ID3D11Device* d3d11Device, IDXGISwapChain1* swapChain, ID3D11RenderTargetView** d3d11FrameBufferView, ID3D11DepthStencilView** depthBufferView)
+{
+    ID3D11Texture2D* d3d11FrameBuffer;
+    HRESULT hResult = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
+    assert(SUCCEEDED(hResult));
+
+    hResult = d3d11Device->CreateRenderTargetView(d3d11FrameBuffer, 0, d3d11FrameBufferView);
+    assert(SUCCEEDED(hResult));
+
+    D3D11_TEXTURE2D_DESC depthBufferDesc;
+    d3d11FrameBuffer->GetDesc(&depthBufferDesc);
+
+    d3d11FrameBuffer->Release();
+
+    depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+    ID3D11Texture2D* depthBuffer = {};
+    d3d11Device->CreateTexture2D(&depthBufferDesc, nullptr, &depthBuffer);
+
+    if (depthBuffer == nullptr)
+        return 1;
+
+    d3d11Device->CreateDepthStencilView(depthBuffer, nullptr, depthBufferView);
+
+    depthBuffer->Release();
 
     return 0;
 }
@@ -579,8 +579,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     UNREFERENCED_PARAMETER(lpCmdLine);
     UNREFERENCED_PARAMETER(nCmdShow);
 
-    InitCamera(&camera);
-
     if(CreateWindow2(hInstance,&hwnd)) return 1;
     if(CreateDeviceAndContext(&device,&deviceContext)) return 1;
 
@@ -605,63 +603,64 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     deviceContext->IASetInputLayout(inputLayout);
 
-    long oldTime = GetTime();
+    // InitCamera(&camera);
+    // long oldTime = GetTime();
 
-    while(true)
-    {
-        long newTime = GetTime();
-        float deltaTime = GetDeltaTime(oldTime,newTime);
-        oldTime = newTime;
-        currentTimeInSeconds += deltaTime;
+    // while(true)
+    // {
+    //     long newTime = GetTime();
+    //     float deltaTime = GetDeltaTime(oldTime,newTime);
+    //     oldTime = newTime;
+    //     currentTimeInSeconds += deltaTime;
 
-        bool mustExitLoop = false;
-        HandleWindowMessages(hwnd,&mustExitLoop);
-        if (mustExitLoop) break;
+    //     bool mustExitLoop = false;
+    //     HandleWindowMessages(hwnd,&mustExitLoop);
+    //     if (mustExitLoop) break;
 
-        if(windowWasResized)
-        {
-            OnWindowResize(hwnd,deviceContext,swapChain,&renderTargetView,&depthStencilView);
-            windowWasResized = false;
-        }
+    //     if(windowWasResized)
+    //     {
+    //         OnWindowResize(hwnd,deviceContext,swapChain,&renderTargetView,&depthStencilView);
+    //         windowWasResized = false;
+    //     }
 
-        UpdateCamera(deltaTime,&camera);
+    //     UpdateCamera(deltaTime,&camera);
 
-        // float duno = M_PI * currentTimeInSeconds;
-        // modelMatrix = rotateXMat(-0.2f * duno) * rotateYMat(0.1f * duno) ;
-        // modelMatrix =
-        // {
-        //     1,0,0,0,
-        //     0,1,0,0,
-        //     0,0,1,0,
-        //     0,0,0,1
-        // };
-        viewMatrix = ToViewMatrix(&camera);
-        FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
-        deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
-        deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-        deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+    //     // float duno = M_PI * currentTimeInSeconds;
+    //     // modelMatrix = rotateXMat(-0.2f * duno) * rotateYMat(0.1f * duno) ;
+    //     // modelMatrix =
+    //     // {
+    //     //     1,0,0,0,
+    //     //     0,1,0,0,
+    //     //     0,0,1,0,
+    //     //     0,0,0,1
+    //     // };
+    //     viewMatrix = ToViewMatrix(&camera);
+    //     FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
+    //     deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
+    //     deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+    //     deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
-        UINT stride = 3 * sizeof(float);
-        UINT offset = 0;
-        for (size_t i = 0; i < 3; i++)
-        {
-            float test1 = ((float)i)/3;
-            modelMatrix =
-            {
-                1,0,0,0+test1,
-                0,1,0,0+test1,
-                0,0,1,0+test1,
-                0,0,0,1
-            };
-            modelViewProj = modelMatrix * viewMatrix * projMatrix;
-            UpdateConstantBuffer(deviceContext,constantBuffer,modelViewProj);
-            deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-            deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-            deviceContext->DrawIndexed(indexCount, 0, 0);
-        }
+    //     UINT stride = 3 * sizeof(float);
+    //     UINT offset = 0;
+    //     for (size_t i = 0; i < 3; i++)
+    //     {
+    //         float test1 = ((float)i)/3;
+    //         modelMatrix =
+    //         {
+    //             1,0,0,0+test1,
+    //             0,1,0,0+test1,
+    //             0,0,1,0+test1,
+    //             0,0,0,1
+    //         };
+    //         modelViewProj = modelMatrix * viewMatrix * projMatrix;
+    //         deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+    //         deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+    //         UpdateConstantBuffer(deviceContext,constantBuffer,modelViewProj);
+    //         deviceContext->DrawIndexed(indexCount, 0, 0);
+    //     }
 
-        swapChain->Present(1, 0);
-    }
+    //     swapChain->Present(1, 0);
+    // }
 
     return 0;
 }

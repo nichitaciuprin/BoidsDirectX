@@ -1,15 +1,10 @@
 #pragma once
 
 #include <algorithm>
-#include "winuser.h"
+#include <winuser.h>
 #include <string.h>
 #include <stdlib.h>
 #include <string>
-
-#include <d3d11_1.h>
-#include <d3dcompiler.h>
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "d3dcompiler.lib")
 
 // using namespace std;
 // using namespace DX;
@@ -37,96 +32,8 @@ public:
 
         SetInstance(m_hwnd,this);
 
-        // m_deviceResources = make_unique<DeviceResources>();
-        // m_deviceResources->SetWindow(m_hwnd, width2, height2);
-        // m_deviceResources->CreateDeviceResources();
-        // m_deviceResources->CreateWindowSizeDependentResources();
-        // auto context = m_deviceResources->GetD3DDeviceContext();
-        // m_shape = GeometricPrimitive::CreateSphere(context,1);
-        // m_box = GeometricPrimitive::CreateBox(context,Vector3(1,1,1));
-        // m_ground = GeometricPrimitive::CreateBox(context,Vector3(100,1,100));
+        InitD3D();
     }
-    // void Update()
-    // {
-    //     MSG msg = {};
-    //     while (PeekMessage(&msg, m_hwnd, 0, 0, PM_REMOVE))
-    //     {
-    //         TranslateMessage(&msg);
-    //         DispatchMessage(&msg);
-    //     }
-    // }
-    // void Clear()
-    // {
-    //     m_deviceResources->PIXBeginEvent(L"Clear");
-    //     auto context = m_deviceResources->GetD3DDeviceContext();
-    //     auto renderTarget = m_deviceResources->GetRenderTargetView();
-    //     auto depthStencil = m_deviceResources->GetDepthStencilView();
-    //     context->ClearRenderTargetView(renderTarget, Colors::CornflowerBlue);
-    //     context->ClearDepthStencilView(depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-    //     context->OMSetRenderTargets(1, &renderTarget, depthStencil);
-    //     auto const viewport = m_deviceResources->GetScreenViewport();
-    //     context->RSSetViewports(1, &viewport);
-    //     m_deviceResources->PIXEndEvent();
-    // }
-    // void ToFullscreen()
-    // {
-    //     SetWindowLongPtr(m_hwnd, GWL_STYLE, WS_POPUP);
-    //     SetWindowLongPtr(m_hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
-    //     auto uFlags = SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED;
-    //     SetWindowPos(m_hwnd, HWND_TOP, 0, 0, 0, 0, uFlags);
-    //     ShowWindow(m_hwnd, SW_SHOWMAXIMIZED);
-    //     fullscreen = true;
-    // }
-    // void ToDefaultSize()
-    // {
-    //     SetWindowLongPtr(m_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-    //     SetWindowLongPtr(m_hwnd, GWL_EXSTYLE, 0);
-    //     auto uFlags = SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED;
-    //     SetWindowPos(m_hwnd, HWND_TOP, 0, 0, defaultWidth, defaultHeight, uFlags);
-    //     ShowWindow(m_hwnd, SW_SHOWNORMAL);
-    //     fullscreen = false;
-    // }
-    // void PaintStart()
-    // {
-    //     m_deviceResources->PIXBeginEvent(L"Render");
-    // }
-    // void PaintEnd()
-    // {
-    //     m_deviceResources->PIXEndEvent();
-    //     m_deviceResources->Present();
-    // }
-    // void PaintSetCamera(Vector3 position, Vector3 target, Vector3 up)
-    // {
-    //     m_view = Matrix::CreateLookAt(position, target, up);
-    // }
-    // void PaintSetPerpective()
-    // {
-    //     auto size = m_deviceResources->GetOutputSize();
-    //     m_proj = Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f, float(size.right) / float(size.bottom), 0.1f, 1000.f);
-    // }
-    // void PaintGround()
-    // {
-    //     auto groundPosition = Matrix::CreateWorld(Vector3::Zero+Vector3::Down/2, Vector3::Forward, Vector3::Up);
-    //     m_ground->Draw(groundPosition,m_view,m_proj,Colors::Black);
-    // }
-    // void PaintSphere(Vector3 position)
-    // {
-    //     auto m_world = Matrix::CreateWorld(position, Vector3::Forward, Vector3::Up);
-    //     m_shape->Draw(m_world,m_view,m_proj);
-    // }
-    // Vector2 DirectionWASD()
-    // {
-    //     auto axisY = Window::key_w + Window::key_s;
-    //     auto axisX = Window::key_a + Window::key_d;
-    //     auto result = Vector2(axisX, axisY);
-    //     result.Normalize();
-    //     return result;
-    // }
-    // Vector2 MouseLook()
-    // {
-    //     // TODO
-    //     return Vector2::Zero;
-    // }
 
 private:
     static bool classRegistered;
@@ -134,6 +41,7 @@ private:
     static const LPCWSTR iconName;
     const int defaultWidth = 800;
     const int defaultHeight = 600;
+    HWND m_hwnd;
     bool keydown_W = false;
     bool keydown_A = false;
     bool keydown_S = false;
@@ -144,20 +52,6 @@ private:
     bool keydown_VK_LEFT = false;
     bool keydown_VK_DOWN = false;
     bool keydown_VK_RIGHT = false;
-    HWND                      m_hwnd;
-    ID3D11Device*             m_device;
-    ID3D11DeviceContext*      m_deviceContext;
-    IDXGISwapChain1*          m_swapChain;
-    ID3D11RenderTargetView*   m_renderTargetView;
-    ID3D11DepthStencilView*   m_depthStencilView;
-    ID3D11InputLayout*        m_inputLayout;
-    ID3D11VertexShader*       m_vertexShader;
-    ID3D11PixelShader*        m_pixelShader;
-    ID3D11Buffer*             m_vertexBuffer;
-    ID3D11Buffer*             m_indexBuffer;
-    ID3D11Buffer*             m_constantBuffer;
-    ID3D11RasterizerState*    m_rasterizerState;
-    ID3D11DepthStencilState*  m_depthStencilState;
     static void MaybeRegisterClass(HINSTANCE hInstance)
     {
         if (classRegistered) return;
@@ -166,13 +60,23 @@ private:
         windowClass.style = CS_HREDRAW | CS_VREDRAW;
         windowClass.lpfnWndProc = WndProc;
         windowClass.hInstance = hInstance;
-        windowClass.hIcon = LoadIconW(hInstance, iconName);
         windowClass.hCursor = LoadCursorW(nullptr, IDC_ARROW);
         windowClass.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
         windowClass.lpszClassName = className;
-        windowClass.hIconSm = LoadIconW(windowClass.hInstance, iconName);
+        windowClass.hIcon = LoadIconW(hInstance, iconName);
+        windowClass.hIconSm = LoadIconW(hInstance, iconName);
         if (!RegisterClassExW(&windowClass)) throw;
         classRegistered = true;
+
+        // WNDCLASSEXW winClass = {};
+        // winClass.cbSize = sizeof(WNDCLASSEXW);
+        // winClass.style = CS_HREDRAW | CS_VREDRAW;
+        // winClass.lpfnWndProc = &WndProc;
+        // winClass.hInstance = hInstance;
+        // winClass.hIcon = LoadIconW(0, IDI_APPLICATION);
+        // winClass.hCursor = LoadCursorW(0, IDC_ARROW);
+        // winClass.lpszClassName = L"MyWindowClass";
+        // winClass.hIconSm = LoadIconW(0, IDI_APPLICATION);
     }
     static void SetInstance(HWND hwnd, Window* window)
     {
@@ -189,32 +93,9 @@ private:
         if (window == NULL)
             return DefWindowProc(hwnd, message, wParam, lParam);
 
-        // auto m_deviceResources = window->m_deviceResources.get();
-        // if (m_deviceResources == NULL)
-        //     return DefWindowProc(hwnd, message, wParam, lParam);
-
         switch (message)
         {
-            case WM_DISPLAYCHANGE:
-                // m_deviceResources->UpdateColorSpace();
-                break;
-            case WM_MOVE:
-                // auto outputSize = m_deviceResources->GetOutputSize();
-                // m_deviceResources->WindowSizeChanged(outputSize.right, outputSize.bottom);
-                break;
-            case WM_SIZE:
-                // if (wParam == SIZE_MINIMIZED && !window->minimized)
-                // {
-                //     window->minimized = true;
-                // }
-                // else if (window->minimized)
-                // {
-                //     window->minimized = false;
-                // }
-                // else if (!window->sizemove)
-                // {
-                //     window->OnWindowSizeChanged(LOWORD(lParam), HIWORD(lParam));
-                // }
+            case WM_SIZE: // Window size was changed
                 break;
             case WM_KEYDOWN:
             case WM_KEYUP:
@@ -241,8 +122,17 @@ private:
 
         return DefWindowProc(hwnd, message, wParam, lParam);
     }
-    void InitD3D()
+    int InitD3D()
     {
+        // if(CreateDeviceAndDeviceContext()) return 1;
+
+        // #ifdef DEBUG_BUILD
+        // EnableDebug();
+        // #endif
+
+        // if(CreateSwapChain()) return 1;
+
+        return 1;
     }
     // void OnWindowSizeChanged(int width, int height)
     // {
