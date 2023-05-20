@@ -24,6 +24,8 @@ class D3D
 public:
     static int Init(HWND inHwnd)
     {
+        if(inited) return 0;
+
         hwnd = inHwnd;
 
         if(CreateDeviceAndDeviceContext()) return 1;
@@ -47,10 +49,13 @@ public:
         deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         deviceContext->IASetInputLayout(inputLayout);
 
+        inited = true;
+
         return 0;
     }
     static void DrawBegin()
     {
+        if(!inited) return;
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
         deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
         deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -58,6 +63,7 @@ public:
     }
     static void Draw(Matrix modelViewProj)
     {
+        if(!inited) return;
         UINT stride = 3 * sizeof(float);
         UINT offset = 0;
         deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
@@ -67,10 +73,13 @@ public:
     }
     static void DrawEnd()
     {
+        if(!inited) return;
         swapChain->Present(1, 0);
     }
     static void OnWindowResize(int windowWidth, int windowHeight)
     {
+        if(!inited) return;
+
         float windowWidthF = (float)windowWidth;
         float windowHeightF = (float)windowHeight;
         float windowAspectRatio = windowWidthF / windowHeightF;
@@ -91,6 +100,7 @@ public:
     }
     static void UpdateConstantBuffer(Matrix modelViewProj)
     {
+        if(!inited) return;
         D3D11_MAPPED_SUBRESOURCE mappedSubresource;
         deviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         Constants* constants = (Constants*)(mappedSubresource.pData);
@@ -99,6 +109,7 @@ public:
     }
 
 private:
+    static bool                      inited;
     static HWND                      hwnd;
     static ID3D11Device*             device;
     static ID3D11DeviceContext*      deviceContext;
@@ -377,6 +388,7 @@ private:
         return 0;
     }
 };
+bool                      D3D::inited = false;
 HWND                      D3D::hwnd = nullptr;
 ID3D11Device*             D3D::device = nullptr;
 ID3D11DeviceContext*      D3D::deviceContext = nullptr;

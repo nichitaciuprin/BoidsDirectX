@@ -1,3 +1,4 @@
+#pragma once
 // void GetCurentDirectoryPath(char* result)
 // {
 //     wchar_t buffer[MAX_PATH] = {};

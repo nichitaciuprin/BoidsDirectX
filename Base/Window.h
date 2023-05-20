@@ -1,17 +1,5 @@
 #pragma once
 
-#include <algorithm>
-#include <winuser.h>
-#include <string.h>
-#include <stdlib.h>
-#include <string>
-
-// using namespace std;
-// using namespace DX;
-// using namespace DirectX;
-// using namespace DirectX::SimpleMath;
-// using Microsoft::WRL::ComPtr;
-
 class Window
 {
 public:
@@ -35,7 +23,7 @@ public:
 
         SetInstance(m_hwnd,this);
 
-        InitD3D();
+        D3D::Init(m_hwnd);
     }
     void GetWindowInfo(int* outWindowWidth, int* outWindowHeight)
     {
@@ -100,16 +88,6 @@ private:
         windowClass.hIconSm = LoadIconW(hInstance, iconName);
         if (!RegisterClassExW(&windowClass)) throw;
         classRegistered = true;
-
-        // WNDCLASSEXW winClass = {};
-        // winClass.cbSize = sizeof(WNDCLASSEXW);
-        // winClass.style = CS_HREDRAW | CS_VREDRAW;
-        // winClass.lpfnWndProc = &WndProc;
-        // winClass.hInstance = hInstance;
-        // winClass.hIcon = LoadIconW(0, IDI_APPLICATION);
-        // winClass.hCursor = LoadCursorW(0, IDC_ARROW);
-        // winClass.lpszClassName = L"MyWindowClass";
-        // winClass.hIconSm = LoadIconW(0, IDI_APPLICATION);
     }
     static void SetInstance(HWND hwnd, Window* window)
     {
@@ -160,23 +138,6 @@ private:
 
         return DefWindowProc(hwnd, message, wParam, lParam);
     }
-    int InitD3D()
-    {
-        // if(CreateDeviceAndDeviceContext()) return 1;
-
-        // #ifdef DEBUG_BUILD
-        // EnableDebug();
-        // #endif
-
-        // if(CreateSwapChain()) return 1;
-
-        return 1;
-    }
-    // void OnWindowSizeChanged(int width, int height)
-    // {
-    //     if (!m_deviceResources->WindowSizeChanged(width, height))
-    //         return;
-    // }
 };
 bool Window::classRegistered = false;
 const LPCWSTR Window::className = L"BoidsDirectX";

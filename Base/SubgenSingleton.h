@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Subgen.h"
-#include <stdbool.h>
 
 class SubgenSingleton
 {
