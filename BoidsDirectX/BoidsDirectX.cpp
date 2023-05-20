@@ -1,8 +1,12 @@
 #include "BoidsDirectX.h"
 
-void Main(HINSTANCE hInstance)
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
-    float currentTimeInSeconds = 0;
+    UNREFERENCED_PARAMETER(hInstance);
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(lpCmdLine);
+    UNREFERENCED_PARAMETER(nCmdShow);
+
     auto window = make_unique<Window>(hInstance);
     D3D::Init(window->GetHWND());
     Camera camera;
@@ -13,7 +17,6 @@ void Main(HINSTANCE hInstance)
     while(true)
     {
         float deltaTime = GetDeltaTime2();
-        currentTimeInSeconds += deltaTime;
 
         if (window->WindowShouldClose()) break;
 
@@ -29,15 +32,6 @@ void Main(HINSTANCE hInstance)
         }
         RenderBoids(&camera,window->ClientWidth(),window->ClientHeight(),positions,count);
     }
-}
-int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
-{
-    UNREFERENCED_PARAMETER(hInstance);
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-    UNREFERENCED_PARAMETER(nCmdShow);
-
-    Main(hInstance);
 
     return 0;
 }
