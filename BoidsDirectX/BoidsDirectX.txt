@@ -1,0 +1,27 @@
+void Main()
+{
+    float appTime = 0.0f;
+
+    InitWindow();
+
+    while(true)
+    {
+        float deltaTime = GetDeltaTime();
+        appTime += deltaTime;
+
+        if (WindowWasClosed()) break;
+
+        WindowDrawBegin();
+
+        for (size_t i = 0; i < 3; i++)
+        {
+            float test1 = ((float)i)/3;
+            Vector3 position = { test1, test1, test1 };
+
+            WindowDrawBoid();
+        }
+
+        WindowDrawEnd();
+    }
+}
+void DrawBoids(Vector3* boids, size_t boidsCount)

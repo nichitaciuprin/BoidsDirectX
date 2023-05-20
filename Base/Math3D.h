@@ -150,7 +150,7 @@ inline float4x4 operator* (float4x4 a, float4x4 b)
 
 
 
-float4x4 ToViewMatrix(Camera* camera)
+float4x4 ToViewMatrix(const Camera* camera)
 {
     return
         translationMat(-camera->cameraPos) *

@@ -1,20 +1,4 @@
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#ifndef UNICODE
-#define UNICODE
-#endif
-
-#include <windows.h>
-#include <memory>
-#include <assert.h>
-#include <stdint.h>
-
-#include "../Base/Time.h"
-#include "../Base/Math.h"
-#include "../Base/Math3D.h"
-#include "../Base/SubgenSingleton.h"
-#include "../Base/Window.h"
-#include "../Base/D3D.h"
+#include "BoidsDirectX.h"
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
@@ -23,7 +7,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     UNREFERENCED_PARAMETER(lpCmdLine);
     UNREFERENCED_PARAMETER(nCmdShow);
 
-    auto window = std::make_unique<Window>(hInstance);
+    auto window = make_unique<Window>(hInstance);
 
     D3D::Init(window->GetHWND());
 
@@ -57,7 +41,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
         if(windowWasResized)
         {
-            projMatrix = makePerspectiveMat(window->AspectRation(), degreesToRadians(84), 0.1f, 1000.f);
             D3D::OnWindowResize(window->ClientWidth(),window->ClientHeight());
             windowWasResized = false;
         }
@@ -66,28 +49,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
                      window->keydown_VK_LEFT,window->keydown_VK_UP,window->keydown_VK_DOWN,window->keydown_VK_RIGHT,
                      window->keydown_W,window->keydown_A,window->keydown_S,window->keydown_D,window->keydown_E,window->keydown_Q);
 
-        // float duno = M_PI * currentTimeInSeconds;
-        // modelMatrix = rotateXMat(-0.2f * duno) * rotateYMat(0.1f * duno) ;
-
-        viewMatrix = ToViewMatrix(&camera);
-        D3D::DrawBegin();
-
-        for (size_t i = 0; i < 3; i++)
+        const size_t count = 3;
+        float3 positions[count];
+        for (size_t i = 0; i < count; i++)
         {
-            float test1 = ((float)i)/3;
-            modelMatrix =
-            {
-                1,0,0,0+test1,
-                0,1,0,0+test1,
-                0,0,1,0+test1,
-                0,0,0,1
-            };
-            modelViewProj = modelMatrix * viewMatrix * projMatrix;
-
-            D3D::Draw(modelViewProj);
+            float test1 = ((float)i)/count;
+            positions[i] = { test1, test1, test1 };
         }
-
-        D3D::DrawEnd();
+        RenderBoids(&camera,window->ClientWidth(),window->ClientHeight(),positions,count);
     }
 
     return 0;

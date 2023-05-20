@@ -19,12 +19,12 @@ public:
         );
         pos = randPointInsideAABB;
 
-        auto xRand = XTKW::RandomFractionSigned();
-        auto yRand = XTKW::RandomFractionSigned();
-        auto zRand = XTKW::RandomFractionSigned();
+        auto xRand = SubgenSingleton::FractionSigned();
+        auto yRand = SubgenSingleton::FractionSigned();
+        auto zRand = SubgenSingleton::FractionSigned();
         auto randDirection = Vector3(xRand,yRand,zRand);
         randDirection.Normalize();
-        auto randSpeed = XTKW::RandomRange(minSpeed,maxSpeed);
+        auto randSpeed = SubgenSingleton::Range(minSpeed,maxSpeed);
         vel = randDirection * randSpeed;
     }
     static void Update(vector<Boid>& boids, const AABB& aabb, float deltaTime)

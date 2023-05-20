@@ -375,7 +375,6 @@ private:
         device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
         return 0;
     }
-    
 };
 HWND                      D3D::hwnd = nullptr;
 ID3D11Device*             D3D::device = nullptr;
