@@ -1,27 +1,16 @@
 void Main()
 {
-    float appTime = 0.0f;
-
-    InitWindow();
+    auto boidsWorld = make_unique<BoidsWorld>();
 
     while(true)
     {
-        float deltaTime = GetDeltaTime();
-        appTime += deltaTime;
+        auto deltaTime = GetDeltaTime();
 
         if (WindowWasClosed()) break;
 
-        WindowDrawBegin();
+        boidsWorld->Update(deltaTime);
+        boidsWorld->Render();
 
-        for (size_t i = 0; i < 3; i++)
-        {
-            float test1 = ((float)i)/3;
-            Vector3 position = { test1, test1, test1 };
-
-            WindowDrawBoid();
-        }
-
-        WindowDrawEnd();
+        WindowRender(boidsWorld);
     }
 }
-void DrawBoids(Vector3* boids, size_t boidsCount)

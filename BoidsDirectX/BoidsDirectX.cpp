@@ -1,49 +1,24 @@
 #include "BoidsDirectX.h"
 
-int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
+void Main(HINSTANCE hInstance)
 {
-    UNREFERENCED_PARAMETER(hInstance);
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-    UNREFERENCED_PARAMETER(nCmdShow);
-
-    auto window = make_unique<Window>(hInstance);
-
-    D3D::Init(window->GetHWND());
-
-    float4x4 modelMatrix = {};
-    float4x4 viewMatrix = {};
-    float4x4 projMatrix = {};
-    float4x4 modelViewProj = {};
-
-    bool windowWasResized = true; // To force initial perspectiveMat calculation
-
-    Camera camera =
-    {
-        { 0, 0, 2 },
-        0,
-        0
-    };
-
     float currentTimeInSeconds = 0;
+    auto window = make_unique<Window>(hInstance);
+    D3D::Init(window->GetHWND());
+    Camera camera;
+    camera.cameraPos = { 0, 0, 2 };
+    camera.rot1 = 0;
+    camera.rot2 = 0;
 
     while(true)
     {
         float deltaTime = GetDeltaTime2();
         currentTimeInSeconds += deltaTime;
 
-        window->HandleWindowMessages();
-        if (window->IsWindowClosed()) break;
+        if (window->WindowShouldClose()) break;
 
-        if(windowWasResized)
-        {
-            D3D::OnWindowResize(window->ClientWidth(),window->ClientHeight());
-            windowWasResized = false;
-        }
-
-        UpdateCamera(&camera,deltaTime,
-                     window->keydown_VK_LEFT,window->keydown_VK_UP,window->keydown_VK_DOWN,window->keydown_VK_RIGHT,
-                     window->keydown_W,window->keydown_A,window->keydown_S,window->keydown_D,window->keydown_E,window->keydown_Q);
+        UpdateCameraRotation(&camera,deltaTime,window->keydown_VK_LEFT,window->keydown_VK_UP,window->keydown_VK_DOWN,window->keydown_VK_RIGHT);
+        UpdateCameraPosition(&camera,deltaTime,window->keydown_W,window->keydown_A,window->keydown_S,window->keydown_D,window->keydown_E,window->keydown_Q);
 
         const size_t count = 3;
         float3 positions[count];
@@ -54,6 +29,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         }
         RenderBoids(&camera,window->ClientWidth(),window->ClientHeight(),positions,count);
     }
+}
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
+{
+    UNREFERENCED_PARAMETER(hInstance);
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(lpCmdLine);
+    UNREFERENCED_PARAMETER(nCmdShow);
+
+    Main(hInstance);
 
     return 0;
 }

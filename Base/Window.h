@@ -44,7 +44,7 @@ public:
         *outWindowWidth = clientRect.right - clientRect.left;
         *outWindowHeight = clientRect.bottom - clientRect.top;
     }
-    void HandleWindowMessages()
+    bool WindowShouldClose()
     {
         MSG msg = {};
         while(PeekMessageW(&msg, 0, 0, 0, PM_REMOVE))
@@ -56,6 +56,7 @@ public:
             TranslateMessage(&msg);
             DispatchMessageW(&msg);
         }
+        return windowClosed;
     }
     float AspectRation()
     {
@@ -63,7 +64,6 @@ public:
     }
     int ClientWidth() { return defaultWidth; }
     int ClientHeight() { return defaultHeight; }
-    bool IsWindowClosed() { return this->windowClosed; }
     HWND GetHWND() { return m_hwnd; }
 
     bool keydown_W = false;

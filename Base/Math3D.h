@@ -147,9 +147,6 @@ inline float4x4 operator* (float4x4 a, float4x4 b)
         dot(a.row(3), b.cols[3]),
     };
 }
-
-
-
 float4x4 ToViewMatrix(const Camera* camera)
 {
     return
@@ -192,11 +189,4 @@ void UpdateCameraPosition(Camera* camera, float deltaTime, bool w, bool a, bool 
     if(d) camera->cameraPos   += cameraRightXZ * CAM_MOVE_AMOUNT;
     if(e) camera->cameraPos.y += CAM_MOVE_AMOUNT;
     if(q) camera->cameraPos.y -= CAM_MOVE_AMOUNT;
-}
-void UpdateCamera(Camera* camera, float deltaTime,
-                  bool left, bool up, bool down, bool right,
-                  bool w, bool a, bool s, bool d, bool e, bool q)
-{
-    UpdateCameraRotation(camera,deltaTime,left,up,down,right);
-    UpdateCameraPosition(camera,deltaTime,w,a,s,d,e,q);
 }
