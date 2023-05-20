@@ -1,5 +1,18 @@
 #include <windows.h>
 
+double TicksPerSecondCache = 0;
+long TimeOld = 0;
+double TicksPerSecond()
+{
+    if (TicksPerSecondCache == 0)
+    {
+        LARGE_INTEGER perfFreq;
+        QueryPerformanceFrequency(&perfFreq);
+        LONGLONG perfCounterFrequency = perfFreq.QuadPart;
+        TicksPerSecondCache = (double)perfCounterFrequency;
+    }
+    return TicksPerSecondCache;
+}
 long GetTime()
 {
     LARGE_INTEGER ticks;
@@ -8,13 +21,13 @@ long GetTime()
 }
 float GetDeltaTime(long oldTime, long newTime)
 {
-    // TODO cache this. Value is system readonly
-    LARGE_INTEGER perfFreq;
-    QueryPerformanceFrequency(&perfFreq);
-    LONGLONG perfCounterFrequency = perfFreq.QuadPart;
-
     double diff = (double)(newTime - oldTime);
-    double ticksPerSecond = (double)perfCounterFrequency;
-
-    return (float)(diff/ticksPerSecond);
+    return (float)(diff/TicksPerSecond());
+}
+float GetDeltaTime2()
+{
+    long TimeNew = GetTime();
+    float result = GetDeltaTime(TimeOld,TimeNew);
+    TimeOld = TimeNew;
+    return result;
 }

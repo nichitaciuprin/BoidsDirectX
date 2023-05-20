@@ -27,13 +27,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     float currentTimeInSeconds = 0;
 
-    long oldTime = GetTime();
-
     while(true)
     {
-        long newTime = GetTime();
-        float deltaTime = GetDeltaTime(oldTime,newTime);
-        oldTime = newTime;
+        float deltaTime = GetDeltaTime2();
         currentTimeInSeconds += deltaTime;
 
         window->HandleWindowMessages();
