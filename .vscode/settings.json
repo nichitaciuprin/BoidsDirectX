@@ -7,6 +7,7 @@
         "xstring": "cpp",
         "string": "cpp",
         "system_error": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "vector": "cpp"
     }
 }

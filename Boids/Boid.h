@@ -1,8 +1,6 @@
 #pragma once
 
-// #include "DirectXTKWrapper.h"
-#include "../Base/SubgenSingleton.h"
-#include "../Base/AABB.h"
+#include "../Base/Base.h"
 
 class Boid
 {
@@ -12,18 +10,18 @@ public:
     Boid(const AABB& aabb)
     {
         auto randPointInsideAABB = Vector3
-        (
+        {
             SubgenSingleton::Range(aabb.MinX(),aabb.MaxX()),
             SubgenSingleton::Range(aabb.MinY(),aabb.MaxY()),
             SubgenSingleton::Range(aabb.MinZ(),aabb.MaxZ())
-        );
+        };
         pos = randPointInsideAABB;
 
         auto xRand = SubgenSingleton::FractionSigned();
         auto yRand = SubgenSingleton::FractionSigned();
         auto zRand = SubgenSingleton::FractionSigned();
-        auto randDirection = Vector3(xRand,yRand,zRand);
-        randDirection.Normalize();
+        auto randDirection = Vector3{ xRand,yRand,zRand };
+        randDirection = Normalise(randDirection);
         auto randSpeed = SubgenSingleton::Range(minSpeed,maxSpeed);
         vel = randDirection * randSpeed;
     }
@@ -34,9 +32,9 @@ public:
         for (int i = 0;i < length; i++)
         {
             Boid& boid = boids[i];
-            boid.vec_1 = Vector3::Zero;
-            boid.vec_2 = Vector3::Zero;
-            boid.vec_3 = Vector3::Zero;
+            boid.vec_1 = Vector3Zero();
+            boid.vec_2 = Vector3Zero();
+            boid.vec_3 = Vector3Zero();
             boid.count_1 = 0;
             boid.count_2 = 0;
         }
@@ -52,8 +50,8 @@ public:
         {
             Boid& boid = boids[i];
             auto targetVelocity = boid.TargetVelocity(aabb);
-            auto newVelocity = Vector3Ext::MoveTowards(boid.vel,targetVelocity,acc*deltaTime);
-            boid.pos = Vector3Ext::PositionUpdateAdvanced(boid.pos,boid.vel,boid.vel,deltaTime);
+            auto newVelocity = MoveTowards(boid.vel,targetVelocity,acc*deltaTime);
+            boid.pos = PositionUpdateAdvanced(boid.pos,boid.vel,boid.vel,deltaTime);
             boid.vel = newVelocity;
         }
     }
@@ -97,7 +95,7 @@ private:
         if (distSquared >= rangeSquared_3) return;
 
         auto normFraction = 1.0f/dist;
-        auto normDiff = Vector3(diff.x*normFraction,diff.y*normFraction,diff.z*normFraction);
+        auto normDiff = Vector3{ diff.x * normFraction,diff.y * normFraction,diff.z * normFraction };
         auto dist2 = range_3 - dist;
         normDiff = normDiff*dist2;
 
@@ -129,7 +127,7 @@ private:
 
         result += aabb.ShortPathIn(pos);
 
-        result = Vector3Ext::ClampLength(result,minSpeed,maxSpeed);
+        result = ClampLength(result,minSpeed,maxSpeed);
         return result;
     }
 };
@@ -141,7 +139,7 @@ const float Boid::range_3 = 2;
 const float Boid::rangeSquared_1 = range_1*range_1;
 const float Boid::rangeSquared_2 = range_2*range_2;
 const float Boid::rangeSquared_3 = range_3*range_3;
-const float Boid::power1 = 0.01;
-const float Boid::power2 = 0.01;
-const float Boid::power3 = 0.04;
+const float Boid::power1 = 0.01f;
+const float Boid::power2 = 0.01f;
+const float Boid::power3 = 0.04f;
 const float Boid::acc = 10;

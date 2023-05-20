@@ -12,10 +12,11 @@
 #pragma comment(lib, "d3dcompiler.lib")
 
 #include "FileHelper.h"
+#include "Math.h"
 
 struct Constants
 {
-    float4x4 modelViewProj;
+    Matrix modelViewProj;
 };
 
 class D3D
@@ -55,7 +56,7 @@ public:
         deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
         deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
     }
-    static void Draw(float4x4 modelViewProj)
+    static void Draw(Matrix modelViewProj)
     {
         UINT stride = 3 * sizeof(float);
         UINT offset = 0;
@@ -86,9 +87,9 @@ public:
         assert(SUCCEEDED(res));
 
         CreateRenderTargets();
-        // projMatrix = makePerspectiveMat(windowAspectRatio, degreesToRadians(84), 0.1f, 1000.f);
+        // projMatrix = MakePerspectiveMat(windowAspectRatio, MathToRadians(84), 0.1f, 1000.f);
     }
-    static void UpdateConstantBuffer(float4x4 modelViewProj)
+    static void UpdateConstantBuffer(Matrix modelViewProj)
     {
         D3D11_MAPPED_SUBRESOURCE mappedSubresource;
         deviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);

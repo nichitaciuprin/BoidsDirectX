@@ -7,11 +7,11 @@
 #include <memory>
 #include <assert.h>
 #include <stdint.h>
-#include "../Base/Time.h"
-#include "../Base/Math.h"
-#include "../Base/Math3D.h"
-#include "../Base/SubgenSingleton.h"
-#include "../Base/Window.h"
-#include "../Base/D3D.h"
-
+#include <vector>
+#include "Time.h"
+#include "Math.h"
+#include "SubgenSingleton.h"
+#include "Window.h"
+#include "D3D.h"
+#include "AABB.h"
 using namespace std;

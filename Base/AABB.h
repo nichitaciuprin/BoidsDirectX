@@ -1,7 +1,6 @@
 #pragma once
 
-#include "SimpleMath.h"
-using namespace DirectX::SimpleMath;
+#include "Math.h"
 
 struct AABB
 {
@@ -16,9 +15,9 @@ struct AABB
     Vector3 Size() const
     {
         Vector3 result = p0-p1;
-        result.x = fabs(result.x);
-        result.y = fabs(result.y);
-        result.z = fabs(result.z);
+        result.x = MathAbs(result.x);
+        result.y = MathAbs(result.y);
+        result.z = MathAbs(result.z);
         return result;
     }
     Vector3 WrapAround(Vector3 point) const
@@ -34,7 +33,7 @@ struct AABB
     }
     Vector3 ShortPathIn(Vector3 point) const
     {
-        auto result = Vector3::Zero;
+        auto result = Vector3Zero();
         if      (point.x < MinX()) result.x = MinX() - point.x;
         else if (point.x > MaxX()) result.x = MaxX() - point.x;
         if      (point.y < MinY()) result.y = MinY() - point.y;

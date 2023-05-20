@@ -20,7 +20,7 @@ public:
     }
     static float Range(float min, float max)
     {
-        subgen.Range(min,max);
+        return subgen.Range(min,max);
     }
 private:
     static Subgen subgen;
