@@ -2,34 +2,66 @@
 
 #include <windows.h>
 
-double TicksPerSecondCache = 0;
-long TimeOld = 0;
-double TicksPerSecond()
+typedef LONGLONG TICKS;
+
+TICKS TicksPerSecondCache = 0;
+TICKS TicksPerMillisecondCache = 0;
+TICKS FixedTimeStepCache = 0;
+TICKS TimeOld = 0;
+TICKS TimeNew = 0;
+
+TICKS TicksPerSecond()
 {
     if (TicksPerSecondCache == 0)
     {
         LARGE_INTEGER perfFreq;
         QueryPerformanceFrequency(&perfFreq);
-        LONGLONG perfCounterFrequency = perfFreq.QuadPart;
-        TicksPerSecondCache = (double)perfCounterFrequency;
+        auto perfCounterFrequency = perfFreq.QuadPart;
+        TicksPerSecondCache = perfCounterFrequency;
     }
     return TicksPerSecondCache;
 }
-long GetTime()
+TICKS TicksPerMillisecond()
+{
+    if (TicksPerMillisecondCache == 0)
+        TicksPerMillisecondCache = TicksPerSecond()/1000;
+    return TicksPerMillisecondCache;
+}
+TICKS FixedTimeStep()
+{
+    if (FixedTimeStepCache == 0)
+        FixedTimeStepCache = TicksPerMillisecond()*20;
+    return FixedTimeStepCache;
+}
+TICKS GetTime()
 {
     LARGE_INTEGER ticks;
     QueryPerformanceCounter(&ticks);
-    return (long)ticks.QuadPart;
+    return ticks.QuadPart;
 }
-float GetDeltaTime(long oldTime, long newTime)
+TICKS GetCalcTime(TICKS oldTime, TICKS newTime)
 {
-    double diff = (double)(newTime - oldTime);
-    return (float)(diff/TicksPerSecond());
+    if (oldTime > newTime)
+       return LLONG_MAX - oldTime + newTime;
+    return newTime - oldTime;
 }
-float GetDeltaTime2()
+void WaitAfterRender()
 {
-    long TimeNew = GetTime();
-    float result = GetDeltaTime(TimeOld,TimeNew);
-    TimeOld = TimeNew;
-    return result;
+    TICKS waitTicks = 0;
+    if (TimeOld == 0)
+    {
+        waitTicks = FixedTimeStep()/TicksPerMillisecond();
+    }
+    else
+    {
+        TimeNew = GetTime();
+        auto calcTime = GetCalcTime(TimeOld, TimeNew);
+        auto duno = FixedTimeStep();
+        waitTicks = duno - calcTime;
+        if (waitTicks < 0)
+            waitTicks = 0;
+    }
+    auto milliseconds = (DWORD)(waitTicks/TicksPerMillisecond());
+    Sleep(milliseconds);
+    TimeOld = GetTime();
 }

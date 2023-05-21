@@ -141,6 +141,7 @@ inline Vector3 operator + (Vector3 left, Vector3 right)
     left.y += right.y;
     left.z += right.z;
     return left;
+    // return {left.x+right.x, left.y+right.y, left.z+right.z};
 }
 inline Vector3 operator - (Vector3 left, Vector3 right)
 {
@@ -148,6 +149,7 @@ inline Vector3 operator - (Vector3 left, Vector3 right)
     left.y -= right.y;
     left.z -= right.z;
     return left;
+    // return {left.x-right.x, left.y-right.y, left.z-right.z};
 }
 inline Vector3 operator * (Vector3 v, float f)
 {

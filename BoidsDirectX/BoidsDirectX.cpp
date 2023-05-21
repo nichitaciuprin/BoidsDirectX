@@ -7,15 +7,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     UNREFERENCED_PARAMETER(lpCmdLine);
     UNREFERENCED_PARAMETER(nCmdShow);
 
-    auto boidsWorld = make_unique<World>();
+    auto world = make_unique<World>();
+    world->Render(hInstance);
 
     while(true)
     {
-        auto deltaTime = GetDeltaTime2();
-
-        boidsWorld->Update(deltaTime);
-        boidsWorld->Render(hInstance);
-        if (Window1::Closed()) break;
+        world->Update(0.02f);
+        world->Render(hInstance);
     }
 
     return 0;

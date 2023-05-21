@@ -10,11 +10,13 @@ public:
 
     World()
     {
-        camera.cameraPos = {0,10,10};
+        // camera.cameraPos = {0,10,10};
         // cameraUp = Vector3Up();
-        // cameraPosition += Vector3Up()*110;
-        // cameraPosition += Vector3Right()*175;
-        // cameraPosition += -Vector3Forward()*175;
+        camera.cameraPos += Vector3Up()*110;
+        camera.cameraPos += Vector3Right()*175;
+        camera.cameraPos += -Vector3Forward()*175;
+        camera.rot1 = MathToRadians(-45);
+        camera.rot2 = MathToRadians(15);
         // cameraTarget = Vector3Up()*50;
     }
     void Update(float deltaTime)

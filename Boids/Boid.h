@@ -102,6 +102,14 @@ private:
         boid1.vec_3 = boid1.vec_3+normDiff;
         boid2.vec_3 = boid2.vec_3-normDiff;
     }
+    void ZeroCache()
+    {
+        vec_1 = Vector3Zero();
+        vec_2 = Vector3Zero();
+        vec_3 = Vector3Zero();
+        count_1 = 0;
+        count_2 = 0;
+    }
     Vector3 TargetVelocity(const AABB& aabb) const
     {
         auto l_vec_1 = vec_1;
