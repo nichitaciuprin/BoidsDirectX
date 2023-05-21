@@ -174,11 +174,17 @@ inline Vector3 operator -= (Vector3 &lhs, Vector3 rhs)
 }
 inline Vector3 operator *= (Vector3& v, float f)
 {
-    return {v.x*f, v.y*f, v.z*f};
+    v.x *= f;
+    v.y *= f;
+    v.z *= f;
+    return v;
 }
 inline Vector3 operator /= (Vector3& v, float f)
 {
-    return {v.x/f, v.y/f, v.z/f};
+    v.x /= f;
+    v.y /= f;
+    v.z /= f;
+    return v;
 }
 
 inline Matrix operator * (Matrix a, Matrix b)
@@ -216,6 +222,17 @@ inline Vector3 Cross(Vector3 a, Vector3 b)
 inline Vector3 Normalise(Vector3 v)
 {
     return v * (1.f / length(v));
+}
+
+inline Matrix Identity()
+{
+    return
+    {
+        1,0,0,0,
+        0,1,0,0,
+        0,0,1,0,
+        0,0,0,1,
+    };
 }
 inline Matrix RotateXMatrix(float rad)
 {

@@ -32,7 +32,7 @@ public:
         *outWindowWidth = clientRect.right - clientRect.left;
         *outWindowHeight = clientRect.bottom - clientRect.top;
     }
-    bool WindowShouldClose()
+    void Update()
     {
         MSG msg = {};
         while(PeekMessageW(&msg, 0, 0, 0, PM_REMOVE))
@@ -44,6 +44,9 @@ public:
             TranslateMessage(&msg);
             DispatchMessageW(&msg);
         }
+    }
+    bool Closed()
+    {
         return windowClosed;
     }
     float AspectRation()

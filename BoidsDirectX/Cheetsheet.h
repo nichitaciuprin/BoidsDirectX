@@ -13,10 +13,9 @@ struct Vector4
 {
     float x, y, z, w;
 };
-union Matrix
+struct Matrix
 {
     float m[4][4];
-    Vector4 cols[4];
 };
 struct AABB
 {
@@ -24,7 +23,7 @@ struct AABB
 };
 struct Camera
 {
-    Vector3 cameraPos;
+    Vector3 position;
     float rot1;
     float rot2;
 };

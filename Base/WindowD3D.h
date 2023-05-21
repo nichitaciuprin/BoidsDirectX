@@ -96,7 +96,6 @@ public:
         assert(SUCCEEDED(res));
 
         CreateRenderTargets();
-        // projMatrix = MakePerspectiveMat(windowAspectRatio, MathToRadians(84), 0.1f, 1000.f);
     }
     static void UpdateConstantBuffer(Matrix modelViewProj)
     {

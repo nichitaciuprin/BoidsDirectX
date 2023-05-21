@@ -5,18 +5,17 @@
 class World
 {
 public:
-    Vector3 cameraPosition;
-    Vector3 cameraTarget;
-    Vector3 cameraUp;
+    Camera camera;
     BoidWorld boidWorld;
+
     World()
     {
-        cameraUp = Vector3Up();
-        cameraPosition += Vector3Up()*110;
-        cameraPosition += Vector3Right()*175;
-        cameraPosition += -Vector3Forward()*175;
-        cameraTarget = Vector3Up()*50;
-        // XTKW::WindowInitDefault();
+        camera.cameraPos = {0,10,10};
+        // cameraUp = Vector3Up();
+        // cameraPosition += Vector3Up()*110;
+        // cameraPosition += Vector3Right()*175;
+        // cameraPosition += -Vector3Forward()*175;
+        // cameraTarget = Vector3Up()*50;
     }
     void Update(float deltaTime)
     {
@@ -24,19 +23,20 @@ public:
         // cameraPosition = Vector3::Transform(cameraPosition,rotation);
         boidWorld.Update(deltaTime);
     }
-    void Render()
+    void Render(HINSTANCE hInstance)
     {
-        // XTKW::WindowUpdate();
-        // XTKW::WindowClear();
-        // XTKW::WindowRenderStart();
-        // XTKW::WindowSetCamera(cameraPosition, cameraTarget, cameraUp);
-        // XTKW::WindowDrawGround();
-        // auto length = boidWorld.boids.size();
-        // for (size_t i = 0; i < length; i++)
-        // {
-        //     auto boid = &boidWorld.boids[i];
-        //     XTKW::WindowDrawSphere(boid->pos);
-        // }
-        // XTKW::WindowRenderEnd();
+        Window1::Init(hInstance);
+        Window1::DrawBegin();
+        Window1::SetCamera(&camera);
+        auto length = boidWorld.boids.size();
+        for (size_t i = 0; i < length; i++)
+        {
+            auto boid = &boidWorld.boids[i];
+            Window1::DrawCube(boid->pos);
+
+            // Vector3 position = {1,0,-4};
+            // Window1::DrawCube(position);
+        }
+        Window1::DrawEnd();
     }
 };

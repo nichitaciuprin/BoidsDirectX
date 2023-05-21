@@ -9,29 +9,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     auto boidsWorld = make_unique<World>();
 
-    Window1::Init(hInstance);
-
     while(true)
     {
-        float deltaTime = GetDeltaTime2();
+        auto deltaTime = GetDeltaTime2();
 
-
-        // boidsWorld->Update(deltaTime);
-        // boidsWorld->Render();
-
-        // if (window->WindowShouldClose()) break;
-
-        // UpdateCameraRotation(&camera,deltaTime,window->keydown_VK_LEFT,window->keydown_VK_UP,window->keydown_VK_DOWN,window->keydown_VK_RIGHT);
-        // UpdateCameraPosition(&camera,deltaTime,window->keydown_W,window->keydown_A,window->keydown_S,window->keydown_D,window->keydown_E,window->keydown_Q);
-
-        // const size_t count = 3;
-        // float3 positions[count];
-        // for (size_t i = 0; i < count; i++)
-        // {
-        //     float test1 = ((float)i)/count;
-        //     positions[i] = { test1, test1, test1 };
-        // }
-        // RenderBoids(&camera,window->ClientWidth(),window->ClientHeight(),positions,count);
+        boidsWorld->Update(deltaTime);
+        boidsWorld->Render(hInstance);
+        if (Window1::Closed()) break;
     }
 
     return 0;
