@@ -32,13 +32,9 @@ struct Boid
     Vector3 position;
     Vector3 velocity;
 };
-struct BoidsWorld
-{
-    AABB bounds;
-    std::vector<Boid> boids;
-};
 struct AppState
 {
     Camera camera;
-    BoidsWorld boidWorld;
+    AABB bounds;
+    std::vector<Boid> boids;
 };
