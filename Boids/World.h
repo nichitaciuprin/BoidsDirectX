@@ -10,11 +10,11 @@ public:
 
     World()
     {
-        // camera.cameraPos = {0,10,10};
+        // camera.position = {0,10,10};
         // cameraUp = Vector3Up();
-        camera.cameraPos += Vector3Up()*110;
-        camera.cameraPos += Vector3Right()*175;
-        camera.cameraPos += -Vector3Forward()*175;
+        camera.position += Vector3Up()*110;
+        camera.position += Vector3Right()*175;
+        camera.position += -Vector3Forward()*175;
         camera.rot1 = MathToRadians(-45);
         camera.rot2 = MathToRadians(15);
         // cameraTarget = Vector3Up()*50;

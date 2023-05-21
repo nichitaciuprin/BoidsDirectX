@@ -26,7 +26,7 @@ union Matrix
 };
 struct Camera
 {
-    Vector3 cameraPos;
+    Vector3 position;
     float rot1;
     float rot2;
 };
@@ -114,11 +114,11 @@ inline float MathToRadians(float degs)
 {
     return degs * ((float)M_PI / 180.0f);
 }
-inline float length(Vector3 v)
+inline float Vector3Length(Vector3 v)
 {
     return sqrtf(v.x*v.x + v.y*v.y + v.z*v.z);
 }
-inline float dot(Vector4 a, Vector4 b)
+inline float Vector4Dot(Vector4 a, Vector4 b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
 }
@@ -134,14 +134,12 @@ inline Vector3 operator - (Vector3 v)
 {
     return {-v.x, -v.y, -v.z};
 }
-
 inline Vector3 operator + (Vector3 left, Vector3 right)
 {
     left.x += right.x;
     left.y += right.y;
     left.z += right.z;
     return left;
-    // return {left.x+right.x, left.y+right.y, left.z+right.z};
 }
 inline Vector3 operator - (Vector3 left, Vector3 right)
 {
@@ -149,17 +147,21 @@ inline Vector3 operator - (Vector3 left, Vector3 right)
     left.y -= right.y;
     left.z -= right.z;
     return left;
-    // return {left.x-right.x, left.y-right.y, left.z-right.z};
 }
 inline Vector3 operator * (Vector3 v, float f)
 {
-    return {v.x*f, v.y*f, v.z*f};
+    v.x *= f;
+    v.y *= f;
+    v.z *= f;
+    return v;
 }
 inline Vector3 operator / (Vector3 v, float f)
 {
-    return {v.x/f, v.y/f, v.z/f};
+    v.x /= f;
+    v.y /= f;
+    v.z /= f;
+    return v;
 }
-
 inline Vector3 operator += (Vector3 &lhs, Vector3 rhs)
 {
     lhs.x += rhs.x;
@@ -188,30 +190,17 @@ inline Vector3 operator /= (Vector3& v, float f)
     v.z /= f;
     return v;
 }
-
-inline Matrix operator * (Matrix a, Matrix b)
+static Vector3 ClampLength(Vector3 vector, float min, float max)
 {
-    return
-    {
-        dot(a.row(0), b.cols[0]),
-        dot(a.row(1), b.cols[0]),
-        dot(a.row(2), b.cols[0]),
-        dot(a.row(3), b.cols[0]),
-        dot(a.row(0), b.cols[1]),
-        dot(a.row(1), b.cols[1]),
-        dot(a.row(2), b.cols[1]),
-        dot(a.row(3), b.cols[1]),
-        dot(a.row(0), b.cols[2]),
-        dot(a.row(1), b.cols[2]),
-        dot(a.row(2), b.cols[2]),
-        dot(a.row(3), b.cols[2]),
-        dot(a.row(0), b.cols[3]),
-        dot(a.row(1), b.cols[3]),
-        dot(a.row(2), b.cols[3]),
-        dot(a.row(3), b.cols[3]),
-    };
+    auto length2 = Vector3Length(vector);
+    if (length2 > max) return vector*(max/length2);
+    if (length2 < min) return vector*(min/length2);
+    return vector;
 }
-
+inline Vector3 Normalise(Vector3 v)
+{
+    return v * (1.f / Vector3Length(v));
+}
 inline Vector3 Cross(Vector3 a, Vector3 b)
 {
     return
@@ -221,11 +210,43 @@ inline Vector3 Cross(Vector3 a, Vector3 b)
         a.x*b.y - a.y*b.x
     };
 }
-inline Vector3 Normalise(Vector3 v)
+static Vector3 MoveTowards(Vector3 fromVector, Vector3 toVector, float delta)
 {
-    return v * (1.f / length(v));
+    if (fromVector == toVector) return fromVector;
+    auto diff = toVector-fromVector;
+    auto dist = Vector3Length(diff);
+    if (dist <= delta) return toVector;
+    diff = Normalise(diff);
+    auto moveVec = diff*delta;
+    return fromVector+moveVec;
+}
+static Vector3 PositionUpdateAdvanced(Vector3 position, Vector3 oldVelocity, Vector3 newVelocity, float deltaTime)
+{
+    return position + (oldVelocity+newVelocity)/2 * deltaTime;
 }
 
+inline Matrix operator * (Matrix a, Matrix b)
+{
+    return
+    {
+        Vector4Dot(a.row(0), b.cols[0]),
+        Vector4Dot(a.row(1), b.cols[0]),
+        Vector4Dot(a.row(2), b.cols[0]),
+        Vector4Dot(a.row(3), b.cols[0]),
+        Vector4Dot(a.row(0), b.cols[1]),
+        Vector4Dot(a.row(1), b.cols[1]),
+        Vector4Dot(a.row(2), b.cols[1]),
+        Vector4Dot(a.row(3), b.cols[1]),
+        Vector4Dot(a.row(0), b.cols[2]),
+        Vector4Dot(a.row(1), b.cols[2]),
+        Vector4Dot(a.row(2), b.cols[2]),
+        Vector4Dot(a.row(3), b.cols[2]),
+        Vector4Dot(a.row(0), b.cols[3]),
+        Vector4Dot(a.row(1), b.cols[3]),
+        Vector4Dot(a.row(2), b.cols[3]),
+        Vector4Dot(a.row(3), b.cols[3]),
+    };
+}
 inline Matrix Identity()
 {
     return
@@ -287,7 +308,7 @@ inline Matrix MakePerspectiveMat(float aspectRatio, float fovYRadians, float zNe
 Matrix ToViewMatrix(const Camera* camera)
 {
     return
-        TranslationMatrix(-camera->cameraPos) *
+        TranslationMatrix(-camera->position) *
         RotateYMatrix(camera->rot1) *
         RotateXMatrix(camera->rot2);
 }
@@ -320,32 +341,10 @@ void UpdateCameraPosition(Camera* camera, float deltaTime, bool w, bool a, bool 
 
     const float CAM_MOVE_SPEED = 5.f; // in metres per second
     const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * deltaTime;
-    if(w) camera->cameraPos   += camFwdXZ * CAM_MOVE_AMOUNT;
-    if(s) camera->cameraPos   -= camFwdXZ * CAM_MOVE_AMOUNT;
-    if(a) camera->cameraPos   -= cameraRightXZ * CAM_MOVE_AMOUNT;
-    if(d) camera->cameraPos   += cameraRightXZ * CAM_MOVE_AMOUNT;
-    if(e) camera->cameraPos.y += CAM_MOVE_AMOUNT;
-    if(q) camera->cameraPos.y -= CAM_MOVE_AMOUNT;
-}
-
-static Vector3 ClampLength(Vector3 vector, float min, float max)
-{
-    auto length2 = length(vector);
-    if (length2 > max) return vector*(max/length2);
-    if (length2 < min) return vector*(min/length2);
-    return vector;
-}
-static Vector3 MoveTowards(Vector3 fromVector, Vector3 toVector, float delta)
-{
-    if (fromVector == toVector) return fromVector;
-    auto diff = toVector-fromVector;
-    auto dist = length(diff);
-    if (dist <= delta) return toVector;
-    diff = Normalise(diff);
-    auto moveVec = diff*delta;
-    return fromVector+moveVec;
-}
-static Vector3 PositionUpdateAdvanced(Vector3 position, Vector3 oldVelocity, Vector3 newVelocity, float deltaTime)
-{
-    return position + (oldVelocity+newVelocity)/2 * deltaTime;
+    if(w) camera->position   += camFwdXZ * CAM_MOVE_AMOUNT;
+    if(s) camera->position   -= camFwdXZ * CAM_MOVE_AMOUNT;
+    if(a) camera->position   -= cameraRightXZ * CAM_MOVE_AMOUNT;
+    if(d) camera->position   += cameraRightXZ * CAM_MOVE_AMOUNT;
+    if(e) camera->position.y += CAM_MOVE_AMOUNT;
+    if(q) camera->position.y -= CAM_MOVE_AMOUNT;
 }

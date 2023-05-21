@@ -26,7 +26,7 @@ public:
         if (window->Closed()) return;
         auto aspectRatio = (float)window->ClientWidth()/(float)window->ClientHeight();
         viewMatrix = ToViewMatrix(camera);
-        projMatrix = MakePerspectiveMat(aspectRatio, M_PI / 4.f, 0.1f, 1000.f);
+        projMatrix = MakePerspectiveMat(aspectRatio, (float)(M_PI / 4.f), 0.1f, 1000.f);
         // projMatrix = MakePerspectiveMat(aspectRatio, MathToRadians(84), 0.1f, 1000.f);
     }
     static void DrawCube(Vector3 position)
