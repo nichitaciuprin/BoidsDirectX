@@ -35,6 +35,7 @@ public:
         if(CreateSwapChain()) return 1;
         if(CreateRenderTargets()) return 1;
         if(CompileShadersAndInputs()) return 1;
+        // LoadCube();
         if(CreateVertexBuffer()) return 1;
         if(CreateIndexBuffer()) return 1;
         if(CreateConstantBuffer()) return 1;
@@ -109,6 +110,7 @@ public:
 
 private:
     static bool                      inited;
+    static int                       indexCount;
     static HWND                      hwnd;
     static ID3D11Device*             device;
     static ID3D11DeviceContext*      deviceContext;
@@ -123,7 +125,6 @@ private:
     static ID3D11Buffer*             constantBuffer;
     static ID3D11RasterizerState*    rasterizerState;
     static ID3D11DepthStencilState*  depthStencilState;
-    static int indexCount;
 
     static int CreateDeviceAndDeviceContext()
     {
@@ -303,10 +304,10 @@ private:
             -0.5f,-0.5f, 0.5f,
             -0.5f, 0.5f,-0.5f,
             -0.5f, 0.5f, 0.5f,
-            0.5f,-0.5f,-0.5f,
-            0.5f,-0.5f, 0.5f,
-            0.5f, 0.5f,-0.5f,
-            0.5f, 0.5f, 0.5f
+             0.5f,-0.5f,-0.5f,
+             0.5f,-0.5f, 0.5f,
+             0.5f, 0.5f,-0.5f,
+             0.5f, 0.5f, 0.5f
         };
 
         D3D11_BUFFER_DESC vertexBufferDesc = {};
@@ -388,6 +389,7 @@ private:
     }
 };
 bool                      D3D::inited = false;
+int                       D3D::indexCount = 0;
 HWND                      D3D::hwnd = nullptr;
 ID3D11Device*             D3D::device = nullptr;
 ID3D11DeviceContext*      D3D::deviceContext = nullptr;
@@ -402,4 +404,3 @@ ID3D11Buffer*             D3D::indexBuffer = nullptr;
 ID3D11Buffer*             D3D::constantBuffer = nullptr;
 ID3D11RasterizerState*    D3D::rasterizerState = nullptr;
 ID3D11DepthStencilState*  D3D::depthStencilState = nullptr;
-int D3D::indexCount = 0;
