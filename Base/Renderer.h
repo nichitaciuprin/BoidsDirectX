@@ -6,7 +6,7 @@ public:
     Renderer()
     {
     }
-    void Render(const Camera* camera, vector<Boids> boids)
-    {
-    }
+    // void Render(const Camera* camera, vector<Boids> boids)
+    // {
+    // }
 };

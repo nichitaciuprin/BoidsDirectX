@@ -11,9 +11,9 @@ public:
     {
         auto randPointInsideAABB = Vector3
         {
-            SubgenSingleton::Range(aabb.MinX(),aabb.MaxX()),
-            SubgenSingleton::Range(aabb.MinY(),aabb.MaxY()),
-            SubgenSingleton::Range(aabb.MinZ(),aabb.MaxZ())
+            SubgenSingleton::Range(AABBMinX(&aabb),AABBMaxX(&aabb)),
+            SubgenSingleton::Range(AABBMinY(&aabb),AABBMaxY(&aabb)),
+            SubgenSingleton::Range(AABBMinZ(&aabb),AABBMaxZ(&aabb))
         };
         pos = randPointInsideAABB;
 
@@ -133,7 +133,7 @@ private:
 
         auto result = vel + l_vec_1 + l_vec_2 + l_vec_3;
 
-        result += aabb.ShortPathIn(pos);
+        result += AABBShortPathIn(&aabb,pos);
 
         result = ClampLength(result,minSpeed,maxSpeed);
         return result;

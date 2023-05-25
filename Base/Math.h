@@ -60,6 +60,14 @@ int MathSign(float value)
     if (value < 0) { return -1; }
                      return  0;
 }
+float MathMin(float value1, float value2)
+{
+    return fminf(value1,value2);
+}
+float MathMax(float value1, float value2)
+{
+    return fmaxf(value1, value2);
+}
 float MathAbs(float value)
 {
     return fabsf(value);
