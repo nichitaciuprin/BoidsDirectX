@@ -5,9 +5,9 @@ class CubeRecourse
 public:
     CubeRecourse(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ID3D11Buffer* constantBuffer)
     {
-        this.device = device;
-        this.deviceContext = deviceContext;
-        this.constantBuffer = constantBuffer;
+        this->device = device;
+        this->deviceContext = deviceContext;
+        this->constantBuffer = constantBuffer;
         CreateVertexBuffer(device);
         CreateIndexBuffer(device);
     }
@@ -21,7 +21,7 @@ public:
         deviceContext->DrawIndexed(indexCount, 0, 0);
     }
 private:
-    size_t indexCount;
+    UINT indexCount;
     ID3D11Device* device;
     ID3D11DeviceContext* deviceContext;
     ID3D11Buffer* vertexBuffer;

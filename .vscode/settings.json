@@ -8,6 +8,8 @@
         "string": "cpp",
         "system_error": "cpp",
         "memory": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "type_traits": "cpp",
+        "xutility": "cpp"
     }
 }

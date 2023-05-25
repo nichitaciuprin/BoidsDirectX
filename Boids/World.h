@@ -27,18 +27,18 @@ public:
     }
     void Render(HINSTANCE hInstance)
     {
-        Window1::Init(hInstance);
-        Window1::DrawBegin();
-        Window1::SetCamera(&camera);
-        auto length = boidWorld.boids.size();
-        for (size_t i = 0; i < length; i++)
-        {
-            auto boid = &boidWorld.boids[i];
-            Window1::DrawCube(boid->pos);
+        // Renderer::Init(hInstance);
+        // Renderer::DrawBegin();
+        // Renderer::SetCamera(&camera);
+        // auto length = boidWorld.boids.size();
+        // for (size_t i = 0; i < length; i++)
+        // {
+        //     auto boid = &boidWorld.boids[i];
+        //     Renderer::DrawCube(boid->pos);
 
-            // Vector3 position = {1,0,-4};
-            // Window1::DrawCube(position);
-        }
-        Window1::DrawEnd();
+        //     // Vector3 position = {1,0,-4};
+        //     // Renderer::DrawCube(position);
+        // }
+        // Renderer::DrawEnd();
     }
 };
