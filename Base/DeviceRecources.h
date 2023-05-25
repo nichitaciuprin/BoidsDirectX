@@ -1,18 +1,5 @@
 #pragma once
 
-#include <algorithm>
-#include <winuser.h>
-#include <string.h>
-#include <stdlib.h>
-#include <string>
-
-#include <d3d11_1.h>
-#include <d3dcompiler.h>
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "d3dcompiler.lib")
-
-#include "Math.h"
-
 struct Constants
 {
     Matrix modelViewProj;
