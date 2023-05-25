@@ -30,11 +30,15 @@ public:
         for (size_t i = 0; i < length; i++)
         {
             auto boid = boids[i];
-            auto model = TranslationMatrix(boid.pos);
+            auto model = TranslationMatrix(boid.position);
             auto result = model * view * proj;
             cubeModel->Draw(result);
         }
         window->Present();
+    }
+    bool WindowIsClosed() const
+    {
+        return window->Closed();
     }
 private:
     unique_ptr<CubeModel> cubeModel;

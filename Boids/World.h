@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Boid.h"
-#include "../Base/Base.h"
 #include "BoidWorld.h"
 
 class World

@@ -27,7 +27,8 @@ public:
         if (!sj--) sj = 54;
         int x = state[si] - state[sj];
         if (x < 0) x += MAX;
-        return state[si] = x;
+        state[si] = x;
+        return x;
     }
     float FractionUnsigned()
     {

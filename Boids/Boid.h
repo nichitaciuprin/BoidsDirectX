@@ -3,17 +3,14 @@
 class Boid
 {
 public:
-    Vector3 pos;
-    Vector3 vel;
+    Vector3 position;
+    Vector3 velocity;
     Boid(const AABB& aabb, Subgen* subugen)
     {
-        auto randPointInsideAABB = Vector3
-        {
-            subugen->Range(AABBMinX(&aabb),AABBMaxX(&aabb)),
-            subugen->Range(AABBMinY(&aabb),AABBMaxY(&aabb)),
-            subugen->Range(AABBMinZ(&aabb),AABBMaxZ(&aabb))
-        };
-        pos = randPointInsideAABB;
+        auto x = subugen->Range(AABBMinX(&aabb),AABBMaxX(&aabb));
+        auto y = subugen->Range(AABBMinY(&aabb),AABBMaxY(&aabb));
+        auto z = subugen->Range(AABBMinZ(&aabb),AABBMaxZ(&aabb));
+        position = Vector3{ x,y,z };
 
         auto xRand = subugen->FractionSigned();
         auto yRand = subugen->FractionSigned();
@@ -21,7 +18,7 @@ public:
         auto randDirection = Vector3{ xRand,yRand,zRand };
         randDirection = Normalise(randDirection);
         auto randSpeed = subugen->Range(minSpeed,maxSpeed);
-        vel = randDirection * randSpeed;
+        velocity = randDirection * randSpeed;
     }
     static void Update(vector<Boid>& boids, const AABB& aabb, float deltaTime)
     {
@@ -48,9 +45,9 @@ public:
         {
             Boid& boid = boids[i];
             auto targetVelocity = boid.TargetVelocity(aabb);
-            auto newVelocity = MoveTowards(boid.vel,targetVelocity,acc*deltaTime);
-            boid.pos = PositionUpdateAdvanced(boid.pos,boid.vel,boid.vel,deltaTime);
-            boid.vel = newVelocity;
+            auto newVelocity = MoveTowards(boid.velocity,targetVelocity,acc*deltaTime);
+            boid.position = PositionUpdateAdvanced(boid.position,boid.velocity,boid.velocity,deltaTime);
+            boid.velocity = newVelocity;
         }
     }
 private:
@@ -73,21 +70,21 @@ private:
     int count_2;
     static void CalculatePair(Boid& boid1, Boid& boid2)
     {
-        auto diff = boid1.pos-boid2.pos;
+        auto diff = boid1.position-boid2.position;
         auto distSquared = diff.x*diff.x + diff.y*diff.y + diff.z*diff.z;
         auto dist = sqrtf(distSquared);
 
         // COHESION
         if (distSquared >= rangeSquared_1) return;
 
-        boid1.vec_1 = boid1.vec_1+boid2.pos; boid1.count_1++;
-        boid2.vec_1 = boid2.vec_1+boid1.pos; boid2.count_1++;
+        boid1.vec_1 = boid1.vec_1+boid2.position; boid1.count_1++;
+        boid2.vec_1 = boid2.vec_1+boid1.position; boid2.count_1++;
 
         // ALIGHMENT
         if (distSquared >= rangeSquared_2) return;
 
-        boid1.vec_2 = boid1.vec_2+boid2.vel; boid1.count_2++;
-        boid2.vec_2 = boid2.vec_2+boid1.vel; boid2.count_2++;
+        boid1.vec_2 = boid1.vec_2+boid2.velocity; boid1.count_2++;
+        boid2.vec_2 = boid2.vec_2+boid1.velocity; boid2.count_2++;
 
         // SEPARATION
         if (distSquared >= rangeSquared_3) return;
@@ -100,14 +97,6 @@ private:
         boid1.vec_3 = boid1.vec_3+normDiff;
         boid2.vec_3 = boid2.vec_3-normDiff;
     }
-    void ZeroCache()
-    {
-        vec_1 = Vector3Zero();
-        vec_2 = Vector3Zero();
-        vec_3 = Vector3Zero();
-        count_1 = 0;
-        count_2 = 0;
-    }
     Vector3 TargetVelocity(const AABB& aabb) const
     {
         auto l_vec_1 = vec_1;
@@ -117,21 +106,21 @@ private:
         if (count_1 != 0)
         {
             l_vec_1 /= (float)count_1;
-            l_vec_1 -= pos;
+            l_vec_1 -= position;
         }
         if (count_2 != 0)
         {
             l_vec_2 /= (float)count_2;
-            l_vec_2 -= vel;
+            l_vec_2 -= velocity;
         }
 
         l_vec_1 *= power1;
         l_vec_2 *= power2;
         l_vec_3 *= power3;
 
-        auto result = vel + l_vec_1 + l_vec_2 + l_vec_3;
+        auto result = velocity + l_vec_1 + l_vec_2 + l_vec_3;
 
-        result += AABBShortPathIn(&aabb,pos);
+        result += AABBShortPathIn(&aabb,position);
 
         result = ClampLength(result,minSpeed,maxSpeed);
         return result;

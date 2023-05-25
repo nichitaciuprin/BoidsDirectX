@@ -18,6 +18,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     {
         world->Update(0.02f);
         renderer->Render(&world->camera, world->boidWorld.boids);
+        if (renderer->WindowIsClosed())
+            break;
     }
 
     return 0;
