@@ -11,6 +11,7 @@ public:
     vector<Boid> boids;
     BoidWorld()
     {
+        Subgen subgen = Subgen(0);
         aabb.p0 = Vector3Backward() + Vector3Left();
         aabb.p1 = Vector3Forward() + Vector3Right();
         auto size = 50.0f;
@@ -18,7 +19,7 @@ public:
         aabb.p1 *= size;
         aabb.p1 += Vector3Up()*size*2;
         for (int i = 0; i < boidCount; i++)
-            boids.push_back(Boid(aabb));
+            boids.push_back(Boid(aabb,&subgen));
     }
     void Update(float deltaTime)
     {

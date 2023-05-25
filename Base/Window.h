@@ -39,7 +39,7 @@ public:
     }
     void Clear()
     {
-        auto deviceContext = D3D::GetInstance()->GetDeviceContext();
+        auto deviceContext = DeviceRecources::GetInstance()->GetDeviceContext();
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
         deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
         deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -84,7 +84,7 @@ private:
     ID3D11DepthStencilView* depthStencilView;
     void CreateSwapChain()
     {
-        auto device = D3D::GetInstance()->GetDevice();
+        auto device = DeviceRecources::GetInstance()->GetDevice();
 
         HRESULT hResult;
         IDXGIFactory2* dxgiFactory;
@@ -128,7 +128,7 @@ private:
     }
     void CreateRenderTargets()
     {
-        auto device = D3D::GetInstance()->GetDevice();
+        auto device = DeviceRecources::GetInstance()->GetDevice();
 
         ID3D11Texture2D* d3d11FrameBuffer;
         HRESULT hResult = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
@@ -163,7 +163,7 @@ private:
     }
     void OnWindowResize(int windowWidth, int windowHeight)
     {
-        auto deviceContext = D3D::GetInstance()->GetDeviceContext();
+        auto deviceContext = DeviceRecources::GetInstance()->GetDeviceContext();
 
         float windowWidthF = (float)windowWidth;
         float windowHeightF = (float)windowHeight;

@@ -9,7 +9,6 @@ struct Sphere
     Vector3 position;
     float radius;
 };
-
 float AABBMinX(const AABB* aabb)
 {
     return MathMin(aabb->p0.x,aabb->p1.x);

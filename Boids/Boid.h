@@ -7,22 +7,22 @@ class Boid
 public:
     Vector3 pos;
     Vector3 vel;
-    Boid(const AABB& aabb)
+    Boid(const AABB& aabb, Subgen* subugen)
     {
         auto randPointInsideAABB = Vector3
         {
-            SubgenSingleton::Range(AABBMinX(&aabb),AABBMaxX(&aabb)),
-            SubgenSingleton::Range(AABBMinY(&aabb),AABBMaxY(&aabb)),
-            SubgenSingleton::Range(AABBMinZ(&aabb),AABBMaxZ(&aabb))
+            subugen->Range(AABBMinX(&aabb),AABBMaxX(&aabb)),
+            subugen->Range(AABBMinY(&aabb),AABBMaxY(&aabb)),
+            subugen->Range(AABBMinZ(&aabb),AABBMaxZ(&aabb))
         };
         pos = randPointInsideAABB;
 
-        auto xRand = SubgenSingleton::FractionSigned();
-        auto yRand = SubgenSingleton::FractionSigned();
-        auto zRand = SubgenSingleton::FractionSigned();
+        auto xRand = subugen->FractionSigned();
+        auto yRand = subugen->FractionSigned();
+        auto zRand = subugen->FractionSigned();
         auto randDirection = Vector3{ xRand,yRand,zRand };
         randDirection = Normalise(randDirection);
-        auto randSpeed = SubgenSingleton::Range(minSpeed,maxSpeed);
+        auto randSpeed = subugen->Range(minSpeed,maxSpeed);
         vel = randDirection * randSpeed;
     }
     static void Update(vector<Boid>& boids, const AABB& aabb, float deltaTime)

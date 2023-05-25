@@ -11,7 +11,6 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-#include "FileHelper.h"
 #include "Math.h"
 
 struct Constants
@@ -19,14 +18,14 @@ struct Constants
     Matrix modelViewProj;
 };
 
-class D3D
+class DeviceRecources
 {
 public:
-    static D3D* GetInstance()
+    static DeviceRecources* GetInstance()
     {
         if (instance == nullptr)
         {
-            instance = new D3D();
+            instance = new DeviceRecources();
         }
         return instance;
     }
@@ -51,16 +50,16 @@ public:
         deviceContext->Unmap(constantBuffer, 0);
     }
 private:
-    static D3D*               instance;
-    ID3D11Device*             device = nullptr;
-    ID3D11DeviceContext*      deviceContext = nullptr;
-    ID3D11InputLayout*        inputLayout = nullptr;
-    ID3D11VertexShader*       vertexShader = nullptr;
-    ID3D11PixelShader*        pixelShader = nullptr;
-    ID3D11Buffer*             constantBuffer = nullptr;
-    ID3D11RasterizerState*    rasterizerState = nullptr;
-    ID3D11DepthStencilState*  depthStencilState = nullptr;
-    D3D()
+    static DeviceRecources*   instance;
+    ID3D11Device*             device;
+    ID3D11DeviceContext*      deviceContext;
+    ID3D11InputLayout*        inputLayout;
+    ID3D11VertexShader*       vertexShader;
+    ID3D11PixelShader*        pixelShader;
+    ID3D11Buffer*             constantBuffer;
+    ID3D11RasterizerState*    rasterizerState;
+    ID3D11DepthStencilState*  depthStencilState;
+    DeviceRecources()
     {
         CreateDeviceAndDeviceContext();
         #ifdef DEBUG_BUILD
@@ -202,4 +201,4 @@ private:
         device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
     }
 };
-D3D* D3D::instance = nullptr;
+DeviceRecources* DeviceRecources::instance = nullptr;

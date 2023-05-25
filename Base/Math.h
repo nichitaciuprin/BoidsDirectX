@@ -176,7 +176,7 @@ inline Vector3 operator /= (Vector3& v, float f)
     v.z /= f;
     return v;
 }
-static Vector3 ClampLength(Vector3 vector, float min, float max)
+inline Vector3 ClampLength(Vector3 vector, float min, float max)
 {
     auto length2 = Vector3Length(vector);
     if (length2 > max) return vector*(max/length2);
@@ -196,7 +196,7 @@ inline Vector3 Cross(Vector3 a, Vector3 b)
         a.x*b.y - a.y*b.x
     };
 }
-static Vector3 MoveTowards(Vector3 fromVector, Vector3 toVector, float delta)
+inline Vector3 MoveTowards(Vector3 fromVector, Vector3 toVector, float delta)
 {
     if (fromVector == toVector) return fromVector;
     auto diff = toVector-fromVector;
@@ -206,7 +206,11 @@ static Vector3 MoveTowards(Vector3 fromVector, Vector3 toVector, float delta)
     auto moveVec = diff*delta;
     return fromVector+moveVec;
 }
-static Vector3 PositionUpdateAdvanced(Vector3 position, Vector3 oldVelocity, Vector3 newVelocity, float deltaTime)
+inline Vector3 PositionUpdateSimple(Vector3 position, Vector3 velocity, float deltaTime)
+{
+    return position + velocity * deltaTime;
+}
+inline Vector3 PositionUpdateAdvanced(Vector3 position, Vector3 oldVelocity, Vector3 newVelocity, float deltaTime)
 {
     return position + (oldVelocity+newVelocity)/2 * deltaTime;
 }
@@ -288,6 +292,13 @@ inline Matrix MakePerspectiveMat(float aspectRatio, float fovYRadians, float zNe
         0, 0, -1, 0
     };
     return result;
+}
+Matrix ToViewMatrix(Vector3 position, float rot1, float ro2)
+{
+    return
+        TranslationMatrix(-position) *
+        RotateYMatrix(rot1) *
+        RotateXMatrix(ro2);
 }
 Matrix ToViewMatrix(const Camera* camera)
 {

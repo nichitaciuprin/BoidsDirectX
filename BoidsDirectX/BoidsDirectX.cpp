@@ -1,5 +1,17 @@
 #include "BoidsDirectX.h"
 
+wstring GetCurentDirectoryPath()
+{
+    wchar_t buffer[MAX_PATH] = {};
+    GetCurrentDirectory(MAX_PATH, (LPWSTR)buffer);
+    return wstring(buffer,sizeof(buffer));
+}
+wstring GetExeFilePath()
+{
+    wchar_t buffer[MAX_PATH] = {};
+    GetModuleFileName(NULL, (LPWSTR)buffer, MAX_PATH);
+    return wstring(buffer,sizeof(buffer));
+}
 void Render(Window* window, const Camera* camera, const vector<Boid> boids, const CubeRecourse* cube)
 {
     window->Update();
@@ -23,7 +35,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     UNREFERENCED_PARAMETER(lpCmdLine);
     UNREFERENCED_PARAMETER(nCmdShow);
 
-    auto d3d = D3D::GetInstance();
+    // wchar_t buffer[MAX_PATH] = {};
+    // GetModuleFileName(NULL, (LPWSTR)buffer, MAX_PATH);
+    // auto result = wstring(buffer,sizeof(buffer));
+
+    auto duno = GetExeFilePath();
+
+    auto d3d = DeviceRecources::GetInstance();
     auto window = make_unique<Window>(hInstance);
     auto cubeRecourse = make_unique<CubeRecourse>(d3d->GetDevice(),d3d->GetDeviceContext(),d3d->GetConstantBuffer());
 

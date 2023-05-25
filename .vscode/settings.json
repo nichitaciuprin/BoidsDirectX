@@ -10,6 +10,7 @@
         "memory": "cpp",
         "vector": "cpp",
         "type_traits": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "algorithm": "cpp"
     }
 }
