@@ -17,5 +17,4 @@ using namespace std;
 #include "AABB.h"
 #include "D3D.h"
 #include "Window.h"
-#include "Renderer.h"
 #include "CubeRecourse.h"

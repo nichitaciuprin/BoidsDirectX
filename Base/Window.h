@@ -36,6 +36,51 @@ public:
         CreateSwapChain();
         CreateRenderTargets();
     }
+    void Clear()
+    {
+        auto deviceContext = D3D::GetInstance()->GetDeviceContext();
+        FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
+        deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
+        deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+        deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+    }
+    Matrix GetPerspective()
+    {
+        auto aspectRatio = (float)defaultWidth/(float)defaultHeight;
+        return MakePerspectiveMat(aspectRatio, (float)(M_PI / 4.f), 0.1f, 1000.f);
+    }
+    void Present()
+    {
+        swapChain->Present(1,0);
+    }
+    void Update()
+    {
+        MSG msg = {};
+        while(PeekMessageW(&msg, 0, 0, 0, PM_REMOVE))
+        {
+            if(msg.message == WM_QUIT)
+            {
+                windowClosed = true;
+            }
+            TranslateMessage(&msg);
+            DispatchMessageW(&msg);
+        }
+    }
+    bool Closed()
+    {
+        return windowClosed;
+    }
+private:
+    static bool classRegistered;
+    static const LPCWSTR className;
+    static const LPCWSTR iconName;
+    const int defaultWidth = 800;
+    const int defaultHeight = 600;
+    HWND m_hwnd;
+    bool windowClosed;
+    IDXGISwapChain1* swapChain;
+    ID3D11RenderTargetView* renderTargetView;
+    ID3D11DepthStencilView* depthStencilView;
     void CreateSwapChain()
     {
         auto device = D3D::GetInstance()->GetDevice();
@@ -108,23 +153,6 @@ public:
 
         depthBuffer->Release();
     }
-    void Clear()
-    {
-        auto deviceContext = D3D::GetInstance()->GetDeviceContext();
-        FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
-        deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
-        deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-        deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-    }
-    Matrix GetPerspective()
-    {
-        auto aspectRatio = (float)defaultWidth/(float)defaultHeight;
-        return MakePerspectiveMat(aspectRatio, (float)(M_PI / 4.f), 0.1f, 1000.f);
-    }
-    void Present()
-    {
-        swapChain->Present(1,0);
-    }
     void GetWindowInfo(int* outWindowWidth, int* outWindowHeight)
     {
         RECT clientRect;
@@ -153,41 +181,6 @@ public:
 
         //CreateRenderTargets();
     }
-    void Update()
-    {
-        MSG msg = {};
-        while(PeekMessageW(&msg, 0, 0, 0, PM_REMOVE))
-        {
-            if(msg.message == WM_QUIT)
-            {
-                windowClosed = true;
-            }
-            TranslateMessage(&msg);
-            DispatchMessageW(&msg);
-        }
-    }
-    bool Closed()
-    {
-        return windowClosed;
-    }
-    float AspectRation()
-    {
-        return (float)defaultWidth / (float)defaultHeight;
-    }
-    int ClientWidth() { return defaultWidth; }
-    int ClientHeight() { return defaultHeight; }
-    HWND GetHWND() { return m_hwnd; }
-private:
-    static bool classRegistered;
-    static const LPCWSTR className;
-    static const LPCWSTR iconName;
-    const int defaultWidth = 800;
-    const int defaultHeight = 600;
-    HWND m_hwnd;
-    bool windowClosed;
-    IDXGISwapChain1*          swapChain;
-    ID3D11RenderTargetView*   renderTargetView;
-    ID3D11DepthStencilView*   depthStencilView;
     static void MaybeRegisterClass(HINSTANCE hInstance)
     {
         if (classRegistered) return;

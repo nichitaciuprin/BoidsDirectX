@@ -31,6 +31,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         auto result = model * view * proj;
         cubeRecourse->Draw(result);
         window->Present();
+
         Sleep(100);
     }
 
