@@ -19,7 +19,7 @@ public:
 
         MaybeRegisterClass(hInstance);
 
-        RECT rc = { 0, 0, defaultWidth, defaultHeight };
+        RECT rc = { 0, 0, width, height };
         AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
         auto width2 = rc.right - rc.left;
         auto height2 = rc.bottom - rc.top;
@@ -35,7 +35,7 @@ public:
 
         CreateSwapChain();
         CreateRenderTargets();
-        OnWindowResize(defaultWidth,defaultHeight);
+        OnWindowResize(width,height);
     }
     void Clear()
     {
@@ -47,7 +47,7 @@ public:
     }
     Matrix GetPerspective()
     {
-        auto aspectRatio = (float)defaultWidth/(float)defaultHeight;
+        auto aspectRatio = (float)width/(float)height;
         return MakePerspectiveMat(aspectRatio, (float)(M_PI / 4.f), 0.1f, 1000.f);
     }
     void Present()
@@ -75,8 +75,8 @@ private:
     static bool classRegistered;
     static const LPCWSTR className;
     static const LPCWSTR iconName;
-    const int defaultWidth = 800;
-    const int defaultHeight = 600;
+    int width = 800;
+    int height = 600;
     HWND m_hwnd;
     bool windowClosed;
     IDXGISwapChain1* swapChain;
@@ -221,6 +221,8 @@ private:
                 break;
             }
             case WM_SIZE: // Window size was changed
+                window->GetWindowInfo(&window->width,&window->height);
+                window->OnWindowResize(window->width,window->height);
                 break;
             case WM_KEYDOWN:
             case WM_KEYUP:
