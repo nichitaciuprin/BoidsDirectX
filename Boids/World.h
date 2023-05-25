@@ -25,20 +25,4 @@ public:
         // cameraPosition = Vector3::Transform(cameraPosition,rotation);
         boidWorld.Update(deltaTime);
     }
-    void Render(HINSTANCE hInstance)
-    {
-        // Renderer::Init(hInstance);
-        // Renderer::DrawBegin();
-        // Renderer::SetCamera(&camera);
-        // auto length = boidWorld.boids.size();
-        // for (size_t i = 0; i < length; i++)
-        // {
-        //     auto boid = &boidWorld.boids[i];
-        //     Renderer::DrawCube(boid->pos);
-
-        //     // Vector3 position = {1,0,-4};
-        //     // Renderer::DrawCube(position);
-        // }
-        // Renderer::DrawEnd();
-    }
 };

@@ -7,10 +7,10 @@
 using namespace std;
 #include <windows.h>
 #include <memory>
+#include <vector>
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <vector>
 #include "Time.h"
 #include "Math.h"
 #include "SubgenSingleton.h"
