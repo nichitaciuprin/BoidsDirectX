@@ -11,7 +11,7 @@ public:
         CreateVertexBuffer(device);
         CreateIndexBuffer(device);
     }
-    void Draw(Matrix modelViewProj)
+    void Draw(Matrix modelViewProj) const
     {
         UINT stride = 3 * sizeof(float);
         UINT offset = 0;
@@ -82,7 +82,7 @@ private:
         HRESULT hResult = device->CreateBuffer(&indexBufferDesc, &indexSubresourceData, &indexBuffer);
         assert(SUCCEEDED(hResult));
     }
-    void UpdateConstantBuffer(Matrix modelViewProj)
+    void UpdateConstantBuffer(Matrix modelViewProj) const
     {
         D3D11_MAPPED_SUBRESOURCE mappedSubresource;
         deviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);

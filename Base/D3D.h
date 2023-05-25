@@ -52,8 +52,6 @@ public:
     }
 private:
     static D3D*               instance;
-    int                       indexCount = 0;
-    HWND                      hwnd = nullptr;
     ID3D11Device*             device = nullptr;
     ID3D11DeviceContext*      deviceContext = nullptr;
     ID3D11InputLayout*        inputLayout = nullptr;

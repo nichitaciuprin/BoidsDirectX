@@ -18,3 +18,4 @@ using namespace std;
 #include "D3D.h"
 #include "Window.h"
 #include "CubeRecourse.h"
+#include "Renderer.h"
