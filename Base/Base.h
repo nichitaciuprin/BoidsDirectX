@@ -15,8 +15,8 @@ using namespace std;
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "Math.h"
 #include "FileHelper.h"
 #include "Time.h"
-#include "Math.h"
 #include "Subgen.h"
 #include "Physics.h"

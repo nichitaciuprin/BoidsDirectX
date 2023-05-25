@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../Base/Base.h"
-
 class Boid
 {
 public:

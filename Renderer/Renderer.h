@@ -6,7 +6,7 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #include "DeviceRecources.h"
 #include "Window.h"
-#include "CubeRecourse.h"
+#include "CubeModel.h"
 
 class Renderer
 {
@@ -18,7 +18,7 @@ public:
         auto device = deviceRecources->GetDevice();
         auto deviceContext = deviceRecources->GetDeviceContext();
         auto constantBuffer = deviceRecources->GetConstantBuffer();
-        cubeModel = make_unique<CubeRecourse>(device,deviceContext,constantBuffer);
+        cubeModel = make_unique<CubeModel>(device,deviceContext,constantBuffer);
     }
     void Render(const Camera* camera, const vector<Boid> boids)
     {
@@ -37,6 +37,6 @@ public:
         window->Present();
     }
 private:
-    unique_ptr<CubeRecourse> cubeModel;
+    unique_ptr<CubeModel> cubeModel;
     unique_ptr<Window> window;
 };

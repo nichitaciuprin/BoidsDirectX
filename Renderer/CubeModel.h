@@ -1,9 +1,9 @@
 #pragma once
 
-class CubeRecourse
+class CubeModel
 {
 public:
-    CubeRecourse(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ID3D11Buffer* constantBuffer)
+    CubeModel(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ID3D11Buffer* constantBuffer)
     {
         this->device = device;
         this->deviceContext = deviceContext;
@@ -11,7 +11,7 @@ public:
         CreateVertexBuffer(device);
         CreateIndexBuffer(device);
     }
-    void Draw(Matrix modelViewProj) const
+    void Draw(Matrix modelViewProj)
     {
         UINT stride = 3 * sizeof(float);
         UINT offset = 0;

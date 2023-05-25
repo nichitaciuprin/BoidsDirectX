@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Boid.h"
-
 using namespace std;
 
 class BoidWorld

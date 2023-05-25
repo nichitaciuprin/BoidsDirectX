@@ -26,7 +26,7 @@ public:
     }
     ID3D11Buffer* GetConstantBuffer()
     {
-        return this->constantBuffer;
+        return constantBuffer;
     }
     void UpdateConstantBuffer(Matrix modelViewProj)
     {
