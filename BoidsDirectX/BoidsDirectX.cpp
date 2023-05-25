@@ -21,19 +21,19 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     auto cubeRecourse = make_unique<CubeRecourse>(d3d->GetDevice(),d3d->GetDeviceContext(),d3d->GetConstantBuffer());
 
     float time = 0;
+
     while(true)
     {
-        window->Clear();
         window->Update();
+        window->Clear();
         auto proj = window->GetPerspective();
-        // auto proj = Identity();
         auto view = Identity();
         auto model = TranslationMatrix({MathPingPong(time,1),0,-5});
         auto result = model * view * proj;
         cubeRecourse->Draw(result);
         window->Present();
 
-        time += 0.1f;
+        time -= 0.03f;
         Sleep(100);
     }
 

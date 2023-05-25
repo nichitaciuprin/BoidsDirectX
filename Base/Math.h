@@ -30,7 +30,6 @@ struct Camera
     float rot1;
     float rot2;
 };
-
 Vector3 Vector3Zero()
 {
     return { 0, 0, 0 };
@@ -55,7 +54,6 @@ Vector3 Vector3Backward()
 {
     return { 0, 0, 1 };
 }
-
 int MathSign(float value)
 {
     if (value > 0) { return  1; }
@@ -86,30 +84,11 @@ float MathMod(float value, float div)
 }
 float MathPingPong(float value, float length)
 {
-    // TODO. Maybe wrong negative number logic
-    if (value < 0) { value = length + MathAbs(value); }
+    value = MathAbs(value);
     int whole = (int)(value/length);
     float rem = fmodf(value,length);
     return whole % 2 == 0 ? rem : length-rem;
 }
-void MathPingPong2(float value, float length, float* valueNew, int* directionNew)
-{
-    // TODO
-    if (value < 0) { value = length + MathAbs(value); }
-    int whole = (int)(value/length);
-    float rem = fmodf(value,length);
-    if (whole % 2 == 0)
-    {
-        *directionNew = 1;
-        *valueNew = rem;
-    }
-    else
-    {
-        *directionNew = -1;
-        *valueNew = length-rem;
-    }
-}
-
 inline float MathToRadians(float degs)
 {
     return degs * ((float)M_PI / 180.0f);
@@ -122,7 +101,6 @@ inline float Vector4Dot(Vector4 a, Vector4 b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
 }
-
 inline bool operator == (Vector3 left, Vector3 right)
 {
     if (left.x != right.x) return false;
@@ -224,7 +202,6 @@ static Vector3 PositionUpdateAdvanced(Vector3 position, Vector3 oldVelocity, Vec
 {
     return position + (oldVelocity+newVelocity)/2 * deltaTime;
 }
-
 inline Matrix operator * (Matrix a, Matrix b)
 {
     return
@@ -304,7 +281,6 @@ inline Matrix MakePerspectiveMat(float aspectRatio, float fovYRadians, float zNe
     };
     return result;
 }
-
 Matrix ToViewMatrix(const Camera* camera)
 {
     return

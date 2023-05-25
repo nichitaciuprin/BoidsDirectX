@@ -41,7 +41,7 @@ public:
     {
         auto deviceContext = D3D::GetInstance()->GetDeviceContext();
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
-        // deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
+        deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
         deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
         deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
     }
