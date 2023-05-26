@@ -30,6 +30,53 @@ struct Camera
     float rot1;
     float rot2;
 };
+inline int MathSign(float value)
+{
+    if (value > 0) { return  1; }
+    if (value < 0) { return -1; }
+                     return  0;
+}
+inline float MathMin(float value1, float value2)
+{
+    return fminf(value1,value2);
+}
+inline float MathMax(float value1, float value2)
+{
+    return fmaxf(value1, value2);
+}
+inline float MathAbs(float value)
+{
+    return fabsf(value);
+}
+inline float MathSqrt(float value)
+{
+    return sqrtf(value);
+}
+inline float MathClamp(float value, float min, float max)
+{
+    if (value < min) { return min; };
+    if (value > max) { return max; };
+                       return value;
+}
+inline float MathInverseLerp(float x, float y, float value)
+{
+    return (value - x)/(y - x);
+}
+inline float MathMod(float value, float div)
+{
+    return fmodf(value,div);
+}
+inline float MathPingPong(float value, float length)
+{
+    value = MathAbs(value);
+    int whole = (int)(value/length);
+    float rem = fmodf(value,length);
+    return whole % 2 == 0 ? rem : length-rem;
+}
+inline float MathToRadians(float degs)
+{
+    return degs * ((float)M_PI / 180.0f);
+}
 Vector3 Vector3Zero()
 {
     return { 0, 0, 0 };
@@ -53,53 +100,6 @@ Vector3 Vector3Forward()
 Vector3 Vector3Backward()
 {
     return { 0, 0, 1 };
-}
-int MathSign(float value)
-{
-    if (value > 0) { return  1; }
-    if (value < 0) { return -1; }
-                     return  0;
-}
-float MathMin(float value1, float value2)
-{
-    return fminf(value1,value2);
-}
-float MathMax(float value1, float value2)
-{
-    return fmaxf(value1, value2);
-}
-float MathAbs(float value)
-{
-    return fabsf(value);
-}
-float MathSqrt(float value)
-{
-    return sqrtf(value);
-}
-float MathClamp(float value, float min, float max)
-{
-    if (value < min) { return min; };
-    if (value > max) { return max; };
-                       return value;
-}
-float MathInverseLerp(float x, float y, float value)
-{
-    return (value - x)/(y - x);
-}
-float MathMod(float value, float div)
-{
-    return fmodf(value,div);
-}
-float MathPingPong(float value, float length)
-{
-    value = MathAbs(value);
-    int whole = (int)(value/length);
-    float rem = fmodf(value,length);
-    return whole % 2 == 0 ? rem : length-rem;
-}
-inline float MathToRadians(float degs)
-{
-    return degs * ((float)M_PI / 180.0f);
 }
 inline float Vector3Length(Vector3 v)
 {
