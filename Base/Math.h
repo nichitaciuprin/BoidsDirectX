@@ -330,15 +330,16 @@ Matrix ToViewMatrix(Vector3 eye, Vector3 target, Vector3 up)
 {
     Vector3 vz = eye - target;
     vz = Normalise(vz);
-    Vector3 vx = Cross(vz,up);
+    Vector3 vx = Cross(up,vz);
     vx = Normalise(vx);
-    Vector3 vy = Cross(vx,vz);
+    Vector3 vy = Cross(vz,vx);
 
     return Matrix
     {
         vx.x, vx.y, vx.z, -Vector3Dot(vx,eye),
         vy.x, vy.y, vy.z, -Vector3Dot(vy,eye),
-        vz.x, vz.y, vz.z, Vector3Dot(vz,eye),
+        vz.x, vz.y, vz.z, -Vector3Dot(vz,eye),
+        0.0f, 0.0f, 0.0f, 1.0f
     };
 }
 void UpdateCameraRotation(Camera* camera, float deltaTime, bool left, bool up, bool down, bool right)
