@@ -25,7 +25,9 @@ public:
         window->Update();
         window->Clear();
         auto proj = window->GetPerspective();
-        auto view = ToViewMatrix(camera);
+        // auto view = ToViewMatrix(camera);
+        auto view = ToViewMatrix(camera->position,{0,100,0},Vector3Up());
+        // auto view = Identity();
         auto length = boids.size();
         for (size_t i = 0; i < length; i++)
         {
