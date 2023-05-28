@@ -48,7 +48,7 @@ public:
     Matrix GetPerspective()
     {
         auto aspectRatio = (float)width/(float)height;
-        return MakePerspectiveMat(aspectRatio, (float)(M_PI / 4.f), 0.1f, 1000.f);
+        return MatrixPerspective(aspectRatio, (float)(M_PI / 4.f), 0.1f, 1000.f);
     }
     void Present()
     {
@@ -75,7 +75,7 @@ private:
     static bool classRegistered;
     static const LPCWSTR className;
     static const LPCWSTR iconName;
-    int width = 800;
+    int width = 600;
     int height = 600;
     HWND m_hwnd;
     bool windowClosed;

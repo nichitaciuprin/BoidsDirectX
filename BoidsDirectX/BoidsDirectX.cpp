@@ -17,7 +17,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     UNREFERENCED_PARAMETER(lpCmdLine);
     UNREFERENCED_PARAMETER(nCmdShow);
 
-    // auto a = D3DXMatrixTranslation(0,0,10);
+    // auto a = DirectX::D3DXMatrixTranslation(0,0,10);
 
     auto renderer = make_unique<Renderer>(hInstance);
 

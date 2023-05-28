@@ -15,14 +15,13 @@ struct Vector4
 {
     float x, y, z, w;
 };
-union Matrix
+struct Matrix
 {
     float m[4][4];
-    Vector4 cols[4];
-    inline Vector4 row(int i)
-    {
-        return { m[0][i], m[1][i], m[2][i], m[3][i] };
-    }
+    // float m0,m1,m2,m3;
+    // float m4,m5,m6,m7;
+    // float m8,m9,m10,m11;
+    // float m12,m13,m14,m15;
 };
 struct Camera
 {
@@ -77,29 +76,29 @@ inline float MathToRadians(float degs)
 {
     return degs * ((float)M_PI / 180.0f);
 }
-Vector3 Vector3Zero()
+inline Vector3 Vector3Zero()
 {
     return { 0, 0, 0 };
 }
-Vector3 Vector3Left()
+inline Vector3 Vector3Left()
 {
     return { -1, 0, 0 };
 }
-Vector3 Vector3Right()
+inline Vector3 Vector3Right()
 {
     return { 1, 0, 0 };
 }
-Vector3 Vector3Up()
+inline Vector3 Vector3Up()
 {
     return { 0, 1, 0 };
 }
-Vector3 Vector3Forward()
-{
-    return { 0, 0, -1 };
-}
-Vector3 Vector3Backward()
+inline Vector3 Vector3Forward()
 {
     return { 0, 0, 1 };
+}
+inline Vector3 Vector3Backward()
+{
+    return { 0, 0, -1 };
 }
 inline float Vector3Length(Vector3 v)
 {
@@ -220,27 +219,47 @@ inline Vector3 PositionUpdateAdvanced(Vector3 position, Vector3 oldVelocity, Vec
 }
 inline Matrix operator * (Matrix a, Matrix b)
 {
-    return
+    Vector4 row0 = { a.m[0][0], a.m[0][1], a.m[0][2], a.m[0][3] };
+    Vector4 row1 = { a.m[1][0], a.m[1][1], a.m[1][2], a.m[1][3] };
+    Vector4 row2 = { a.m[2][0], a.m[2][1], a.m[2][2], a.m[2][3] };
+    Vector4 row3 = { a.m[3][0], a.m[3][1], a.m[3][2], a.m[3][3] };
+
+    Vector4 col0 = { b.m[0][0], b.m[1][0], b.m[2][0], b.m[3][0] };
+    Vector4 col1 = { b.m[0][1], b.m[1][1], b.m[2][1], b.m[3][1] };
+    Vector4 col2 = { b.m[0][2], b.m[1][2], b.m[2][2], b.m[3][2] };
+    Vector4 col3 = { b.m[0][3], b.m[1][3], b.m[2][3], b.m[3][3] };
+
+    float m00 = Vector4Dot(row0,col0);
+    float m01 = Vector4Dot(row0,col1);
+    float m02 = Vector4Dot(row0,col2);
+    float m03 = Vector4Dot(row0,col3);
+
+    float m10 = Vector4Dot(row1,col0);
+    float m11 = Vector4Dot(row1,col1);
+    float m12 = Vector4Dot(row1,col2);
+    float m13 = Vector4Dot(row1,col3);
+
+    float m20 = Vector4Dot(row2,col0);
+    float m21 = Vector4Dot(row2,col1);
+    float m22 = Vector4Dot(row2,col2);
+    float m23 = Vector4Dot(row2,col3);
+
+    float m30 = Vector4Dot(row3,col0);
+    float m31 = Vector4Dot(row3,col1);
+    float m32 = Vector4Dot(row3,col2);
+    float m33 = Vector4Dot(row3,col3);
+
+    Matrix result =
     {
-        Vector4Dot(a.row(0), b.cols[0]),
-        Vector4Dot(a.row(1), b.cols[0]),
-        Vector4Dot(a.row(2), b.cols[0]),
-        Vector4Dot(a.row(3), b.cols[0]),
-        Vector4Dot(a.row(0), b.cols[1]),
-        Vector4Dot(a.row(1), b.cols[1]),
-        Vector4Dot(a.row(2), b.cols[1]),
-        Vector4Dot(a.row(3), b.cols[1]),
-        Vector4Dot(a.row(0), b.cols[2]),
-        Vector4Dot(a.row(1), b.cols[2]),
-        Vector4Dot(a.row(2), b.cols[2]),
-        Vector4Dot(a.row(3), b.cols[2]),
-        Vector4Dot(a.row(0), b.cols[3]),
-        Vector4Dot(a.row(1), b.cols[3]),
-        Vector4Dot(a.row(2), b.cols[3]),
-        Vector4Dot(a.row(3), b.cols[3]),
+        m00,m01,m02,m03,
+        m10,m11,m12,m13,
+        m20,m21,m22,m23,
+        m30,m31,m32,m33
     };
+
+    return result;
 }
-inline Matrix Identity()
+inline Matrix MatrixIdentity()
 {
     return
     {
@@ -250,7 +269,27 @@ inline Matrix Identity()
         0,0,0,1,
     };
 }
-inline Matrix RotateXMatrix(float rad)
+inline Matrix MatrixTranspose(Matrix a)
+{
+    return Matrix
+    {
+        a.m[0][0],a.m[1][0],a.m[2][0],a.m[3][0],
+        a.m[0][1],a.m[1][1],a.m[2][1],a.m[3][1],
+        a.m[0][2],a.m[1][2],a.m[2][2],a.m[3][2],
+        a.m[0][3],a.m[1][3],a.m[2][3],a.m[3][3]
+    };
+}
+inline Matrix MatrixTranslate(Vector3 trans)
+{
+    return
+    {
+        1, 0, 0, trans.x,
+        0, 1, 0, trans.y,
+        0, 0, 1, trans.z,
+        0, 0, 0, 1
+    };
+}
+inline Matrix MatrixRotateX(float rad)
 {
     float sinTheta = sinf(rad);
     float cosTheta = cosf(rad);
@@ -261,7 +300,7 @@ inline Matrix RotateXMatrix(float rad)
         0, 0, 0, 1
     };
 }
-inline Matrix RotateYMatrix(float rad)
+inline Matrix MatrixRotateY(float rad)
 {
     float sinTheta = sinf(rad);
     float cosTheta = cosf(rad);
@@ -272,16 +311,29 @@ inline Matrix RotateYMatrix(float rad)
         0, 0, 0, 1
     };
 }
-inline Matrix TranslationMatrix(Vector3 trans)
+inline Matrix MatrixOrtho(float left, float right, float bottom, float top, float front, float back)
 {
-    return {
-        1, 0, 0, trans.x,
-        0, 1, 0, trans.y,
-        0, 0, 1, trans.z,
-        0, 0, 0, 1
+    float rl = right - left;
+    float tb = top - bottom;
+    float fn = back - front;
+
+    float sx = 2.0f/rl;
+    float sy = 2.0f/tb;
+    float sz = -2.0f/fn;
+
+    float x = -(left + right)  / rl;
+    float y = -(top  + bottom) / tb;
+    float z = -(back + front)  / fn;
+
+    return
+    {
+        sx, 0 , 0,  x,
+        0 , sy, 0,  y,
+        0 , 0 , sz, z,
+        0 , 0 , 0,  1
     };
 }
-inline Matrix MakePerspectiveMat(float aspectRatio, float fovYRadians, float zNear, float zFar)
+inline Matrix MatrixPerspective(float aspectRatio, float fovYRadians, float zNear, float zFar)
 {
     float yScale = tanf(0.5f * ((float)M_PI - fovYRadians));
     float xScale = yScale / aspectRatio;
@@ -292,32 +344,32 @@ inline Matrix MakePerspectiveMat(float aspectRatio, float fovYRadians, float zNe
     {
         xScale, 0, 0, 0,
         0, yScale, 0, 0,
-        0, 0, zScale, zTranslation,
-        0, 0, -1, 0
+        0, 0, zScale, -zTranslation,
+        0, 0, 1, 0
     };
     return result;
 }
-Matrix ToViewMatrix(Vector3 position, float rot1, float ro2)
+inline Matrix MatrixView(Vector3 position, float rot1, float ro2)
 {
     return
-        TranslationMatrix(-position) *
-        RotateYMatrix(rot1) *
-        RotateXMatrix(ro2);
+        MatrixTranslate(-position) *
+        MatrixRotateY(rot1) *
+        MatrixRotateX(ro2);
 }
-Matrix ToViewMatrix(const Camera* camera)
+inline Matrix MatrixView(const Camera* camera)
 {
     return
-        TranslationMatrix(-camera->position) *
-        RotateYMatrix(camera->rot1) *
-        RotateXMatrix(camera->rot2);
+        MatrixTranslate(-camera->position) *
+        MatrixRotateY(camera->rot1) *
+        MatrixRotateX(camera->rot2);
 }
-Matrix ToViewMatrix2(Vector3 eye, Vector3 target, Vector3 up)
+inline Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
 {
     // Taken from https://www.geertarien.com/blog/2017/07/30/breakdown-of-the-lookAt-function-in-OpenGL/
     Vector3 zaxis = Normalise(target - eye);
     Vector3 xaxis = Normalise(Cross(zaxis, up));
-    Vector3 yaxis = Cross(xaxis, zaxis);
-    zaxis = -zaxis;
+    Vector3 yaxis =           Cross(xaxis, zaxis);
+    // zaxis = -zaxis;
     return
     {
         xaxis.x, xaxis.y, xaxis.z, -Vector3Dot(xaxis, eye),
@@ -326,7 +378,7 @@ Matrix ToViewMatrix2(Vector3 eye, Vector3 target, Vector3 up)
         0.0f, 0.0f, 0.0f, 1.0f
     };
 }
-Matrix ToViewMatrix(Vector3 eye, Vector3 target, Vector3 up)
+inline Matrix MatrixView2(Vector3 eye, Vector3 target, Vector3 up)
 {
     Vector3 vz = eye - target;
     vz = Normalise(vz);
@@ -363,7 +415,7 @@ void UpdateCameraRotation(Camera* camera, float deltaTime, bool left, bool up, b
 }
 void UpdateCameraPosition(Camera* camera, float deltaTime, bool w, bool a, bool s, bool d, bool e, bool q)
 {
-    Matrix viewMatrix = ToViewMatrix(camera);
+    Matrix viewMatrix = MatrixView(camera);
     Vector3 camFwdXZ = {-viewMatrix.m[2][0], -viewMatrix.m[2][1], -viewMatrix.m[2][2]};
 
     // Vector3 camFwdXZ = Normalise({camera->cameraFwd.x, 0, camera->cameraFwd.z});

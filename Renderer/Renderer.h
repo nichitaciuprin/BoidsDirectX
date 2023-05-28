@@ -24,16 +24,25 @@ public:
     {
         window->Update();
         window->Clear();
-        auto proj = window->GetPerspective();
-        // auto view = ToViewMatrix(camera);
-        auto view = ToViewMatrix(camera->position,{0,50,0},Vector3Up());
-        // auto view = Identity();
+        Matrix model;
+        Matrix view;
+        Matrix proj;
+        proj = window->GetPerspective();
+        // float scale = 20;
+        // proj =
+        // {
+        //     scale,0,0,0,
+        //     0,scale,0,0,
+        //     0,0,scale,-1,
+        //     0,0,1,1
+        // };
+        view = MatrixView(camera->position,{0,50,0},Vector3Up());
         auto length = boids.size();
         for (size_t i = 0; i < length; i++)
         {
             auto boid = boids[i];
-            auto model = TranslationMatrix(boid.position);
-            auto result = model * view * proj;
+            model = MatrixTranslate(boid.position);
+            auto result = proj * view * model;
             cubeModel->Draw(result);
         }
         window->Present();
