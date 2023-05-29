@@ -59,11 +59,11 @@ private:
 
         deviceContext->RSSetState(rasterizerState);
         deviceContext->OMSetDepthStencilState(depthStencilState, 0);
+        deviceContext->IASetInputLayout(inputLayout);
         deviceContext->VSSetShader(vertexShader, nullptr, 0);
         deviceContext->PSSetShader(pixelShader, nullptr, 0);
         deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
         deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        deviceContext->IASetInputLayout(inputLayout);
     }
     void CreateDeviceAndDeviceContext()
     {
