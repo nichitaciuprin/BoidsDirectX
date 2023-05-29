@@ -18,7 +18,7 @@ public:
         auto device = deviceRecources->GetDevice();
         auto deviceContext = deviceRecources->GetDeviceContext();
         auto constantBuffer = deviceRecources->GetConstantBuffer();
-        cubeModel = make_unique<CubeModel>(device,deviceContext,constantBuffer);
+        cubeModel = make_unique<CubeModel>();
     }
     void Render(const Camera* camera, const vector<Boid> boids)
     {

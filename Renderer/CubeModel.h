@@ -3,31 +3,28 @@
 class CubeModel
 {
 public:
-    CubeModel(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ID3D11Buffer* constantBuffer)
+    CubeModel()
     {
-        this->device = device;
-        this->deviceContext = deviceContext;
-        this->constantBuffer = constantBuffer;
-        CreateVertexBuffer(device);
-        CreateIndexBuffer(device);
+        auto device = DeviceRecources::GetInstance()->GetDevice();
+        CreateVertexBuffer();
+        CreateIndexBuffer();
     }
     void Draw(Matrix modelViewProj)
     {
         UINT stride = sizeof(Vector3);
         UINT offset = 0;
+        auto deviceRecources = DeviceRecources::GetInstance();
+        auto deviceContext = deviceRecources->GetDeviceContext();
         deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
         deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-        UpdateConstantBuffer(modelViewProj);
+        deviceRecources->UpdateConstantBuffer(modelViewProj);
+        UINT indexCount = 36;
         deviceContext->DrawIndexed(indexCount, 0, 0);
     }
 private:
-    UINT indexCount;
-    ID3D11Device* device;
-    ID3D11DeviceContext* deviceContext;
     ID3D11Buffer* vertexBuffer;
     ID3D11Buffer* indexBuffer;
-    ID3D11Buffer* constantBuffer;
-    void CreateVertexBuffer(ID3D11Device* device)
+    void CreateVertexBuffer()
     {
         float vertexData[] =
         {
@@ -49,10 +46,12 @@ private:
         D3D11_SUBRESOURCE_DATA vertexSubresourceData = { };
         vertexSubresourceData.pSysMem = vertexData;
 
+        auto device = DeviceRecources::GetInstance()->GetDevice();
+
         HRESULT hResult = device->CreateBuffer(&vertexBufferDesc, &vertexSubresourceData, &vertexBuffer);
         assert(SUCCEEDED(hResult));
     }
-    void CreateIndexBuffer(ID3D11Device* device)
+    void CreateIndexBuffer()
     {
         uint16_t indices[] =
         {
@@ -70,8 +69,6 @@ private:
             1, 7, 3
         };
 
-        indexCount = sizeof(indices) / sizeof(indices[0]);
-
         D3D11_BUFFER_DESC indexBufferDesc = {};
         indexBufferDesc.ByteWidth = sizeof(indices);
         indexBufferDesc.Usage     = D3D11_USAGE_IMMUTABLE;
@@ -79,17 +76,9 @@ private:
 
         D3D11_SUBRESOURCE_DATA indexSubresourceData = { indices };
 
+        auto device = DeviceRecources::GetInstance()->GetDevice();
+
         HRESULT hResult = device->CreateBuffer(&indexBufferDesc, &indexSubresourceData, &indexBuffer);
         assert(SUCCEEDED(hResult));
-    }
-    void UpdateConstantBuffer(Matrix modelViewProj) const
-    {
-        // HLSL will transopose any matrix in constant buffer
-        modelViewProj = MatrixTranspose(modelViewProj);
-        D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-        deviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-        Constants* constants = (Constants*)(mappedSubresource.pData);
-        constants->modelViewProj = modelViewProj;
-        deviceContext->Unmap(constantBuffer, 0);
     }
 };

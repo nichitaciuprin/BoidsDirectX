@@ -30,6 +30,8 @@ public:
     }
     void UpdateConstantBuffer(Matrix modelViewProj)
     {
+        // HLSL will transopose any matrix in constant buffer
+        modelViewProj = MatrixTranspose(modelViewProj);
         D3D11_MAPPED_SUBRESOURCE mappedSubresource;
         deviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         Constants* constants = (Constants*)(mappedSubresource.pData);
