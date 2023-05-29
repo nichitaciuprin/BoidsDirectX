@@ -16,7 +16,7 @@ public:
         auto yRand = subugen->FractionSigned();
         auto zRand = subugen->FractionSigned();
         auto randDirection = Vector3{ xRand,yRand,zRand };
-        randDirection = Normalise(randDirection);
+        randDirection = Vector3Normalize(randDirection);
         auto randSpeed = subugen->Range(minSpeed,maxSpeed);
         velocity = randDirection * randSpeed;
     }
@@ -45,8 +45,8 @@ public:
         {
             Boid& boid = boids[i];
             auto targetVelocity = boid.TargetVelocity(aabb);
-            auto newVelocity = MoveTowards(boid.velocity,targetVelocity,acc*deltaTime);
-            boid.position = PositionUpdateAdvanced(boid.position,boid.velocity,boid.velocity,deltaTime);
+            auto newVelocity = Vector3MoveTowards(boid.velocity,targetVelocity,acc*deltaTime);
+            boid.position = Vector3PositionUpdateAdvanced(boid.position,boid.velocity,boid.velocity,deltaTime);
             boid.velocity = newVelocity;
         }
     }
@@ -122,7 +122,7 @@ private:
 
         result += AABBShortPathIn(&aabb,position);
 
-        result = ClampLength(result,minSpeed,maxSpeed);
+        result = Vector3ClampLength(result,minSpeed,maxSpeed);
         return result;
     }
 };

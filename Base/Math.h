@@ -179,14 +179,14 @@ inline Vector3 operator /= (Vector3& v, float f)
     v.z /= f;
     return v;
 }
-inline Vector3 ClampLength(Vector3 vector, float min, float max)
+inline Vector3 Vector3ClampLength(Vector3 vector, float min, float max)
 {
     auto length2 = Vector3Length(vector);
     if (length2 > max) return vector*(max/length2);
     if (length2 < min) return vector*(min/length2);
     return vector;
 }
-inline Vector3 Normalise(Vector3 v)
+inline Vector3 Vector3Normalize(Vector3 v)
 {
     return v * (1.f / Vector3Length(v));
 }
@@ -199,21 +199,21 @@ inline Vector3 Vector3Cross(Vector3 a, Vector3 b)
         a.x*b.y - a.y*b.x
     };
 }
-inline Vector3 MoveTowards(Vector3 fromVector, Vector3 toVector, float delta)
+inline Vector3 Vector3MoveTowards(Vector3 fromVector, Vector3 toVector, float delta)
 {
     if (fromVector == toVector) return fromVector;
     auto diff = toVector-fromVector;
     auto dist = Vector3Length(diff);
     if (dist <= delta) return toVector;
-    diff = Normalise(diff);
+    diff = Vector3Normalize(diff);
     auto moveVec = diff*delta;
     return fromVector+moveVec;
 }
-inline Vector3 PositionUpdateSimple(Vector3 position, Vector3 velocity, float deltaTime)
+inline Vector3 Vector3PositionUpdateSimple(Vector3 position, Vector3 velocity, float deltaTime)
 {
     return position + velocity * deltaTime;
 }
-inline Vector3 PositionUpdateAdvanced(Vector3 position, Vector3 oldVelocity, Vector3 newVelocity, float deltaTime)
+inline Vector3 Vector3PositionUpdateAdvanced(Vector3 position, Vector3 oldVelocity, Vector3 newVelocity, float deltaTime)
 {
     return position + (oldVelocity+newVelocity)/2 * deltaTime;
 }
@@ -366,8 +366,8 @@ inline Matrix MatrixView(const Camera* camera)
 inline Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
 {
     // Taken from https://www.geertarien.com/blog/2017/07/30/breakdown-of-the-lookAt-function-in-OpenGL/
-    Vector3 zaxis = Normalise(target - eye);
-    Vector3 xaxis = Normalise(Vector3Cross(zaxis, up));
+    Vector3 zaxis = Vector3Normalize(target - eye);
+    Vector3 xaxis = Vector3Normalize(Vector3Cross(zaxis, up));
     Vector3 yaxis =           Vector3Cross(xaxis, zaxis);
     // zaxis = -zaxis;
     return
@@ -381,9 +381,9 @@ inline Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
 inline Matrix MatrixView2(Vector3 eye, Vector3 target, Vector3 up)
 {
     Vector3 vz = eye - target;
-    vz = Normalise(vz);
+    vz = Vector3Normalize(vz);
     Vector3 vx = Vector3Cross(up,vz);
-    vx = Normalise(vx);
+    vx = Vector3Normalize(vx);
     Vector3 vy = Vector3Cross(vz,vx);
 
     return Matrix
@@ -418,7 +418,7 @@ void UpdateCameraPosition(Camera* camera, float deltaTime, bool w, bool a, bool 
     Matrix viewMatrix = MatrixView(camera);
     Vector3 camFwdXZ = {-viewMatrix.m[2][0], -viewMatrix.m[2][1], -viewMatrix.m[2][2]};
 
-    // Vector3 camFwdXZ = Normalise({camera->cameraFwd.x, 0, camera->cameraFwd.z});
+    // Vector3 camFwdXZ = Vector3Normalize({camera->cameraFwd.x, 0, camera->cameraFwd.z});
     Vector3 cameraRightXZ = Vector3Cross(camFwdXZ, {0, 1, 0});
 
     const float CAM_MOVE_SPEED = 5.f; // in metres per second
