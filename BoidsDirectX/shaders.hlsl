@@ -16,7 +16,7 @@ cbuffer constants : register(b0)
 };
 struct VS_Input
 {
-    float3 vertexPosition : POS;
+    float3 vertexPosition : SV_POSITION;
 };
 struct PS_Input
 {

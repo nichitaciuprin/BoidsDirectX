@@ -13,7 +13,7 @@ public:
     }
     void Draw(Matrix modelViewProj)
     {
-        UINT stride = 3 * sizeof(float);
+        UINT stride = sizeof(Vector3);
         UINT offset = 0;
         deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
         deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);

@@ -141,17 +141,9 @@ private:
         }
 
         {
-            // D3D11_INPUT_ELEMENT_DESC inputElementDesc;
-            // inputElementDesc.SemanticName = "POS";
-            // inputElementDesc.SemanticIndex = 0;
-            // inputElementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
-            // inputElementDesc.InputSlot = 0;
-            // inputElementDesc.AlignedByteOffset = 0;
-            // inputElementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-            // inputElementDesc.InstanceDataStepRate = 0;
             D3D11_INPUT_ELEMENT_DESC inputElementDescArray[] =
             {
-                { "POS",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 }
+                { "SV_POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 }
             };
 
             HRESULT hResult = device->CreateInputLayout(inputElementDescArray, ARRAYSIZE(inputElementDescArray), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout);
@@ -166,7 +158,6 @@ private:
         D3D11_BUFFER_DESC constantBufferDesc = {};
         // ByteWidth must be a multiple of 16, per the docs
         constantBufferDesc.ByteWidth      = sizeof(Constants) + 0xf & 0xfffffff0;
-        // constantBufferDesc.ByteWidth      = sizeof(Constants);
         constantBufferDesc.Usage          = D3D11_USAGE_DYNAMIC;
         constantBufferDesc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
         constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
