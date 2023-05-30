@@ -14,10 +14,6 @@ public:
     Renderer(HINSTANCE hInstance)
     {
         window = make_unique<Window>(hInstance);
-        auto deviceRecources = DeviceRecources::GetInstance();
-        auto device = deviceRecources->GetDevice();
-        auto deviceContext = deviceRecources->GetDeviceContext();
-        auto constantBuffer = deviceRecources->GetConstantBuffer();
         cubeModel = make_unique<CubeModel>();
     }
     void Render(const Camera* camera, const vector<Boid> boids)
@@ -28,14 +24,6 @@ public:
         Matrix view;
         Matrix proj;
         proj = window->GetPerspective();
-        // float scale = 20;
-        // proj =
-        // {
-        //     scale,0,0,0,
-        //     0,scale,0,0,
-        //     0,0,scale,-1,
-        //     0,0,1,1
-        // };
         view = MatrixView(camera->position,{0,50,0},Vector3Up());
         auto length = boids.size();
         for (size_t i = 0; i < length; i++)
