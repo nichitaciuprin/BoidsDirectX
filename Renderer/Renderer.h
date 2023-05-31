@@ -52,6 +52,7 @@ public:
         // view = MatrixView(camera->position,{0,50,0},Vector3Up());
         // view = MatrixView({0,0,0},{0,0,1},Vector3Up());
         view = MatrixView(camera);
+        view = MatrixView(camera->position,{0,50,0},Vector3Up());
         // view = MatrixIdentity();
 
         auto length = boids.size();
@@ -64,7 +65,7 @@ public:
             cubeModel->Draw(result);
         }
 
-        {model = MatrixTranslate({0,0,3});
+        {model = MatrixTranslate({0,50,0});
         auto result = proj * view * model;
         cubeModel->Draw(result);}
         // {model = MatrixTranslate({1,0,3});

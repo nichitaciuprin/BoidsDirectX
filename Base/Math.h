@@ -386,10 +386,6 @@ Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
 {
     // Taken from https://www.geertarien.com/blog/2017/07/30/breakdown-of-the-lookAt-function-in-OpenGL/
 
-    // Vector3 zaxis = Vector3Normalize(target - eye);
-    // Vector3 xaxis = Vector3Normalize(Vector3Cross(zaxis, up));
-    // Vector3 yaxis =                  Vector3Cross(xaxis, zaxis);
-
     Vector3 zaxis = target - eye;
             zaxis = Vector3Normalize(zaxis);
 
@@ -406,13 +402,6 @@ Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
         0.0f, 0.0f, 0.0f, 1.0f
     };
 }
-// float4x4 look_at_matrix(Vector3 eye, Vector3 at, Vector3 up)
-// {
-//     float3 zaxis = normalize(at - eye);
-//     float3 xaxis = normalize(cross(up, zaxis));
-//     float3 yaxis = cross(zaxis, xaxis);
-//     return axis_matrix(xaxis, yaxis, zaxis);
-// }
 inline Matrix MatrixView2(Vector3 eye, Vector3 target, Vector3 up)
 {
     Vector3 vz = eye - target;
