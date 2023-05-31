@@ -21,62 +21,30 @@ public:
     {
         window->Update();
         window->Clear();
-        // UpdateCameraPosition(camera,window->keydown_)
+
         Matrix model;
         Matrix view;
         Matrix proj;
+
         proj = window->GetPerspective();
-        // proj = MatrixIdentity();
-        // float scale = 1.0f/10.0f;
-        // proj =
-        // {
-        //     scale,0,0,0,
-        //     0,scale,0,0,
-        //     0,0,scale,0,
-        //     0,0,0,1
-        // };
-        // proj =
-        // {
-        //     1,0,0,0,
-        //     0,1,0,0,
-        //     0,0,0,1,
-        //     0,0,1,0
-        // };
-        // view =
-        // {
-        //     1,0,0,0,
-        //     0,1,0,0,
-        //     0,0,1,0,
-        //     0,0,0,1
-        // };
-        // view = MatrixView(camera->position,{0,50,0},Vector3Up());
-        // view = MatrixView({0,0,0},{0,0,1},Vector3Up());
         view = MatrixView(camera);
-        view = MatrixView(camera->position,{0,50,0},Vector3Up());
-        // view = MatrixIdentity();
 
         auto length = boids.size();
         for (size_t i = 0; i < length; i++)
         {
-            auto boid = boids[i];
-            // model = MatrixTranslate(boid.position);
+                auto boid = boids[i];
+
             model = MatrixWorld(boid.position,Vector3Normalize(boid.velocity));
-            auto result = proj * view * model;
-            cubeModel->Draw(result);
+            auto transformation = MatrixTransformaton(model,view,proj);
+            cubeModel->Draw(transformation);
         }
 
-        {model = MatrixTranslate({0,50,0});
-        auto result = proj * view * model;
-        cubeModel->Draw(result);}
-        // {model = MatrixTranslate({1,0,3});
-        // auto result = proj * view * model;
-        // cubeModel->Draw(result);}
-        // {model = MatrixTranslate({0,0,-10});
-        // auto result = proj * view * model;
-        // cubeModel->Draw(result);}
-        // model = MatrixTranslate({0,0,10});
-        // auto result = proj * view * model;
-        // cubeModel->Draw(result);
+        {
+            model = MatrixTranslate({0,50,0});
+            auto transformation = MatrixTransformaton(model,view,proj);
+            cubeModel->Draw(transformation);
+        }
+
         window->Present();
     }
     bool WindowIsClosed() const

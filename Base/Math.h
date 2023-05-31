@@ -399,6 +399,10 @@ inline Matrix MatrixProj2(float aspectRatio, float fovYRadians, float zNear, flo
     };
     return result;
 }
+inline Matrix MatrixTransformaton(Matrix model, Matrix view, Matrix proj)
+{
+    return proj * view * model;
+}
 void UpdateCameraRotation(Camera* camera, float deltaTime, bool left, bool up, bool down, bool right)
 {
     float speed = (float)M_PI; // in radians per second
