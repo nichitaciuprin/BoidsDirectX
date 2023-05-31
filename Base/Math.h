@@ -351,19 +351,36 @@ inline Matrix MatrixPerspective(float aspectRatio, float fovYRadians, float zNea
     };
     return result;
 }
+inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
+{
+    Vector3 zaxis = direction;
+            zaxis = Vector3Normalize(zaxis);
+
+    Vector3 xaxis = Vector3Cross(Vector3Up(),zaxis);
+            xaxis = Vector3Normalize(xaxis);
+
+    Vector3 yaxis = Vector3Cross(zaxis,xaxis);
+
+    return
+    {
+        xaxis.x, yaxis.x, zaxis.x, position.x,
+        xaxis.y, yaxis.y, zaxis.y, position.y,
+        xaxis.z, yaxis.z, zaxis.z, position.z,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+}
+
+
 inline Matrix MatrixView(Vector3 eye, float yaw, float pitch)
 {
     return
-        MatrixRotateX(pitch) *
-        MatrixRotateY(yaw) *
-        MatrixTranslate(eye);
+        MatrixRotateX(-pitch) *
+        MatrixRotateY(-yaw) *
+        MatrixTranslate(-eye);
 }
 inline Matrix MatrixView(const Camera* camera)
 {
-    return
-        MatrixRotateX(-camera->pitch) *
-        MatrixRotateY(-camera->yaw) *
-        MatrixTranslate(-camera->position);
+    return MatrixView(camera->position,camera->yaw,camera->pitch);
 }
 Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
 {
@@ -376,12 +393,10 @@ Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
     Vector3 zaxis = target - eye;
             zaxis = Vector3Normalize(zaxis);
 
-    Vector3 xaxis = Vector3Cross(zaxis, up);
+    Vector3 xaxis = Vector3Cross(up,zaxis);
             xaxis = Vector3Normalize(xaxis);
-            xaxis = -xaxis;
 
-    Vector3 yaxis = Vector3Cross(xaxis, zaxis);
-            yaxis = -yaxis;
+    Vector3 yaxis = Vector3Cross(zaxis,xaxis);
 
     return
     {
@@ -391,6 +406,13 @@ Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
         0.0f, 0.0f, 0.0f, 1.0f
     };
 }
+// float4x4 look_at_matrix(Vector3 eye, Vector3 at, Vector3 up)
+// {
+//     float3 zaxis = normalize(at - eye);
+//     float3 xaxis = normalize(cross(up, zaxis));
+//     float3 yaxis = cross(zaxis, xaxis);
+//     return axis_matrix(xaxis, yaxis, zaxis);
+// }
 inline Matrix MatrixView2(Vector3 eye, Vector3 target, Vector3 up)
 {
     Vector3 vz = eye - target;
@@ -436,7 +458,7 @@ void UpdateCameraPosition(Camera* camera, float deltaTime, bool w, bool a, bool 
             right = Vector3Normalize(right);
             right = -right;
 
-    const float CAM_MOVE_SPEED = 5.f; // in metres per second
+    const float CAM_MOVE_SPEED = 50.0f; // in metres per second
     const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * deltaTime;
     if(w) camera->position   += forward * CAM_MOVE_AMOUNT;
     if(s) camera->position   -= forward * CAM_MOVE_AMOUNT;

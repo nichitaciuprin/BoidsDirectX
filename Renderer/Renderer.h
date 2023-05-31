@@ -58,7 +58,8 @@ public:
         for (size_t i = 0; i < length; i++)
         {
             auto boid = boids[i];
-            model = MatrixTranslate(boid.position);
+            // model = MatrixTranslate(boid.position);
+            model = MatrixWorld(boid.position,Vector3Normalize(boid.velocity));
             auto result = proj * view * model;
             cubeModel->Draw(result);
         }
