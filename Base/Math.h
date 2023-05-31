@@ -26,8 +26,8 @@ struct Matrix
 struct Camera
 {
     Vector3 position;
-    float rot1;
-    float rot2;
+    float yaw;
+    float pitch;
 };
 inline int MathSign(float value)
 {
@@ -291,24 +291,26 @@ inline Matrix MatrixTranslate(Vector3 trans)
 }
 inline Matrix MatrixRotateX(float rad)
 {
-    float sinTheta = sinf(rad);
-    float cosTheta = cosf(rad);
-    return {
-        1, 0, 0, 0,
-        0, cosTheta, -sinTheta, 0,
-        0, sinTheta, cosTheta, 0,
-        0, 0, 0, 1
+    float sin = sinf(rad);
+    float cos = cosf(rad);
+    return
+    {
+        1,   0,    0,    0,
+        0,   cos,  -sin, 0,
+        0,   sin,  cos,  0,
+        0,   0,    0,    1
     };
 }
 inline Matrix MatrixRotateY(float rad)
 {
-    float sinTheta = sinf(rad);
-    float cosTheta = cosf(rad);
-    return {
-        cosTheta, 0, sinTheta, 0,
-        0, 1, 0, 0,
-        -sinTheta, 0, cosTheta, 0,
-        0, 0, 0, 1
+    float sin = sinf(rad);
+    float cos = cosf(rad);
+    return
+    {
+        cos,   0,  sin,  0,
+        0,     1,  0,    0,
+        -sin,  0,  cos,  0,
+        0,     0,  0,    1
     };
 }
 inline Matrix MatrixOrtho(float left, float right, float bottom, float top, float front, float back)
@@ -349,27 +351,38 @@ inline Matrix MatrixPerspective(float aspectRatio, float fovYRadians, float zNea
     };
     return result;
 }
-inline Matrix MatrixView(Vector3 position, float rot1, float ro2)
+inline Matrix MatrixView(Vector3 eye, float yaw, float pitch)
 {
     return
-        MatrixTranslate(-position) *
-        MatrixRotateY(rot1) *
-        MatrixRotateX(ro2);
+        MatrixRotateX(pitch) *
+        MatrixRotateY(yaw) *
+        MatrixTranslate(eye);
 }
 inline Matrix MatrixView(const Camera* camera)
 {
     return
-        MatrixTranslate(-camera->position) *
-        MatrixRotateY(camera->rot1) *
-        MatrixRotateX(camera->rot2);
+        MatrixRotateX(-camera->pitch) *
+        MatrixRotateY(-camera->yaw) *
+        MatrixTranslate(-camera->position);
 }
-inline Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
+Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
 {
     // Taken from https://www.geertarien.com/blog/2017/07/30/breakdown-of-the-lookAt-function-in-OpenGL/
-    Vector3 zaxis = Vector3Normalize(target - eye);
-    Vector3 xaxis = Vector3Normalize(Vector3Cross(zaxis, up));
-    Vector3 yaxis =           Vector3Cross(xaxis, zaxis);
-    // zaxis = -zaxis;
+
+    // Vector3 zaxis = Vector3Normalize(target - eye);
+    // Vector3 xaxis = Vector3Normalize(Vector3Cross(zaxis, up));
+    // Vector3 yaxis =                  Vector3Cross(xaxis, zaxis);
+
+    Vector3 zaxis = target - eye;
+            zaxis = Vector3Normalize(zaxis);
+
+    Vector3 xaxis = Vector3Cross(zaxis, up);
+            xaxis = Vector3Normalize(xaxis);
+            xaxis = -xaxis;
+
+    Vector3 yaxis = Vector3Cross(xaxis, zaxis);
+            yaxis = -yaxis;
+
     return
     {
         xaxis.x, xaxis.y, xaxis.z, -Vector3Dot(xaxis, eye),
@@ -398,35 +411,37 @@ void UpdateCameraRotation(Camera* camera, float deltaTime, bool left, bool up, b
 {
     float speed = (float)M_PI; // in radians per second
     float result = speed * deltaTime;
-    if(left)   camera->rot1 -= result;
-    if(up)     camera->rot2 -= result;
-    if(down)   camera->rot2 += result;
-    if(right)  camera->rot1 += result;
+    if(left)   camera->yaw -= result;
+    if(up)     camera->pitch -= result;
+    if(down)   camera->pitch += result;
+    if(right)  camera->yaw += result;
 
     // Wrap yaw to avoid floating-point errors if we turn too far
     float M_PI2 = 2*(float)M_PI;
-    while(camera->rot1 >=  M_PI2) camera->rot1 -= M_PI2;
-    while(camera->rot1 <= -M_PI2) camera->rot1 += M_PI2;
+    while(camera->yaw >=  M_PI2) camera->yaw -= M_PI2;
+    while(camera->yaw <= -M_PI2) camera->yaw += M_PI2;
 
     // Clamp pitch to stop camera flipping upside down
     float degree = MathToRadians(85);
-    if(camera->rot2 >  degree) camera->rot2 =  degree;
-    if(camera->rot2 < -degree) camera->rot2 = -degree;
+    if(camera->pitch >  degree) camera->pitch =  degree;
+    if(camera->pitch < -degree) camera->pitch = -degree;
 }
 void UpdateCameraPosition(Camera* camera, float deltaTime, bool w, bool a, bool s, bool d, bool e, bool q)
 {
-    Matrix viewMatrix = MatrixView(camera);
-    Vector3 camFwdXZ = {-viewMatrix.m[2][0], -viewMatrix.m[2][1], -viewMatrix.m[2][2]};
+    Matrix matrix = MatrixView(camera);
 
-    // Vector3 camFwdXZ = Vector3Normalize({camera->cameraFwd.x, 0, camera->cameraFwd.z});
-    Vector3 cameraRightXZ = Vector3Cross(camFwdXZ, {0, 1, 0});
+    Vector3 forward = { matrix.m[2][0], matrix.m[2][1], matrix.m[2][2] };
+    Vector3 up = Vector3Up();
+    Vector3 right = Vector3Cross(forward, Vector3Up());
+            right = Vector3Normalize(right);
+            right = -right;
 
     const float CAM_MOVE_SPEED = 5.f; // in metres per second
     const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * deltaTime;
-    if(w) camera->position   += camFwdXZ * CAM_MOVE_AMOUNT;
-    if(s) camera->position   -= camFwdXZ * CAM_MOVE_AMOUNT;
-    if(a) camera->position   -= cameraRightXZ * CAM_MOVE_AMOUNT;
-    if(d) camera->position   += cameraRightXZ * CAM_MOVE_AMOUNT;
+    if(w) camera->position   += forward * CAM_MOVE_AMOUNT;
+    if(s) camera->position   -= forward * CAM_MOVE_AMOUNT;
+    if(a) camera->position   -= right * CAM_MOVE_AMOUNT;
+    if(d) camera->position   += right * CAM_MOVE_AMOUNT;
     if(e) camera->position.y += CAM_MOVE_AMOUNT;
     if(q) camera->position.y -= CAM_MOVE_AMOUNT;
 }

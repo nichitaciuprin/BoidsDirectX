@@ -1,9 +1,9 @@
 #pragma once
 
-class CubeModel
+class BirdModel
 {
 public:
-    CubeModel()
+    BirdModel()
     {
         auto device = DeviceRecources::GetInstance()->GetDevice();
         CreateVertexBuffer();
@@ -28,15 +28,16 @@ private:
     {
         float vertexData[] =
         {
-            -0.5f,-0.5f,-0.5f,  // 0
-            -0.5f,-0.5f, 0.5f,  // 1
-            -0.5f, 0.5f,-0.5f,  // 2
-            -0.5f, 0.5f, 0.5f,  // 3
-             0.5f,-0.5f,-0.5f,  // 4
-             0.5f,-0.5f, 0.5f,  // 5
-             0.5f, 0.5f,-0.5f,  // 6
-             0.5f, 0.5f, 0.5f   // 7
+             0.00f,  0.25f,  1.00f,
+             0.00f, -0.50f,  0.00f,
+             0.00f,  0.00f,  2.00f,
+             2.00f,  0.00f, -2.00f,
+            -2.00f,  0.00f, -2.00f,
         };
+
+        // auto arraySize = ARRAYSIZE(vertexData);
+        // for (size_t i = 0; i < arraySize; i++)
+        //     vertexData[i] /= 4.75f;
 
         D3D11_BUFFER_DESC vertexBufferDesc = {};
         vertexBufferDesc.ByteWidth = sizeof(vertexData);
@@ -55,18 +56,12 @@ private:
     {
         uint16_t indices[] =
         {
-            0, 6, 4,
-            0, 2, 6,
-            0, 3, 2,
-            0, 1, 3,
-            2, 7, 6,
-            2, 3, 7,
-            4, 6, 7,
-            4, 7, 5,
-            0, 4, 5,
-            0, 5, 1,
-            1, 5, 7,
-            1, 7, 3
+            0, 2, 3,
+            0, 4, 2,
+            2, 4, 1,
+            2, 1, 3,
+            0, 3, 1,
+            0, 1, 4
         };
 
         indexCount = ARRAYSIZE(indices);

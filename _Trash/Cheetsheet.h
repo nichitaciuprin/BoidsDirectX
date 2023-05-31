@@ -24,8 +24,8 @@ struct AABB
 struct Camera
 {
     Vector3 position;
-    float rot1;
-    float rot2;
+    float yaw;
+    float pitch;
 };
 struct Boid
 {

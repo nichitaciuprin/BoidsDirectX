@@ -77,6 +77,7 @@ PS_Input vs_main(VS_Input input)
 
     output.screenSpace = mul(modelViewProj,vertexPosition);
     output.screenSpace.z = -output.screenSpace.z;
+
     // input.vertexPosition.z -= 10;
     // output.screenSpace = float4(input.vertexPosition, 1.0f);
     return output;

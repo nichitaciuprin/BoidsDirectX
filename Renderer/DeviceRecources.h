@@ -172,7 +172,7 @@ private:
         D3D11_RASTERIZER_DESC rasterizerDesc = {};
         rasterizerDesc.FillMode = D3D11_FILL_SOLID;
         rasterizerDesc.CullMode = D3D11_CULL_BACK;
-        rasterizerDesc.FrontCounterClockwise = TRUE;
+        rasterizerDesc.FrontCounterClockwise = FALSE;
         device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
     }
     void CreateDepthStencilState()
