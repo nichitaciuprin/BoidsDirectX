@@ -1,9 +1,9 @@
 #pragma once
 
-class BirdModel
+class ModelBird
 {
 public:
-    BirdModel()
+    ModelBird()
     {
         auto device = DeviceRecources::GetInstance()->GetDevice();
         CreateVertexBuffer();
