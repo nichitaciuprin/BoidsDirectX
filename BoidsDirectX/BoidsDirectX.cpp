@@ -28,18 +28,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             renderer->Keydown_E(),
             renderer->Keydown_Q());
 
-        // world->Update(0.02f,
-        //     false,
-        //     false,
-        //     false,
-        //     false,
-        //     false,
-        //     false,
-        //     true,
-        //     false,
-        //     false,
-        //     false);
-
         renderer->Render(&world->camera, world->boidWorld.boids);
         if (renderer->WindowIsClosed())
             break;

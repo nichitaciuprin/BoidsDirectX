@@ -92,6 +92,10 @@ inline Vector3 Vector3Up()
 {
     return { 0, 1, 0 };
 }
+inline Vector3 Vector3Down()
+{
+    return { 0, 1, 0 };
+}
 inline Vector3 Vector3Forward()
 {
     return { 0, 0, 1 };
@@ -313,7 +317,51 @@ inline Matrix MatrixRotateY(float rad)
         0,     0,  0,    1
     };
 }
-inline Matrix MatrixOrtho(float left, float right, float bottom, float top, float front, float back)
+inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
+{
+    Vector3 zaxis = direction;
+            zaxis = Vector3Normalize(zaxis);
+    Vector3 xaxis = Vector3Cross(Vector3Up(),zaxis);
+    Vector3 yaxis = Vector3Cross(zaxis,xaxis);
+
+    return
+    {
+        xaxis.x, yaxis.x, zaxis.x, position.x,
+        xaxis.y, yaxis.y, zaxis.y, position.y,
+        xaxis.z, yaxis.z, zaxis.z, position.z,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+}
+inline Matrix MatrixView(Vector3 eye, float yaw, float pitch)
+{
+    return
+        MatrixRotateX(-pitch) *
+        MatrixRotateY(-yaw) *
+        MatrixTranslate(-eye);
+}
+inline Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
+{
+    Vector3 zaxis = target - eye;
+            zaxis = Vector3Normalize(zaxis);
+
+    Vector3 xaxis = Vector3Cross(up,zaxis);
+            xaxis = Vector3Normalize(xaxis);
+
+    Vector3 yaxis = Vector3Cross(zaxis,xaxis);
+
+    return
+    {
+        xaxis.x, xaxis.y, xaxis.z, -Vector3Dot(xaxis, eye),
+        yaxis.x, yaxis.y, yaxis.z, -Vector3Dot(yaxis, eye),
+        zaxis.x, zaxis.y, zaxis.z, -Vector3Dot(zaxis, eye),
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+}
+inline Matrix MatrixView(const Camera* camera)
+{
+    return MatrixView(camera->position,camera->yaw,camera->pitch);
+}
+inline Matrix MatrixProj1(float left, float right, float bottom, float top, float front, float back)
 {
     float rl = right - left;
     float tb = top - bottom;
@@ -335,7 +383,7 @@ inline Matrix MatrixOrtho(float left, float right, float bottom, float top, floa
         0 , 0 , 0,  1
     };
 }
-inline Matrix MatrixPerspective(float aspectRatio, float fovYRadians, float zNear, float zFar)
+inline Matrix MatrixProj2(float aspectRatio, float fovYRadians, float zNear, float zFar)
 {
     float yScale = tanf(0.5f * ((float)M_PI - fovYRadians));
     float xScale = yScale / aspectRatio;
@@ -350,73 +398,6 @@ inline Matrix MatrixPerspective(float aspectRatio, float fovYRadians, float zNea
         0, 0, 1, 0
     };
     return result;
-}
-inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
-{
-    Vector3 zaxis = direction;
-            zaxis = Vector3Normalize(zaxis);
-
-    Vector3 xaxis = Vector3Cross(Vector3Up(),zaxis);
-            xaxis = Vector3Normalize(xaxis);
-
-    Vector3 yaxis = Vector3Cross(zaxis,xaxis);
-
-    return
-    {
-        xaxis.x, yaxis.x, zaxis.x, position.x,
-        xaxis.y, yaxis.y, zaxis.y, position.y,
-        xaxis.z, yaxis.z, zaxis.z, position.z,
-        0.0f, 0.0f, 0.0f, 1.0f
-    };
-}
-
-
-inline Matrix MatrixView(Vector3 eye, float yaw, float pitch)
-{
-    return
-        MatrixRotateX(-pitch) *
-        MatrixRotateY(-yaw) *
-        MatrixTranslate(-eye);
-}
-inline Matrix MatrixView(const Camera* camera)
-{
-    return MatrixView(camera->position,camera->yaw,camera->pitch);
-}
-Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
-{
-    // Taken from https://www.geertarien.com/blog/2017/07/30/breakdown-of-the-lookAt-function-in-OpenGL/
-
-    Vector3 zaxis = target - eye;
-            zaxis = Vector3Normalize(zaxis);
-
-    Vector3 xaxis = Vector3Cross(up,zaxis);
-            xaxis = Vector3Normalize(xaxis);
-
-    Vector3 yaxis = Vector3Cross(zaxis,xaxis);
-
-    return
-    {
-        xaxis.x, xaxis.y, xaxis.z, -Vector3Dot(xaxis, eye),
-        yaxis.x, yaxis.y, yaxis.z, -Vector3Dot(yaxis, eye),
-        zaxis.x, zaxis.y, zaxis.z, -Vector3Dot(zaxis, eye),
-        0.0f, 0.0f, 0.0f, 1.0f
-    };
-}
-inline Matrix MatrixView2(Vector3 eye, Vector3 target, Vector3 up)
-{
-    Vector3 vz = eye - target;
-    vz = Vector3Normalize(vz);
-    Vector3 vx = Vector3Cross(up,vz);
-    vx = Vector3Normalize(vx);
-    Vector3 vy = Vector3Cross(vz,vx);
-
-    return Matrix
-    {
-        vx.x, vx.y, vx.z, -Vector3Dot(vx,eye),
-        vy.x, vy.y, vy.z, -Vector3Dot(vy,eye),
-        vz.x, vz.y, vz.z, -Vector3Dot(vz,eye),
-        0.0f, 0.0f, 0.0f, 1.0f
-    };
 }
 void UpdateCameraRotation(Camera* camera, float deltaTime, bool left, bool up, bool down, bool right)
 {
