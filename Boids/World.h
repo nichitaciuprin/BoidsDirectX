@@ -10,19 +10,8 @@ public:
     BoidWorld boidWorld;
     World()
     {
-        // camera.position += Vector3Up()*110;
-        // camera.position += Vector3Right()*175;
-        // camera.position += -Vector3Forward()*175;
-        // camera.yaw = MathToRadians(-45);
-        // camera.pitch = MathToRadians(15);
-
-        // camera.position += Vector3Up()*110;
-        // camera.position += Vector3Right()*175;
-        // camera.position += -Vector3Forward()*50;
-        // camera.yaw = MathToRadians(-45);
-        // camera.pitch = MathToRadians(15);
-
         camera.position += Vector3Up()*50;
+        camera.position += Vector3Backward()*200;
     }
     float time;
     void Update(float deltaTime,

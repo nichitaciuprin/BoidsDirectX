@@ -39,12 +39,6 @@ public:
             cubeModel->Draw(transformation);
         }
 
-        {
-            model = MatrixTranslate({0,50,0});
-            auto transformation = MatrixTransformaton(model,view,proj);
-            cubeModel->Draw(transformation);
-        }
-
         window->Present();
     }
     bool WindowIsClosed() const
