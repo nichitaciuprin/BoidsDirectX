@@ -1,65 +1,19 @@
 #pragma once
 
-struct Constants
-{
-    Matrix modelViewProj;
-};
-
-class DeviceRecources
+class ShaderBasic
 {
 public:
-    static DeviceRecources* GetInstance()
+    ShaderBasic()
     {
-        if (instance == nullptr)
-        {
-            instance = new DeviceRecources();
-        }
-        return instance;
-    }
-    ID3D11Device* GetDevice()
-    {
-        return device;
-    }
-    ID3D11DeviceContext* GetDeviceContext()
-    {
-        return deviceContext;
-    }
-    ID3D11Buffer* GetConstantBuffer()
-    {
-        return constantBuffer;
-    }
-    void UpdateConstantBuffer(Matrix modelViewProj)
-    {
-        // HLSL will transopose any matrix in constant buffer
-        modelViewProj = MatrixTranspose(modelViewProj);
-        D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-        deviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-        Constants* constants = (Constants*)(mappedSubresource.pData);
-        constants->modelViewProj = modelViewProj;
-        deviceContext->Unmap(constantBuffer, 0);
-    }
-private:
-    static DeviceRecources*   instance;
-    ID3D11Device*             device;
-    ID3D11DeviceContext*      deviceContext;
-    ID3D11InputLayout*        inputLayout;
-    ID3D11VertexShader*       vertexShader;
-    ID3D11PixelShader*        pixelShader;
-    ID3D11Buffer*             constantBuffer;
-    ID3D11RasterizerState*    rasterizerState;
-    ID3D11DepthStencilState*  depthStencilState;
-    DeviceRecources()
-    {
-        CreateDeviceAndDeviceContext();
-        #ifdef DEBUG_BUILD
-        EnableDebug();
-        #endif
-
         CompileShadersAndInputs();
         CreateConstantBuffer();
         CreateRasterizerState();
         CreateDepthStencilState();
-
+    }
+    void Set()
+    {
+        auto deviceRecources = DeviceRecources::GetInstance();
+        auto deviceContext = deviceRecources->GetDeviceContext();
         deviceContext->RSSetState(rasterizerState);
         deviceContext->OMSetDepthStencilState(depthStencilState, 0);
         deviceContext->IASetInputLayout(inputLayout);
@@ -68,39 +22,19 @@ private:
         deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
         deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     }
-    void CreateDeviceAndDeviceContext()
-    {
-        D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
-        UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+private:
+    ID3D11InputLayout*        inputLayout;
+    ID3D11VertexShader*       vertexShader;
+    ID3D11PixelShader*        pixelShader;
+    ID3D11Buffer*             constantBuffer;
+    ID3D11RasterizerState*    rasterizerState;
+    ID3D11DepthStencilState*  depthStencilState;
 
-        #if defined(DEBUG_BUILD)
-        creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
-        #endif
-
-        HRESULT hResult = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE,
-                                            0, creationFlags,
-                                            featureLevels, ARRAYSIZE(featureLevels),
-                                            D3D11_SDK_VERSION, &device, 0, &deviceContext);
-        assert(SUCCEEDED(hResult));
-    }
-    void EnableDebug()
-    {
-        ID3D11Debug *d3dDebug = nullptr;
-        device->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug);
-        if (d3dDebug)
-        {
-            ID3D11InfoQueue *d3dInfoQueue = nullptr;
-            if (SUCCEEDED(d3dDebug->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&d3dInfoQueue)))
-            {
-                d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
-                d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
-                d3dInfoQueue->Release();
-            }
-            d3dDebug->Release();
-        }
-    }
     void CompileShadersAndInputs()
     {
+        auto deviceRecources = DeviceRecources::GetInstance();
+        auto device = deviceRecources->GetDevice();
+
         UINT shaderCompileFlags = 0;
         // Compiling with this flag allows debugging shaders with Visual Studio
         #if defined(DEBUG_BUILD)
@@ -158,6 +92,9 @@ private:
     }
     void CreateConstantBuffer()
     {
+        auto deviceRecources = DeviceRecources::GetInstance();
+        auto device = deviceRecources->GetDevice();
+
         D3D11_BUFFER_DESC constantBufferDesc = {};
         // ByteWidth must be a multiple of 16, per the docs
         constantBufferDesc.ByteWidth      = sizeof(Constants) + 0xf & 0xfffffff0;
@@ -170,6 +107,9 @@ private:
     }
     void CreateRasterizerState()
     {
+        auto deviceRecources = DeviceRecources::GetInstance();
+        auto device = deviceRecources->GetDevice();
+
         D3D11_RASTERIZER_DESC rasterizerDesc = {};
         rasterizerDesc.FillMode = D3D11_FILL_SOLID;
         rasterizerDesc.CullMode = D3D11_CULL_BACK;
@@ -178,6 +118,9 @@ private:
     }
     void CreateDepthStencilState()
     {
+        auto deviceRecources = DeviceRecources::GetInstance();
+        auto device = deviceRecources->GetDevice();
+
         D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
         depthStencilDesc.DepthEnable    = TRUE;
         depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
@@ -185,4 +128,3 @@ private:
         device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
     }
 };
-DeviceRecources* DeviceRecources::instance = nullptr;

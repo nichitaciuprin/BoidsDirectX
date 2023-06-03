@@ -8,6 +8,7 @@
 #include "Window.h"
 #include "ModelCube.h"
 #include "ModelBird.h"
+#include "ShaderBasic.h"
 
 class Renderer
 {
