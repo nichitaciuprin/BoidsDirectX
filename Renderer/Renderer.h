@@ -61,7 +61,7 @@ public:
     bool Keydown_VK_DOWN()  { return window->keydown_VK_DOWN; }
     bool Keydown_VK_RIGHT() { return window->keydown_VK_RIGHT; }
 private:
-    unique_ptr<ShaderBasic> shader;
-    unique_ptr<ModelBird> model;
     unique_ptr<Window> window;
+    unique_ptr<ModelBird> model;
+    unique_ptr<ShaderBasic> shader;
 };
