@@ -63,3 +63,35 @@ Vector3 AABBShortPathIn(const AABB* aabb, Vector3 point)
     else if (point.z > AABBMaxZ(aabb)) result.z = AABBMaxZ(aabb) - point.z;
     return result;
 }
+bool InsideOrTouching(Vector3 point, Sphere sphere)
+{
+    return Vector3Length(point-sphere.position) <= sphere.radius;
+}
+Vector3 ClosesSurfacePoint(Vector3 point, Sphere sphere)
+{
+    auto diff = point-sphere.position;
+    auto dir = Vector3Normalize(diff);
+    auto dist = Vector3Length(diff);
+    if (dist < sphere.radius)
+        return dir* sphere.radius;
+    return sphere.position+dir*dist;
+}
+bool Raycast(Vector3 from, Vector3 dir, Sphere sphere, float* outDistance, Vector3* outPoint, Vector3* outNormal)
+{
+    Vector3 position = sphere.position;
+    float radius = sphere.radius;
+    Vector3 diff = from - position;
+    float a = Vector3LengthNoRoot(dir);
+    float b = Vector3Dot(dir,diff) * 2;
+    float c = Vector3LengthNoRoot(diff) - radius*radius;
+    float delta = b * b - 4 * a * c;
+    if (delta < 0) return false;
+    float dist = (float)(-b - MathSqrt(delta)) / (2 * a);
+    if (dist < 0) return false;
+    Vector3 point = from+dir*dist;
+    Vector3 normal = point-position;
+    *outDistance = dist;
+    *outPoint = point;
+    *outNormal = normal;
+    return true;
+}

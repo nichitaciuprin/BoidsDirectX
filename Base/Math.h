@@ -106,7 +106,11 @@ inline Vector3 Vector3Backward()
 }
 inline float Vector3Length(Vector3 v)
 {
-    return sqrtf(v.x*v.x + v.y*v.y + v.z*v.z);
+    return MathSqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+}
+inline float Vector3LengthNoRoot(Vector3 v)
+{
+    return v.x*v.x + v.y*v.y + v.z*v.z;
 }
 inline float Vector3Dot(Vector3 a, Vector3 b)
 {
