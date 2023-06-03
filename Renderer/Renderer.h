@@ -22,7 +22,7 @@ public:
         window->Update();
         window->Clear();
 
-        Matrix model;
+        Matrix world;
         Matrix view;
         Matrix proj;
 
@@ -32,10 +32,10 @@ public:
         auto length = boids.size();
         for (size_t i = 0; i < length; i++)
         {
-                auto boid = boids[i];
+            auto boid = boids[i];
 
-            model = MatrixWorld(boid.position,Vector3Normalize(boid.velocity));
-            auto transformation = MatrixTransformaton(model,view,proj);
+            world = MatrixWorld(boid.position,Vector3Normalize(boid.velocity));
+            auto transformation = MatrixTransformaton(world,view,proj);
             model->Draw(transformation);
         }
 
