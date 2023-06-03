@@ -17,7 +17,6 @@ public:
         auto deviceContext = deviceRecources->GetDeviceContext();
         deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
         deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-        deviceRecources->UpdateConstantBuffer(modelViewProj);
         deviceContext->DrawIndexed(indexCount, 0, 0);
     }
 private:

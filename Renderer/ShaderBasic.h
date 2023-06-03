@@ -9,9 +9,6 @@ public:
         CreateConstantBuffer();
         CreateRasterizerState();
         CreateDepthStencilState();
-    }
-    void Set()
-    {
         auto deviceRecources = DeviceRecources::GetInstance();
         auto deviceContext = deviceRecources->GetDeviceContext();
         deviceContext->RSSetState(rasterizerState);
@@ -21,6 +18,21 @@ public:
         deviceContext->PSSetShader(pixelShader, nullptr, 0);
         deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
         deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    }
+    void Set()
+    {
+    }
+    void UpdateConstantBuffer(Matrix modelViewProj)
+    {
+        auto deviceRecources = DeviceRecources::GetInstance();
+        auto deviceContext = deviceRecources->GetDeviceContext();
+        // HLSL will transopose any matrix in constant buffer
+        modelViewProj = MatrixTranspose(modelViewProj);
+        D3D11_MAPPED_SUBRESOURCE mappedSubresource;
+        deviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+        Constants* constants = (Constants*)(mappedSubresource.pData);
+        constants->modelViewProj = modelViewProj;
+        deviceContext->Unmap(constantBuffer, 0);
     }
 private:
     ID3D11InputLayout*        inputLayout;

@@ -17,9 +17,12 @@ public:
     {
         window = make_unique<Window>(hInstance);
         model = make_unique<ModelBird>();
+        shader = make_unique<ShaderBasic>();
     }
     void Render(const Camera* camera, const vector<Boid> boids)
     {
+        shader->Set();
+
         window->Update();
         window->Clear();
 
@@ -37,7 +40,8 @@ public:
 
             world = MatrixWorld(boid.position,Vector3Normalize(boid.velocity));
             auto transformation = MatrixTransformaton(world,view,proj);
-            model->Draw(transformation);
+            shader->UpdateConstantBuffer(transformation);
+            model->Draw();
         }
 
         window->Present();
@@ -57,6 +61,7 @@ public:
     bool Keydown_VK_DOWN()  { return window->keydown_VK_DOWN; }
     bool Keydown_VK_RIGHT() { return window->keydown_VK_RIGHT; }
 private:
+    unique_ptr<ShaderBasic> shader;
     unique_ptr<ModelBird> model;
     unique_ptr<Window> window;
 };
