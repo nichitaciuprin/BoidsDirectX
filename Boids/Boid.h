@@ -5,21 +5,7 @@ class Boid
 public:
     Vector3 position;
     Vector3 velocity;
-    Boid(const AABB& aabb, Subgen* subugen)
-    {
-        auto x = subugen->Range(AABBMinX(&aabb),AABBMaxX(&aabb));
-        auto y = subugen->Range(AABBMinY(&aabb),AABBMaxY(&aabb));
-        auto z = subugen->Range(AABBMinZ(&aabb),AABBMaxZ(&aabb));
-        position = Vector3{ x,y,z };
 
-        auto xRand = subugen->FractionSigned();
-        auto yRand = subugen->FractionSigned();
-        auto zRand = subugen->FractionSigned();
-        auto randDirection = Vector3{ xRand,yRand,zRand };
-        randDirection = Vector3Normalize(randDirection);
-        auto randSpeed = subugen->Range(minSpeed,maxSpeed);
-        velocity = randDirection * randSpeed;
-    }
     static void Update(vector<Boid>& boids, const AABB& aabb, float deltaTime)
     {
         auto length = boids.size();
@@ -50,6 +36,23 @@ public:
             boid.velocity = newVelocity;
         }
     }
+
+    Boid(const AABB& aabb, Subgen* subugen)
+    {
+        auto x = subugen->Range(AABBMinX(&aabb),AABBMaxX(&aabb));
+        auto y = subugen->Range(AABBMinY(&aabb),AABBMaxY(&aabb));
+        auto z = subugen->Range(AABBMinZ(&aabb),AABBMaxZ(&aabb));
+        position = Vector3{ x,y,z };
+
+        auto xRand = subugen->FractionSigned();
+        auto yRand = subugen->FractionSigned();
+        auto zRand = subugen->FractionSigned();
+        auto randDirection = Vector3{ xRand,yRand,zRand };
+        randDirection = Vector3Normalize(randDirection);
+        auto randSpeed = subugen->Range(minSpeed,maxSpeed);
+        velocity = randDirection * randSpeed;
+    }
+
 private:
     static const float minSpeed;
     static const float maxSpeed;
@@ -63,11 +66,13 @@ private:
     static const float power2;
     static const float power3;
     static const float acc;
+
     Vector3 vec_1;
     Vector3 vec_2;
     Vector3 vec_3;
     int count_1;
     int count_2;
+
     static void CalculatePair(Boid& boid1, Boid& boid2)
     {
         auto diff = boid1.position-boid2.position;
@@ -97,6 +102,7 @@ private:
         boid1.vec_3 = boid1.vec_3+normDiff;
         boid2.vec_3 = boid2.vec_3-normDiff;
     }
+
     Vector3 TargetVelocity(const AABB& aabb) const
     {
         auto l_vec_1 = vec_1;

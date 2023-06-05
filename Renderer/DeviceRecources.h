@@ -11,6 +11,7 @@ public:
         }
         return instance;
     }
+
     ID3D11Device* GetDevice()
     {
         return device;
@@ -19,10 +20,13 @@ public:
     {
         return deviceContext;
     }
+
 private:
     static DeviceRecources*   instance;
+
     ID3D11Device*             device;
     ID3D11DeviceContext*      deviceContext;
+
     DeviceRecources()
     {
         CreateDeviceAndDeviceContext();

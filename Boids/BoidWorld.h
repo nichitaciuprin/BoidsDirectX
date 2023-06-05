@@ -1,12 +1,11 @@
 #pragma once
 
-using namespace std;
-
 class BoidWorld
 {
 public:
     AABB aabb;
     vector<Boid> boids;
+
     BoidWorld()
     {
         Subgen subgen = Subgen(0);
@@ -19,10 +18,12 @@ public:
         for (int i = 0; i < boidCount; i++)
             boids.push_back(Boid(aabb,&subgen));
     }
+
     void Update(float deltaTime)
     {
         Boid::Update(boids,aabb,deltaTime);
     }
+
 private:
     int boidCount = 400;
 };

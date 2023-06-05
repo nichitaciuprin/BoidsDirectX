@@ -13,6 +13,7 @@ public:
     bool keydown_VK_LEFT = false;
     bool keydown_VK_DOWN = false;
     bool keydown_VK_RIGHT = false;
+
     Window(HINSTANCE hInstance)
     {
         windowClosed = false;
@@ -37,6 +38,7 @@ public:
         CreateRenderTargets();
         OnWindowResize(width,height);
     }
+
     void Clear()
     {
         auto deviceContext = DeviceRecources::GetInstance()->GetDeviceContext();
@@ -71,10 +73,12 @@ public:
     {
         return windowClosed;
     }
+
 private:
     static bool classRegistered;
     static const LPCWSTR className;
     static const LPCWSTR iconName;
+
     int width = 600;
     int height = 600;
     HWND m_hwnd;
@@ -82,6 +86,75 @@ private:
     IDXGISwapChain1* swapChain;
     ID3D11RenderTargetView* renderTargetView;
     ID3D11DepthStencilView* depthStencilView;
+
+    static void MaybeRegisterClass(HINSTANCE hInstance)
+    {
+        if (classRegistered) return;
+        WNDCLASSEXW windowClass = {};
+        windowClass.cbSize = sizeof(WNDCLASSEXW);
+        windowClass.style = CS_HREDRAW | CS_VREDRAW;
+        windowClass.lpfnWndProc = WndProc;
+        windowClass.hInstance = hInstance;
+        windowClass.hCursor = LoadCursorW(nullptr, IDC_ARROW);
+        windowClass.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
+        windowClass.lpszClassName = className;
+        windowClass.hIcon = LoadIconW(hInstance, iconName);
+        windowClass.hIconSm = LoadIconW(hInstance, iconName);
+        if (!RegisterClassExW(&windowClass)) throw;
+        classRegistered = true;
+    }
+    static void SetInstance(HWND hwnd, Window* window)
+    {
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(window));
+    }
+    static Window* GetInstance(HWND hwnd)
+    {
+        return reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+    }
+    static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+    {
+        auto window = GetInstance(hwnd);
+
+        if (window == NULL)
+            return DefWindowProc(hwnd, message, wParam, lParam);
+
+        switch (message)
+        {
+            case WM_DESTROY:
+            {
+                window->windowClosed = true;
+                break;
+            }
+            case WM_SIZE: // Window size was changed
+                window->GetWindowInfo(&window->width,&window->height);
+                window->OnWindowResize(window->width,window->height);
+                break;
+            case WM_KEYDOWN:
+            case WM_KEYUP:
+            {
+                bool isDown = (message == WM_KEYDOWN);
+                switch (wParam)
+                {
+                    case VK_ESCAPE : { DestroyWindow(hwnd);               break; }
+                    case 'W'       : { window->keydown_W        = isDown; break; }
+                    case 'A'       : { window->keydown_A        = isDown; break; }
+                    case 'S'       : { window->keydown_S        = isDown; break; }
+                    case 'D'       : { window->keydown_D        = isDown; break; }
+                    case 'E'       : { window->keydown_E        = isDown; break; }
+                    case 'Q'       : { window->keydown_Q        = isDown; break; }
+                    case VK_UP     : { window->keydown_VK_UP    = isDown; break; }
+                    case VK_LEFT   : { window->keydown_VK_LEFT  = isDown; break; }
+                    case VK_DOWN   : { window->keydown_VK_DOWN  = isDown; break; }
+                    case VK_RIGHT  : { window->keydown_VK_RIGHT = isDown; break; }
+                    default        : {                                    break; }
+                }
+                break;
+            }
+        }
+
+        return DefWindowProc(hwnd, message, wParam, lParam);
+    }
+
     void CreateSwapChain()
     {
         auto device = DeviceRecources::GetInstance()->GetDevice();
@@ -181,73 +254,6 @@ private:
         assert(SUCCEEDED(res));
 
         CreateRenderTargets();
-    }
-    static void MaybeRegisterClass(HINSTANCE hInstance)
-    {
-        if (classRegistered) return;
-        WNDCLASSEXW windowClass = {};
-        windowClass.cbSize = sizeof(WNDCLASSEXW);
-        windowClass.style = CS_HREDRAW | CS_VREDRAW;
-        windowClass.lpfnWndProc = WndProc;
-        windowClass.hInstance = hInstance;
-        windowClass.hCursor = LoadCursorW(nullptr, IDC_ARROW);
-        windowClass.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
-        windowClass.lpszClassName = className;
-        windowClass.hIcon = LoadIconW(hInstance, iconName);
-        windowClass.hIconSm = LoadIconW(hInstance, iconName);
-        if (!RegisterClassExW(&windowClass)) throw;
-        classRegistered = true;
-    }
-    static void SetInstance(HWND hwnd, Window* window)
-    {
-        SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(window));
-    }
-    static Window* GetInstance(HWND hwnd)
-    {
-        return reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-    }
-    static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
-    {
-        auto window = GetInstance(hwnd);
-
-        if (window == NULL)
-            return DefWindowProc(hwnd, message, wParam, lParam);
-
-        switch (message)
-        {
-            case WM_DESTROY:
-            {
-                window->windowClosed = true;
-                break;
-            }
-            case WM_SIZE: // Window size was changed
-                window->GetWindowInfo(&window->width,&window->height);
-                window->OnWindowResize(window->width,window->height);
-                break;
-            case WM_KEYDOWN:
-            case WM_KEYUP:
-            {
-                bool isDown = (message == WM_KEYDOWN);
-                switch (wParam)
-                {
-                    case VK_ESCAPE : { DestroyWindow(hwnd);               break; }
-                    case 'W'       : { window->keydown_W        = isDown; break; }
-                    case 'A'       : { window->keydown_A        = isDown; break; }
-                    case 'S'       : { window->keydown_S        = isDown; break; }
-                    case 'D'       : { window->keydown_D        = isDown; break; }
-                    case 'E'       : { window->keydown_E        = isDown; break; }
-                    case 'Q'       : { window->keydown_Q        = isDown; break; }
-                    case VK_UP     : { window->keydown_VK_UP    = isDown; break; }
-                    case VK_LEFT   : { window->keydown_VK_LEFT  = isDown; break; }
-                    case VK_DOWN   : { window->keydown_VK_DOWN  = isDown; break; }
-                    case VK_RIGHT  : { window->keydown_VK_RIGHT = isDown; break; }
-                    default        : {                                    break; }
-                }
-                break;
-            }
-        }
-
-        return DefWindowProc(hwnd, message, wParam, lParam);
     }
 };
 bool Window::classRegistered = false;
