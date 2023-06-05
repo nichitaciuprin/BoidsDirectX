@@ -1,10 +1,5 @@
 #pragma once
 
-struct Constants
-{
-    Matrix modelViewProj;
-};
-
 class DeviceRecources
 {
 public:

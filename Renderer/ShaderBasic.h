@@ -140,4 +140,9 @@ private:
         depthStencilDesc.DepthFunc      = D3D11_COMPARISON_LESS;
         device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
     }
+
+    struct Constants
+    {
+        Matrix modelViewProj;
+    };
 };
