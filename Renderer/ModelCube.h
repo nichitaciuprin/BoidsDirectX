@@ -5,11 +5,11 @@ class CubeModel
 public:
     CubeModel()
     {
-        auto device = DeviceRecources::GetInstance()->GetDevice();
         CreateVertexBuffer();
         CreateIndexBuffer();
     }
-    void Draw(Matrix modelViewProj)
+
+    void Draw()
     {
         UINT stride = sizeof(Vector3);
         UINT offset = 0;
@@ -17,12 +17,15 @@ public:
         auto deviceContext = deviceRecources->GetDeviceContext();
         deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
         deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+        deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         deviceContext->DrawIndexed(indexCount, 0, 0);
     }
+
 private:
     UINT indexCount;
     ID3D11Buffer* vertexBuffer;
     ID3D11Buffer* indexBuffer;
+
     void CreateVertexBuffer()
     {
         float vertexData[] =

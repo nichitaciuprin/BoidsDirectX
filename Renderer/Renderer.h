@@ -19,6 +19,7 @@ public:
         model = make_unique<ModelBird>();
         shader = make_unique<ShaderBasic>();
     }
+
     void Render(const Camera* camera, const vector<Boid> boids)
     {
         shader->Set();
@@ -60,6 +61,7 @@ public:
     bool Keydown_VK_LEFT()  { return window->keydown_VK_LEFT; }
     bool Keydown_VK_DOWN()  { return window->keydown_VK_DOWN; }
     bool Keydown_VK_RIGHT() { return window->keydown_VK_RIGHT; }
+
 private:
     unique_ptr<Window> window;
     unique_ptr<ModelBird> model;
