@@ -6,9 +6,12 @@
 #endif
 using namespace std;
 #include <windows.h>
+#include <wrl/client.h>
+using Microsoft::WRL::ComPtr;
 #include <winuser.h>
 #include <algorithm>
 #include <string>
+#include <iostream>
 #include <memory>
 #include <vector>
 #include <assert.h>
@@ -20,3 +23,4 @@ using namespace std;
 #include "Time.h"
 #include "Subgen.h"
 #include "Physics.h"
+#include "Console.h"

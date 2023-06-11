@@ -13,8 +13,7 @@ public:
     {
         UINT stride = sizeof(Vector3);
         UINT offset = 0;
-        auto deviceRecources = DeviceRecources::GetInstance();
-        auto deviceContext = deviceRecources->GetDeviceContext();
+        auto deviceContext = DeviceRecources::GetInstance()->GetDeviceContext();
         deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
         deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
         deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

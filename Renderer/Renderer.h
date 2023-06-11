@@ -4,6 +4,7 @@
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
+#include "ComExt.h"
 #include "DeviceRecources.h"
 #include "Window.h"
 #include "ModelCube.h"
@@ -16,6 +17,9 @@ public:
     Renderer(HINSTANCE hInstance)
     {
         window = make_unique<Window>(hInstance);
+        {
+            auto model2 = make_unique<ModelBird>();
+        }
         model = make_unique<ModelBird>();
         shader = make_unique<ShaderBasic>();
     }

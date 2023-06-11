@@ -13,8 +13,7 @@ public:
 
     void Set()
     {
-        auto deviceRecources = DeviceRecources::GetInstance();
-        auto deviceContext = deviceRecources->GetDeviceContext();
+        auto deviceContext = DeviceRecources::GetInstance()->GetDeviceContext();
         deviceContext->RSSetState(rasterizerState);
         deviceContext->OMSetDepthStencilState(depthStencilState, 0);
         deviceContext->IASetInputLayout(inputLayout);
@@ -24,8 +23,7 @@ public:
     }
     void UpdateConstantBuffer(Matrix modelViewProj)
     {
-        auto deviceRecources = DeviceRecources::GetInstance();
-        auto deviceContext = deviceRecources->GetDeviceContext();
+        auto deviceContext = DeviceRecources::GetInstance()->GetDeviceContext();
         // HLSL will transopose any matrix in constant buffer
         modelViewProj = MatrixTranspose(modelViewProj);
         D3D11_MAPPED_SUBRESOURCE mappedSubresource;
@@ -45,8 +43,7 @@ private:
 
     void CompileShadersAndInputs()
     {
-        auto deviceRecources = DeviceRecources::GetInstance();
-        auto device = deviceRecources->GetDevice();
+        auto device = DeviceRecources::GetInstance()->GetDevice();
 
         UINT shaderCompileFlags = 0;
         // Compiling with this flag allows debugging shaders with Visual Studio
@@ -105,8 +102,7 @@ private:
     }
     void CreateConstantBuffer()
     {
-        auto deviceRecources = DeviceRecources::GetInstance();
-        auto device = deviceRecources->GetDevice();
+        auto device = DeviceRecources::GetInstance()->GetDevice();
 
         D3D11_BUFFER_DESC constantBufferDesc = {};
         // ByteWidth must be a multiple of 16, per the docs
@@ -120,8 +116,7 @@ private:
     }
     void CreateRasterizerState()
     {
-        auto deviceRecources = DeviceRecources::GetInstance();
-        auto device = deviceRecources->GetDevice();
+        auto device = DeviceRecources::GetInstance()->GetDevice();
 
         D3D11_RASTERIZER_DESC rasterizerDesc = {};
         rasterizerDesc.FillMode = D3D11_FILL_SOLID;
@@ -131,8 +126,7 @@ private:
     }
     void CreateDepthStencilState()
     {
-        auto deviceRecources = DeviceRecources::GetInstance();
-        auto device = deviceRecources->GetDevice();
+        auto device = DeviceRecources::GetInstance()->GetDevice();
 
         D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
         depthStencilDesc.DepthEnable    = TRUE;

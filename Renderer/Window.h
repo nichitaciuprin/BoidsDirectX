@@ -43,9 +43,9 @@ public:
     {
         auto deviceContext = DeviceRecources::GetInstance()->GetDeviceContext();
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
-        deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
-        deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-        deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+        deviceContext->ClearRenderTargetView(renderTargetView.Get(), backgroundColor);
+        deviceContext->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+        deviceContext->OMSetRenderTargets(1, renderTargetView.GetAddressOf(), depthStencilView.Get());
     }
     Matrix GetPerspective()
     {
@@ -83,9 +83,10 @@ private:
     int height = 600;
     HWND m_hwnd;
     bool windowClosed;
-    IDXGISwapChain1* swapChain;
-    ID3D11RenderTargetView* renderTargetView;
-    ID3D11DepthStencilView* depthStencilView;
+
+    ComPtr<IDXGISwapChain1> swapChain;
+    ComPtr<ID3D11RenderTargetView> renderTargetView;
+    ComPtr<ID3D11DepthStencilView> depthStencilView;
 
     static void MaybeRegisterClass(HINSTANCE hInstance)
     {
@@ -163,22 +164,16 @@ private:
         IDXGIFactory2* dxgiFactory;
         IDXGIDevice1* dxgiDevice;
 
-        hResult = device->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
-        assert(SUCCEEDED(hResult));
-
+        ThrowIfFailed(device->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice));
         IDXGIAdapter* dxgiAdapter;
-        hResult = dxgiDevice->GetAdapter(&dxgiAdapter);
-        assert(SUCCEEDED(hResult));
+        ThrowIfFailed(dxgiDevice->GetAdapter(&dxgiAdapter));
         dxgiDevice->Release();
 
         DXGI_ADAPTER_DESC adapterDesc;
         dxgiAdapter->GetDesc(&adapterDesc);
-
         OutputDebugStringA("Graphics Device: ");
         OutputDebugStringW(adapterDesc.Description);
-
-        hResult = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory);
-        assert(SUCCEEDED(hResult));
+        ThrowIfFailed(dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory));
         dxgiAdapter->Release();
 
         DXGI_SWAP_CHAIN_DESC1 d3d11SwapChainDesc = {};
@@ -194,9 +189,7 @@ private:
         d3d11SwapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
         d3d11SwapChainDesc.Flags = 0;
 
-        hResult = dxgiFactory->CreateSwapChainForHwnd(device, m_hwnd, &d3d11SwapChainDesc, 0, 0, &swapChain);
-        assert(SUCCEEDED(hResult));
-
+        ThrowIfFailed(dxgiFactory->CreateSwapChainForHwnd(device, m_hwnd, &d3d11SwapChainDesc, 0, 0, swapChain.GetAddressOf()));
         dxgiFactory->Release();
     }
     void CreateRenderTargets()
@@ -204,27 +197,17 @@ private:
         auto device = DeviceRecources::GetInstance()->GetDevice();
 
         ID3D11Texture2D* d3d11FrameBuffer;
-        HRESULT hResult = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
-        assert(SUCCEEDED(hResult));
-
-        hResult = device->CreateRenderTargetView(d3d11FrameBuffer, 0, &renderTargetView);
-        assert(SUCCEEDED(hResult));
-
+        ThrowIfFailed(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer));
+        ThrowIfFailed(device->CreateRenderTargetView(d3d11FrameBuffer, 0, &renderTargetView));
         D3D11_TEXTURE2D_DESC depthBufferDesc;
         d3d11FrameBuffer->GetDesc(&depthBufferDesc);
-
         d3d11FrameBuffer->Release();
 
         depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
         depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
         ID3D11Texture2D* depthBuffer = {};
-        device->CreateTexture2D(&depthBufferDesc, nullptr, &depthBuffer);
-
-        assert(depthBuffer != nullptr);
-
+        ThrowIfFailed(device->CreateTexture2D(&depthBufferDesc, nullptr, &depthBuffer));
         device->CreateDepthStencilView(depthBuffer, nullptr, &depthStencilView);
-
         depthBuffer->Release();
     }
     void GetWindowInfo(int* outWindowWidth, int* outWindowHeight)
@@ -250,8 +233,7 @@ private:
         renderTargetView->Release();
         depthStencilView->Release();
 
-        HRESULT res = swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
-        assert(SUCCEEDED(res));
+        ThrowIfFailed(swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0));
 
         CreateRenderTargets();
     }
