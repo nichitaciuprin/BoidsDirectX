@@ -51,11 +51,15 @@ private:
     }
     void EnableDebug()
     {
+        HRESULT hResult;
+
         ID3D11Debug *d3dDebug = nullptr;
-        assert(SUCCEEDED(device->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug)));
+        hResult = device->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug);
+        assert(SUCCEEDED(hResult));
 
         ID3D11InfoQueue *d3dInfoQueue = nullptr;
-        assert(SUCCEEDED(d3dDebug->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&d3dInfoQueue)));
+        hResult = d3dDebug->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&d3dInfoQueue);
+        assert(SUCCEEDED(hResult));
 
         d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
         d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
