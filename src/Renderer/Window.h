@@ -201,10 +201,12 @@ private:
     }
     void CreateRenderTargets()
     {
+        HRESULT hResult;
+
         auto device = DeviceRecources::GetInstance()->GetDevice();
 
         ID3D11Texture2D* d3d11FrameBuffer;
-        HRESULT hResult = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
+        hResult = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&d3d11FrameBuffer);
         assert(SUCCEEDED(hResult));
 
         hResult = device->CreateRenderTargetView(d3d11FrameBuffer, 0, &renderTargetView);
