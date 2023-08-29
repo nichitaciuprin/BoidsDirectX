@@ -252,8 +252,8 @@ private:
         renderTargetView->Release();
         depthStencilView->Release();
 
-        HRESULT res = swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
-        assert(SUCCEEDED(res));
+        HRESULT hResult = swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+        assert(SUCCEEDED(hResult));
 
         CreateRenderTargets();
     }
