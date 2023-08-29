@@ -20,7 +20,7 @@ public:
         shader = make_unique<ShaderBasic>();
     }
 
-    void Render(const Camera* camera, const vector<Boid> boids)
+    void Render(const Camera* camera, const vector<Boid>& boids)
     {
         shader->Set();
 
