@@ -74,7 +74,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     UNREFERENCED_PARAMETER(nCmdShow);
 
     const wchar_t window_class_name[] = L"WindowClass1";
-    WNDCLASS window_class = { 0 };
+    WNDCLASS window_class = {};
     window_class.lpfnWndProc = WindowProcessMessage;
     window_class.hInstance = hInstance;
     window_class.lpszClassName = (LPCSTR)window_class_name;
@@ -94,7 +94,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     assert(window_handle != NULL);
 
-    MSG message = { 0 };
+    MSG message = {};
     unsigned int p = 0;
 
     while (true)
