@@ -19,7 +19,8 @@ static BITMAPINFO frame_bitmap_info;
 static HBITMAP frame_bitmap = 0;
 static HDC frame_device_context = 0;
 
-LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM wParam, LPARAM lParam)
+{
     switch(message) {
         case WM_QUIT:
         case WM_DESTROY: {
@@ -61,7 +62,7 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
 {
     const wchar_t window_class_name[] = L"My Window Class";
-    static WNDCLASS window_class = { 0 };
+    WNDCLASS window_class = { 0 };
     window_class.lpfnWndProc = WindowProcessMessage;
     window_class.hInstance = hInstance;
     window_class.lpszClassName = (LPCSTR)window_class_name;
@@ -73,16 +74,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
     frame_bitmap_info.bmiHeader.biCompression = BI_RGB;
     frame_device_context = CreateCompatibleDC(0);
 
-    static HWND window_handle;
-    window_handle = CreateWindow((PCSTR)window_class_name, "Drawing Pixels", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                                 640, 300, 640, 480, NULL, NULL, hInstance, NULL);
+    HWND window_handle;
+    window_handle = CreateWindow((PCSTR)window_class_name, "Drawing Pixels",
+                                 WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                                 640, 300, 640, 480,
+                                 NULL, NULL, hInstance, NULL);
+
     if(window_handle == NULL) { return -1; }
 
-    while(!quit) {
-        static MSG message = { 0 };
-        while(PeekMessage(&message, NULL, 0, 0, PM_REMOVE)) { DispatchMessage(&message); }
+    MSG message = { 0 };
+    unsigned int p = 0;
 
-        static unsigned int p = 0;
+    while(true)
+    {
+        if (quit) break;
+
+        while(PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
+        {
+            DispatchMessage(&message);
+        }
+
         frame.pixels[(p++)%(frame.width*frame.height)] = Rand32();
         frame.pixels[Rand32()%(frame.width*frame.height)] = 0;
 
