@@ -51,7 +51,7 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
             frame_bitmap_info.bmiHeader.biWidth  = LOWORD(lParam);
             frame_bitmap_info.bmiHeader.biHeight = HIWORD(lParam);
 
-            if(frame_bitmap) DeleteObject(frame_bitmap);
+            if (frame_bitmap) DeleteObject(frame_bitmap);
             frame_bitmap = CreateDIBSection(NULL, &frame_bitmap_info, DIB_RGB_COLORS, (void**)&frame.pixels, 0, 0);
             SelectObject(frame_device_context, frame_bitmap);
 
@@ -91,16 +91,16 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
                                  640, 300, 640, 480,
                                  NULL, NULL, hInstance, NULL);
 
-    if(window_handle == NULL) { return -1; }
+    if (window_handle == NULL) { return -1; }
 
     MSG message = { 0 };
     unsigned int p = 0;
 
-    while(true)
+    while (true)
     {
         if (quit) break;
 
-        while(PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
+        while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
         {
             DispatchMessage(&message);
         }
