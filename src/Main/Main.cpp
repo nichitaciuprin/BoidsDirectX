@@ -21,13 +21,16 @@ static HDC frame_device_context = 0;
 
 LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    switch(message) {
+    switch(message)
+    {
         case WM_QUIT:
-        case WM_DESTROY: {
+        case WM_DESTROY:
+        {
             quit = true;
-        } break;
-
-        case WM_PAINT: {
+            break;
+        }
+        case WM_PAINT:
+        {
             static PAINTSTRUCT paint;
             static HDC device_context;
             device_context = BeginPaint(window_handle, &paint);
@@ -38,9 +41,10 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
                    paint.rcPaint.left, paint.rcPaint.top,
                    SRCCOPY);
             EndPaint(window_handle, &paint);
-        } break;
-
-        case WM_SIZE: {
+            break;
+        }
+        case WM_SIZE:
+        {
             frame_bitmap_info.bmiHeader.biWidth  = LOWORD(lParam);
             frame_bitmap_info.bmiHeader.biHeight = HIWORD(lParam);
 
@@ -50,11 +54,10 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
 
             frame.width =  LOWORD(lParam);
             frame.height = HIWORD(lParam);
-        } break;
-
-        default: {
-            return DefWindowProc(window_handle, message, wParam, lParam);
+            break;
         }
+        default:
+            return DefWindowProc(window_handle, message, wParam, lParam);
     }
     return 0;
 }
