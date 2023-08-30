@@ -14,10 +14,10 @@ struct {
     uint32_t* pixels;
 } frame = {0};
 
-static bool quit = false;
-static BITMAPINFO frame_bitmap_info;
-static HBITMAP frame_bitmap = 0;
-static HDC frame_device_context = 0;
+bool quit = false;
+BITMAPINFO frame_bitmap_info;
+HBITMAP frame_bitmap = 0;
+HDC frame_device_context = 0;
 
 LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -31,12 +31,13 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
         }
         case WM_PAINT:
         {
-            static PAINTSTRUCT paint;
-            static HDC device_context;
+            PAINTSTRUCT paint;
+            HDC device_context;
             device_context = BeginPaint(window_handle, &paint);
             BitBlt(device_context,
                    paint.rcPaint.left, paint.rcPaint.top,
-                   paint.rcPaint.right - paint.rcPaint.left, paint.rcPaint.bottom - paint.rcPaint.top,
+                   paint.rcPaint.right - paint.rcPaint.left,
+                   paint.rcPaint.bottom - paint.rcPaint.top,
                    frame_device_context,
                    paint.rcPaint.left, paint.rcPaint.top,
                    SRCCOPY);
@@ -69,7 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
     UNREFERENCED_PARAMETER(pCmdLine);
     UNREFERENCED_PARAMETER(nCmdShow);
 
-    const wchar_t window_class_name[] = L"My Window Class";
+    const wchar_t window_class_name[] = L"WindowClass1";
     WNDCLASS window_class = { 0 };
     window_class.lpfnWndProc = WindowProcessMessage;
     window_class.hInstance = hInstance;
