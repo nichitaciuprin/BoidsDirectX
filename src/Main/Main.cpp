@@ -2,7 +2,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-static bool quit = false;
+#if RAND_MAX == 32767
+#define Rand32() ((rand() << 16) + (rand() << 1) + (rand() & 1))
+#else
+#define Rand32() rand()
+#endif
 
 struct {
     int width;
@@ -10,52 +14,10 @@ struct {
     uint32_t* pixels;
 } frame = {0};
 
-LRESULT CALLBACK WindowProcessMessage(HWND, UINT, WPARAM, LPARAM);
-#if RAND_MAX == 32767
-#define Rand32() ((rand() << 16) + (rand() << 1) + (rand() & 1))
-#else
-#define Rand32() rand()
-#endif
-
+static bool quit = false;
 static BITMAPINFO frame_bitmap_info;
 static HBITMAP frame_bitmap = 0;
 static HDC frame_device_context = 0;
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
-{
-    const wchar_t window_class_name[] = L"My Window Class";
-    static WNDCLASS window_class = { 0 };
-    window_class.lpfnWndProc = WindowProcessMessage;
-    window_class.hInstance = hInstance;
-    window_class.lpszClassName = (LPCSTR)window_class_name;
-    RegisterClass(&window_class);
-
-    frame_bitmap_info.bmiHeader.biSize = sizeof(frame_bitmap_info.bmiHeader);
-    frame_bitmap_info.bmiHeader.biPlanes = 1;
-    frame_bitmap_info.bmiHeader.biBitCount = 32;
-    frame_bitmap_info.bmiHeader.biCompression = BI_RGB;
-    frame_device_context = CreateCompatibleDC(0);
-
-    static HWND window_handle;
-    window_handle = CreateWindow((PCSTR)window_class_name, "Drawing Pixels", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                                 640, 300, 640, 480, NULL, NULL, hInstance, NULL);
-    if(window_handle == NULL) { return -1; }
-
-    while(!quit) {
-        static MSG message = { 0 };
-        while(PeekMessage(&message, NULL, 0, 0, PM_REMOVE)) { DispatchMessage(&message); }
-
-        static unsigned int p = 0;
-        frame.pixels[(p++)%(frame.width*frame.height)] = Rand32();
-        frame.pixels[Rand32()%(frame.width*frame.height)] = 0;
-
-        InvalidateRect(window_handle, NULL, FALSE);
-        UpdateWindow(window_handle);
-    }
-
-    return 0;
-}
-
 
 LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM wParam, LPARAM lParam) {
     switch(message) {
@@ -93,5 +55,40 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
             return DefWindowProc(window_handle, message, wParam, lParam);
         }
     }
+    return 0;
+}
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
+{
+    const wchar_t window_class_name[] = L"My Window Class";
+    static WNDCLASS window_class = { 0 };
+    window_class.lpfnWndProc = WindowProcessMessage;
+    window_class.hInstance = hInstance;
+    window_class.lpszClassName = (LPCSTR)window_class_name;
+    RegisterClass(&window_class);
+
+    frame_bitmap_info.bmiHeader.biSize = sizeof(frame_bitmap_info.bmiHeader);
+    frame_bitmap_info.bmiHeader.biPlanes = 1;
+    frame_bitmap_info.bmiHeader.biBitCount = 32;
+    frame_bitmap_info.bmiHeader.biCompression = BI_RGB;
+    frame_device_context = CreateCompatibleDC(0);
+
+    static HWND window_handle;
+    window_handle = CreateWindow((PCSTR)window_class_name, "Drawing Pixels", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                                 640, 300, 640, 480, NULL, NULL, hInstance, NULL);
+    if(window_handle == NULL) { return -1; }
+
+    while(!quit) {
+        static MSG message = { 0 };
+        while(PeekMessage(&message, NULL, 0, 0, PM_REMOVE)) { DispatchMessage(&message); }
+
+        static unsigned int p = 0;
+        frame.pixels[(p++)%(frame.width*frame.height)] = Rand32();
+        frame.pixels[Rand32()%(frame.width*frame.height)] = 0;
+
+        InvalidateRect(window_handle, NULL, FALSE);
+        UpdateWindow(window_handle);
+    }
+
     return 0;
 }
