@@ -8,12 +8,14 @@
 #define Rand32() rand()
 #endif
 
-struct {
+struct Frame
+{
     int width;
     int height;
     uint32_t* pixels;
-} frame = {0};
+};
 
+Frame frame = {};
 bool quit = false;
 BITMAPINFO frame_bitmap_info;
 HBITMAP frame_bitmap = 0;
