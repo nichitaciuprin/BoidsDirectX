@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <stdbool.h>
+#include <assert.h>
 #include <stdint.h>
 
 #if RAND_MAX == 32767
@@ -91,7 +92,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
                                  640, 300, 640, 480,
                                  NULL, NULL, hInstance, NULL);
 
-    if (window_handle == NULL) { return -1; }
+    assert(window_handle != NULL);
 
     MSG message = { 0 };
     unsigned int p = 0;
