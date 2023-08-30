@@ -58,10 +58,12 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
 
             if (frame_bitmap) DeleteObject(frame_bitmap);
             frame_bitmap = CreateDIBSection(NULL, &frame_bitmap_info, DIB_RGB_COLORS, (void**)&frame.pixels, 0, 0);
+            assert(frame_bitmap != nullptr);
             SelectObject(frame_device_context, frame_bitmap);
 
             frame.width  = LOWORD(lParam);
             frame.height = HIWORD(lParam);
+
             break;
         }
         default:
