@@ -36,7 +36,9 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
         {
             PAINTSTRUCT paint;
             HDC device_context;
+
             device_context = BeginPaint(window_handle, &paint);
+
             BitBlt(device_context,
                    paint.rcPaint.left, paint.rcPaint.top,
                    paint.rcPaint.right - paint.rcPaint.left,
@@ -44,7 +46,9 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
                    frame_device_context,
                    paint.rcPaint.left, paint.rcPaint.top,
                    SRCCOPY);
+
             EndPaint(window_handle, &paint);
+
             break;
         }
         case WM_SIZE:
