@@ -112,8 +112,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             DispatchMessage(&message);
         }
 
-        frame.pixels[(p++)%(frame.width*frame.height)] = Rand32();
-        frame.pixels[Rand32()%(frame.width*frame.height)] = 0;
+        int pixelCount = frame.width*frame.height;
+        frame.pixels[(p++)%(pixelCount)] = Rand32();
+        frame.pixels[Rand32()%(pixelCount)] = 0;
 
         InvalidateRect(window_handle, NULL, FALSE);
         UpdateWindow(window_handle);
