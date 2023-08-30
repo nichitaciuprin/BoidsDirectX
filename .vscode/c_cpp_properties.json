@@ -7,11 +7,6 @@
                 "${workspaceFolder}/deps/WindowsKits/**",
                 "${workspaceFolder}/deps/MSVC/**"
             ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
             "windowsSdkVersion": "10.0.22621.0",
             "compilerPath": "${workspaceFolder}/deps/MSVC/bin/Hostx64/x64/cl.exe",
             "cStandard": "c17",

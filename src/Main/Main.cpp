@@ -21,12 +21,13 @@ static BITMAPINFO frame_bitmap_info;
 static HBITMAP frame_bitmap = 0;
 static HDC frame_device_context = 0;
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow) {
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
+{
     const wchar_t window_class_name[] = L"My Window Class";
     static WNDCLASS window_class = { 0 };
     window_class.lpfnWndProc = WindowProcessMessage;
     window_class.hInstance = hInstance;
-    window_class.lpszClassName = (PCSTR)window_class_name;
+    window_class.lpszClassName = (LPCSTR)window_class_name;
     RegisterClass(&window_class);
 
     frame_bitmap_info.bmiHeader.biSize = sizeof(frame_bitmap_info.bmiHeader);
