@@ -53,7 +53,7 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
             frame_bitmap = CreateDIBSection(NULL, &frame_bitmap_info, DIB_RGB_COLORS, (void**)&frame.pixels, 0, 0);
             SelectObject(frame_device_context, frame_bitmap);
 
-            frame.width =  LOWORD(lParam);
+            frame.width  = LOWORD(lParam);
             frame.height = HIWORD(lParam);
             break;
         }
