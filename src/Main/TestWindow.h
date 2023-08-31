@@ -1,37 +1,24 @@
 #pragma once
 
-// class TestWindow
-// {
-// public:
-//     TestWindow()
-//     {
-//     }
-//     ~TestWindow()
-//     {
-//     }
-// };
+HWND           TestWindow_hwnd = 0;
+bool           TestWindow_windowClassRegistered = false;
+const LPCWSTR  TestWindow_windowClassName = L"WindowClass1";
 
-HWND          TestWindow_hwnd = 0;
-bool          TestWindow_windowClassRegistered = false;
-const wchar_t TestWindow_windowClassName[] = L"WindowClass1";
-// const LPCWSTR TestWindow_windowClassName = L"WindowClass1";
-
-HDC        TestWindow_hdc = 0;
-HBITMAP    TestWindow_hbitmap = 0;
-BITMAPINFO TestWindow_bitmapinfo;
-uint32_t*  TestWindow_pixels = 0;
-int        TestWindow_width = 0;
-int        TestWindow_height = 0;
+HDC         TestWindow_hdc = 0;
+HBITMAP     TestWindow_hbitmap = 0;
+BITMAPINFO  TestWindow_bitmapinfo;
+uint32_t*   TestWindow_pixels = 0;
+int         TestWindow_width = 0;
+int         TestWindow_height = 0;
 
 LRESULT CALLBACK TestWindow_MessageHandler(HWND window_handle, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    // return DefWindowProc(window_handle, message, wParam, lParam);
     switch(message)
     {
         case WM_QUIT:
         case WM_DESTROY:
         {
-            TestWindow_hwnd = 0; //quit = true;
+            TestWindow_hwnd = 0;
             break;
         }
         case WM_PAINT:
@@ -74,14 +61,6 @@ LRESULT CALLBACK TestWindow_MessageHandler(HWND window_handle, UINT message, WPA
     }
     return 0;
 }
-void TestWindow_RegisterWindowClass(HINSTANCE hInstance)
-{
-    WNDCLASS window_class = {};
-    window_class.lpfnWndProc = TestWindow_MessageHandler;
-    window_class.hInstance = hInstance;
-    window_class.lpszClassName = (LPCSTR)TestWindow_windowClassName;
-    RegisterClass(&window_class);
-}
 void TestWindow_Create()
 {
     if (TestWindow_hwnd != 0) return;
@@ -90,8 +69,12 @@ void TestWindow_Create()
 
     if (!TestWindow_windowClassRegistered)
     {
-        TestWindow_RegisterWindowClass(hInstance);
         TestWindow_windowClassRegistered = true;
+        WNDCLASS window_class = {};
+        window_class.lpfnWndProc = TestWindow_MessageHandler;
+        window_class.hInstance = hInstance;
+        window_class.lpszClassName = (LPCSTR)TestWindow_windowClassName;
+        RegisterClass(&window_class);
     }
 
     TestWindow_bitmapinfo.bmiHeader.biSize = sizeof(TestWindow_bitmapinfo.bmiHeader);
@@ -116,6 +99,10 @@ void TestWindow_Create()
                                  NULL, NULL, hInstance, NULL);
 
     assert(TestWindow_hwnd != NULL);
+}
+bool TestWindow_Exists()
+{
+    return TestWindow_hwnd != 0;
 }
 void TestWindow_Update()
 {

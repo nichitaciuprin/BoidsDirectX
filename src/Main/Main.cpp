@@ -34,7 +34,7 @@ int main()
 {
     TestWindow_Create();
 
-    while (true)
+    while (TestWindow_Exists())
     {
         ChangePixelsRandomly(TestWindow_pixels, TestWindow_width, TestWindow_height);
         TestWindow_Update();
