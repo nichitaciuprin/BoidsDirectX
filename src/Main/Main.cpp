@@ -8,8 +8,8 @@
 #include <string>
 #include <memory>
 #include <vector>
-#include "TestWindow.h"
 using namespace std;
+#include "TestWindow.h"
 
 #if RAND_MAX == 32767
 #define Rand32() ((rand() << 16) + (rand() << 1) + (rand() & 1))

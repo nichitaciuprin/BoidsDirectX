@@ -44,6 +44,8 @@ LRESULT CALLBACK TestWindow_MessageHandler(HWND hwnd, UINT message, WPARAM wPara
             int windowWidth = LOWORD(lParam);
             int windowHeight = HIWORD(lParam);
 
+            cout << windowWidth << endl;
+
             TestWindow_bitmapinfo.bmiHeader.biWidth  = windowWidth;
             TestWindow_bitmapinfo.bmiHeader.biHeight = windowHeight;
 
@@ -83,19 +85,19 @@ void TestWindow_Create()
     TestWindow_bitmapinfo.bmiHeader.biCompression = BI_RGB;
     TestWindow_hdc = CreateCompatibleDC(0);
 
-    int width = 640;
-    int height = 480;
-    RECT rc = { 0, 0, width, height };
+    int clientWidth = 640;
+    int clientHeight = 480;
+    RECT rc = { 0, 0, clientWidth, clientHeight };
     AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-    auto width2 = rc.right - rc.left;
-    auto height2 = rc.bottom - rc.top;
+    auto windowWidth = rc.right - rc.left;
+    auto windowsHeight = rc.bottom - rc.top;
     // m_hwnd = CreateWindowExW(0, className, className, WS_OVERLAPPEDWINDOW,
     //                             CW_USEDEFAULT, CW_USEDEFAULT, width2, height2,
     //                             nullptr, nullptr, hInstance, nullptr);
 
     TestWindow_hwnd = CreateWindow((PCSTR)TestWindow_windowClassName, "TestWindow",
                                  WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                                 0, 0, width2, height2,
+                                 0, 0, windowWidth, windowsHeight,
                                  NULL, NULL, hInstance, NULL);
 
     assert(TestWindow_hwnd != NULL);
