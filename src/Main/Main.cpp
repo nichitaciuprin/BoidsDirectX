@@ -3,6 +3,12 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <stdint.h>
+#include <iostream>
+#include <algorithm>
+#include <string>
+#include <memory>
+#include <vector>
+using namespace std;
 
 #if RAND_MAX == 32767
 #define Rand32() ((rand() << 16) + (rand() << 1) + (rand() & 1))
@@ -54,16 +60,19 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
         }
         case WM_SIZE:
         {
-            frame_bitmap_info.bmiHeader.biWidth  = LOWORD(lParam);
-            frame_bitmap_info.bmiHeader.biHeight = HIWORD(lParam);
+            int windowWidth = LOWORD(lParam);
+            int windowHeight = HIWORD(lParam);
+
+            frame_bitmap_info.bmiHeader.biWidth  = windowWidth;
+            frame_bitmap_info.bmiHeader.biHeight = windowHeight;
 
             if (frame_bitmap) DeleteObject(frame_bitmap);
             frame_bitmap = CreateDIBSection(NULL, &frame_bitmap_info, DIB_RGB_COLORS, (void**)&frame.pixels, 0, 0);
             assert(frame_bitmap != nullptr);
             SelectObject(frame_device_context, frame_bitmap);
 
-            frame.width  = LOWORD(lParam);
-            frame.height = HIWORD(lParam);
+            frame.width  = windowWidth;
+            frame.height = windowHeight;
 
             break;
         }
