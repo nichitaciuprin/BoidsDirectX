@@ -99,8 +99,7 @@ int main()
     frame_bitmap_info.bmiHeader.biCompression = BI_RGB;
     frame_device_context = CreateCompatibleDC(0);
 
-    HWND window_handle;
-    window_handle = CreateWindow((PCSTR)window_class_name, "Drawing Pixels",
+    HWND window_handle = CreateWindow((PCSTR)window_class_name, "Drawing Pixels",
                                  WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                                  640, 300, 640, 480,
                                  NULL, NULL, hInstance, NULL);
