@@ -11,7 +11,7 @@ uint32_t*   TestWindow_pixels = 0;
 int         TestWindow_width = 0;
 int         TestWindow_height = 0;
 
-LRESULT CALLBACK TestWindow_MessageHandler(HWND window_handle, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK TestWindow_MessageHandler(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch(message)
     {
@@ -25,7 +25,7 @@ LRESULT CALLBACK TestWindow_MessageHandler(HWND window_handle, UINT message, WPA
         {
             PAINTSTRUCT paint;
 
-            HDC device_context = BeginPaint(window_handle, &paint);
+            HDC device_context = BeginPaint(hwnd, &paint);
 
             BitBlt(device_context,
                    paint.rcPaint.left, paint.rcPaint.top,
@@ -35,7 +35,7 @@ LRESULT CALLBACK TestWindow_MessageHandler(HWND window_handle, UINT message, WPA
                    paint.rcPaint.left, paint.rcPaint.top,
                    SRCCOPY);
 
-            EndPaint(window_handle, &paint);
+            EndPaint(hwnd, &paint);
 
             break;
         }
@@ -57,7 +57,7 @@ LRESULT CALLBACK TestWindow_MessageHandler(HWND window_handle, UINT message, WPA
 
             break;
         }
-        default: return DefWindowProc(window_handle, message, wParam, lParam);
+        default: return DefWindowProc(hwnd, message, wParam, lParam);
     }
     return 0;
 }
