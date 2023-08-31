@@ -6,7 +6,7 @@ const LPCWSTR  TestWindow_windowClassName = L"WindowClass1";
 
 HDC         TestWindow_hdc = 0;
 HBITMAP     TestWindow_hbitmap = 0;
-BITMAPINFO  TestWindow_bitmapinfo;
+BITMAPINFO  TestWindow_bitmapinfo = {};
 uint32_t*   TestWindow_pixels = 0;
 int         TestWindow_width = 0;
 int         TestWindow_height = 0;
