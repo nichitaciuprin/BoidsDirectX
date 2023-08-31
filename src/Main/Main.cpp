@@ -26,9 +26,11 @@ struct Frame
 int pixelIndex = 0;
 void ChangePixelsRandomly(uint32_t* pixels, int width, int height)
 {
+    int i1 = pixelIndex;
+    int i2 = Rand32();
     int pixelCount = width*height;
-    int i1 = (pixelIndex)%(pixelCount);
-    int i2 = Rand32()%(pixelCount);
+    i1 = i1 % pixelCount;
+    i2 = i2 % pixelCount;
     pixels[i1] = Rand32();
     pixels[i2] = 0;
     pixelIndex++;
