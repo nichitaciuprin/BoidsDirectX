@@ -10,18 +10,31 @@
 #include <vector>
 using namespace std;
 
-#if RAND_MAX == 32767
-#define Rand32() ((rand() << 16) + (rand() << 1) + (rand() & 1))
-#else
-#define Rand32() rand()
-#endif
-
 struct Frame
 {
     int width;
     int height;
     uint32_t* pixels;
 };
+
+//====================
+#if RAND_MAX == 32767
+#define Rand32() ((rand() << 16) + (rand() << 1) + (rand() & 1))
+#else
+#define Rand32() rand()
+#endif
+int pixelIndex = 0;
+void ChangePixelsRandomly(uint32_t* pixels, int width, int height)
+{
+    int pixelCount = width*height;
+    int i1 = (pixelIndex)%(pixelCount);
+    int i2 = Rand32()%(pixelCount);
+    pixels[i1] = Rand32();
+    pixels[i2] = 0;
+    pixelIndex++;
+}
+//====================
+
 
 Frame frame = {};
 bool quit = false;
@@ -107,7 +120,6 @@ int main()
     assert(window_handle != NULL);
 
     MSG message = {};
-    unsigned int p = 0;
 
     while (true)
     {
@@ -118,9 +130,7 @@ int main()
             DispatchMessage(&message);
         }
 
-        int pixelCount = frame.width*frame.height;
-        frame.pixels[(p++)%(pixelCount)] = Rand32();
-        frame.pixels[Rand32()%(pixelCount)] = 0;
+        ChangePixelsRandomly(frame.pixels, frame.width, frame.height);
 
         InvalidateRect(window_handle, NULL, FALSE);
         UpdateWindow(window_handle);
