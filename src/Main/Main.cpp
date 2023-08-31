@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
 #include <stdint.h>
@@ -72,12 +73,9 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
     return 0;
 }
 
-int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
+int main()
 {
-    UNREFERENCED_PARAMETER(hInstance);
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-    UNREFERENCED_PARAMETER(nCmdShow);
+    HINSTANCE hInstance = GetModuleHandle(NULL);
 
     const wchar_t window_class_name[] = L"WindowClass1";
     WNDCLASS window_class = {};
