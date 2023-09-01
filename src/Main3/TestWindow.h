@@ -5,6 +5,7 @@ bool           TestWindow_windowClassRegistered = false;
 const LPCWSTR  TestWindow_windowClassName = L"WindowClass1";
 const LPCWSTR  TestWindow_windowName = L"WindowName1";
 
+//==============BITMAP==============
 HDC         TestWindow_hdc = 0;
 HBITMAP     TestWindow_hbitmap = 0;
 BITMAPINFO  TestWindow_bitmapinfo = {};
@@ -25,7 +26,9 @@ void TestWindow_ResetBitmap(int clientWidth, int clientHeight)
     TestWindow_bitmapinfo.bmiHeader.biWidth  = clientWidth;
     TestWindow_bitmapinfo.bmiHeader.biHeight = clientHeight;
 
-    if (TestWindow_hbitmap) DeleteObject(TestWindow_hbitmap);
+    if (TestWindow_hbitmap)
+        DeleteObject(TestWindow_hbitmap);
+
     TestWindow_hbitmap = CreateDIBSection(NULL, &TestWindow_bitmapinfo, DIB_RGB_COLORS, (void**)&TestWindow_pixels, 0, 0);
     assert(TestWindow_hbitmap != nullptr);
     SelectObject(TestWindow_hdc, TestWindow_hbitmap);
@@ -49,10 +52,12 @@ void TestWindow_PaintBitmap()
 
     EndPaint(TestWindow_hwnd, &paint);
 }
+//==================================
+
 LRESULT CALLBACK TestWindow_MessageHandler(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    // if (TestWindow_hdc == 0)
-    //     TestWindow_InitBitmap();
+    if (TestWindow_hdc == 0)
+        TestWindow_InitBitmap();
 
     switch(message)
     {
@@ -78,9 +83,13 @@ LRESULT CALLBACK TestWindow_MessageHandler(HWND hwnd, UINT message, WPARAM wPara
     }
     return 0;
 }
+bool TestWindow_Exists()
+{
+    return TestWindow_hwnd != 0;
+}
 void TestWindow_Create()
 {
-    if (TestWindow_hwnd != 0) return;
+    if (TestWindow_Exists()) return;
 
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
@@ -93,12 +102,6 @@ void TestWindow_Create()
         window_class.lpszClassName = TestWindow_windowClassName;
         RegisterClass(&window_class);
     }
-
-    TestWindow_bitmapinfo.bmiHeader.biSize = sizeof(TestWindow_bitmapinfo.bmiHeader);
-    TestWindow_bitmapinfo.bmiHeader.biPlanes = 1;
-    TestWindow_bitmapinfo.bmiHeader.biBitCount = 32;
-    TestWindow_bitmapinfo.bmiHeader.biCompression = BI_RGB;
-    TestWindow_hdc = CreateCompatibleDC(0);
 
     int clientWidth = 640;
     int clientHeight = 480;
@@ -115,13 +118,9 @@ void TestWindow_Create()
 
     assert(TestWindow_hwnd != NULL);
 }
-bool TestWindow_Exists()
-{
-    return TestWindow_hwnd != 0;
-}
 void TestWindow_Update()
 {
-    if (TestWindow_hwnd == 0) return;
+    if (!TestWindow_Exists()) return;
 
     MSG message = {};
 
@@ -135,7 +134,7 @@ void TestWindow_Update()
 }
 void TestWindow_Delete()
 {
-    if (TestWindow_hwnd == 0) return;
+    if (!TestWindow_Exists()) return;
 
     DestroyWindow(TestWindow_hwnd);
 
