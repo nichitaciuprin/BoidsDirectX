@@ -1,6 +1,6 @@
 #pragma once
 
-class TestWindow
+class BitmapWindow
 {
 public:
     static bool Exists()
@@ -150,14 +150,14 @@ private:
 //==================================
 
 };
-HWND           TestWindow::_hwnd = 0;
-bool           TestWindow::_windowClassRegistered = false;
-const LPCWSTR  TestWindow::_windowClassName = L"WindowClass1";
-const LPCWSTR  TestWindow::_windowName = L"WindowName1";
+HWND           BitmapWindow::_hwnd = 0;
+bool           BitmapWindow::_windowClassRegistered = false;
+const LPCWSTR  BitmapWindow::_windowClassName = L"WindowClass1";
+const LPCWSTR  BitmapWindow::_windowName = L"WindowName1";
 
-HDC         TestWindow::_hdc = 0;
-HBITMAP     TestWindow::_hbitmap = 0;
-BITMAPINFO  TestWindow::_bitmapinfo = {};
-uint32_t*   TestWindow::_pixels = 0;
-int         TestWindow::_width = 0;
-int         TestWindow::_height = 0;
+HDC         BitmapWindow::_hdc = 0;
+HBITMAP     BitmapWindow::_hbitmap = 0;
+BITMAPINFO  BitmapWindow::_bitmapinfo = {};
+uint32_t*   BitmapWindow::_pixels = 0;
+int         BitmapWindow::_width = 0;
+int         BitmapWindow::_height = 0;

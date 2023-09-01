@@ -1,5 +1,5 @@
 #include "../Base/Base.h"
-#include "TestWindow.h"
+#include "BitmapWindow.h"
 
 #if RAND_MAX == 32767
 #define Rand32() ((rand() << 16) + (rand() << 1) + (rand() & 1))
@@ -22,18 +22,18 @@ void ChangePixelsRandomly(uint32_t* pixels, int width, int height)
 
 int main()
 {
-    TestWindow::Create();
+    BitmapWindow::Create();
 
-    while (TestWindow::Exists())
+    while (BitmapWindow::Exists())
     {
         uint32_t* pixels;
         int width;
         int height;
-        TestWindow::GetBitmapInfo(&pixels, &width, &height);
+        BitmapWindow::GetBitmapInfo(&pixels, &width, &height);
 
         ChangePixelsRandomly(pixels, width, height);
 
-        TestWindow::Update();
+        BitmapWindow::Update();
     }
 
     return 0;
