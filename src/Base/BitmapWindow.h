@@ -62,7 +62,7 @@ public:
 
         _hwnd = 0;
     }
-    static void GetBitmapInfo(uint32_t** outPixels, int* outWidth, int* outHeight)
+    static void GetBitmapInfo(uint32_t** outPixels, size_t* outWidth, size_t* outHeight)
     {
         *outPixels = _pixels;
         *outWidth = _width;

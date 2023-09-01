@@ -1,32 +1,33 @@
 #include "../Base/Base.h"
 
-int pixelIndex = 0;
-void ChangePixelsRandomly(uint32_t* pixels, int width, int height)
+void ChangePixelsRandomly(uint32_t* pixels, size_t width, size_t height, size_t pixelIndex)
 {
-    int i1 = pixelIndex;
-    int i2 = Rand32();
-    int pixelCount = width*height;
+    size_t i1 = pixelIndex;
+    size_t i2 = Rand32();
+    size_t pixelCount = width*height;
     i1 = i1 % pixelCount;
     i2 = i2 % pixelCount;
     pixels[i1] = Rand32();
     pixels[i2] = 0;
-    pixelIndex++;
 }
 
 int main()
 {
     BitmapWindow::Create();
 
+    size_t pixelIndex = 0;
+
     while (BitmapWindow::Exists())
     {
         CheckFPS();
 
         uint32_t* pixels;
-        int width;
-        int height;
+        size_t width;
+        size_t height;
         BitmapWindow::GetBitmapInfo(&pixels, &width, &height);
 
-        ChangePixelsRandomly(pixels, width, height);
+        ChangePixelsRandomly(pixels, width, height, pixelIndex);
+        pixelIndex++;
 
         BitmapWindow::Update();
     }
