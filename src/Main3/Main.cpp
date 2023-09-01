@@ -22,17 +22,18 @@ void ChangePixelsRandomly(uint32_t* pixels, int width, int height)
 
 int main()
 {
-    TestWindow_Create();
+    TestWindow::Create();
 
-    while (TestWindow_Exists())
+    while (TestWindow::Exists())
     {
         uint32_t* pixels;
         int width;
         int height;
-        TestWindow_GetBitmapInfo(&pixels, &width, &height);
+        TestWindow::GetBitmapInfo(&pixels, &width, &height);
+
         ChangePixelsRandomly(pixels, width, height);
 
-        TestWindow_Update();
+        TestWindow::Update();
     }
 
     return 0;
