@@ -147,7 +147,6 @@ private:
         EndPaint(_hwnd, &paint);
     }
 //==================================
-
 };
 HWND           BitmapWindow::_hwnd = 0;
 bool           BitmapWindow::_windowClassRegistered = false;
