@@ -25,10 +25,10 @@ public:
 
         int clientWidth = 40;
         int clientHeight = 400;
-        RECT rc = { 0, 0, clientWidth, clientHeight };
-        AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-        auto windowWidth = rc.right - rc.left;
-        auto windowsHeight = rc.bottom - rc.top;
+        RECT rect = { 0, 0, clientWidth, clientHeight };
+        AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
+        auto windowWidth = rect.right - rect.left;
+        auto windowsHeight = rect.bottom - rect.top;
 
         _hwnd = CreateWindow(_windowClassName, _windowName,
                              WS_OVERLAPPEDWINDOW | WS_VISIBLE,
