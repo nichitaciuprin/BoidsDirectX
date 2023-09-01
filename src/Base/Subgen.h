@@ -1,5 +1,11 @@
 #pragma once
 
+#if RAND_MAX == 32767
+#define Rand32() ((rand() << 16) + (rand() << 1) + (rand() & 1))
+#else
+#define Rand32() rand()
+#endif
+
 class Subgen
 {
 public:

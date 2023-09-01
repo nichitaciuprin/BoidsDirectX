@@ -1,12 +1,6 @@
 #include "../Base/Base.h"
 #include "BitmapWindow.h"
 
-#if RAND_MAX == 32767
-#define Rand32() ((rand() << 16) + (rand() << 1) + (rand() & 1))
-#else
-#define Rand32() rand()
-#endif
-
 int pixelIndex = 0;
 void ChangePixelsRandomly(uint32_t* pixels, int width, int height)
 {
