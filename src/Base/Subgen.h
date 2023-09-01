@@ -9,6 +9,12 @@
 class Subgen
 {
 public:
+    static Subgen staticSubgen;
+    static int StaticNext()
+    {
+        return staticSubgen.Next();
+    }
+
     Subgen(int seed)
     {
         si = 0;
@@ -55,3 +61,5 @@ private:
     int seed;
     int MAX = 1000000000;
 };
+
+Subgen Subgen::staticSubgen = Subgen(0);
