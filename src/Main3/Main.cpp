@@ -26,7 +26,12 @@ int main()
 
     while (TestWindow_Exists())
     {
-        ChangePixelsRandomly(TestWindow_pixels, TestWindow_width, TestWindow_height);
+        uint32_t* pixels;
+        int width;
+        int height;
+        TestWindow_GetBitmapInfo(&pixels, &width, &height);
+        ChangePixelsRandomly(pixels, width, height);
+
         TestWindow_Update();
     }
 

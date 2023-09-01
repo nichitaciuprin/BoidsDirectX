@@ -52,6 +52,12 @@ void TestWindow_PaintBitmap()
 
     EndPaint(TestWindow_hwnd, &paint);
 }
+void TestWindow_GetBitmapInfo(uint32_t** outPixels, int* outWidth, int* outHeight)
+{
+    *outPixels = TestWindow_pixels;
+    *outWidth = TestWindow_width;
+    *outHeight = TestWindow_height;
+}
 //==================================
 
 LRESULT CALLBACK TestWindow_MessageHandler(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -123,7 +129,6 @@ void TestWindow_Update()
     if (!TestWindow_Exists()) return;
 
     MSG message = {};
-
     while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
         DispatchMessage(&message);
 
