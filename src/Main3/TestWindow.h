@@ -125,9 +125,7 @@ void TestWindow_Update()
     MSG message = {};
 
     while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
-    {
         DispatchMessage(&message);
-    }
 
     InvalidateRect(TestWindow_hwnd, NULL, FALSE);
     UpdateWindow(TestWindow_hwnd);
