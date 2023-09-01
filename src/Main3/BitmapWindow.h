@@ -35,6 +35,12 @@ public:
                              0, 0, windowWidth, windowsHeight,
                              NULL, NULL, hInstance, NULL);
 
+        // Removes window border
+        // LONG lStyle = GetWindowLong(_hwnd, GWL_STYLE);
+        // lStyle &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
+        // SetWindowLong(_hwnd, GWL_STYLE, lStyle);
+        // SetWindowPos(_hwnd, NULL, 0,0,0,0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
+
         assert(_hwnd != NULL);
     }
     static void Update()
@@ -139,6 +145,17 @@ private:
                 int clientWidth = LOWORD(lParam);
                 int clientHeight = HIWORD(lParam);
                 _ResetBitmap(clientWidth, clientHeight);
+                break;
+            }
+            case WM_KEYDOWN:
+            case WM_KEYUP:
+            {
+                // bool isDown = (message == WM_KEYDOWN);
+                switch (wParam)
+                {
+                    case VK_ESCAPE : { DestroyWindow(hwnd);               break; }
+                    default        : {                                    break; }
+                }
                 break;
             }
             default: return DefWindowProc(hwnd, message, wParam, lParam);
