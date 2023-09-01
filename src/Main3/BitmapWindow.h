@@ -30,11 +30,10 @@ public:
         auto windowWidth = rc.right - rc.left;
         auto windowsHeight = rc.bottom - rc.top;
 
-        _hwnd = CreateWindow(_windowClassName,
-                                    _windowName,
-                                    WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                                    0, 0, windowWidth, windowsHeight,
-                                    NULL, NULL, hInstance, NULL);
+        _hwnd = CreateWindow(_windowClassName, _windowName,
+                             WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                             0, 0, windowWidth, windowsHeight,
+                             NULL, NULL, hInstance, NULL);
 
         assert(_hwnd != NULL);
     }
