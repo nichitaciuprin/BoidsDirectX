@@ -12,8 +12,48 @@ uint32_t*   TestWindow_pixels = 0;
 int         TestWindow_width = 0;
 int         TestWindow_height = 0;
 
+void TestWindow_InitBitmap()
+{
+    TestWindow_bitmapinfo.bmiHeader.biSize = sizeof(TestWindow_bitmapinfo.bmiHeader);
+    TestWindow_bitmapinfo.bmiHeader.biPlanes = 1;
+    TestWindow_bitmapinfo.bmiHeader.biBitCount = 32;
+    TestWindow_bitmapinfo.bmiHeader.biCompression = BI_RGB;
+    TestWindow_hdc = CreateCompatibleDC(0);
+}
+void TestWindow_ResetBitmap(int clientWidth, int clientHeight)
+{
+    TestWindow_bitmapinfo.bmiHeader.biWidth  = clientWidth;
+    TestWindow_bitmapinfo.bmiHeader.biHeight = clientHeight;
+
+    if (TestWindow_hbitmap) DeleteObject(TestWindow_hbitmap);
+    TestWindow_hbitmap = CreateDIBSection(NULL, &TestWindow_bitmapinfo, DIB_RGB_COLORS, (void**)&TestWindow_pixels, 0, 0);
+    assert(TestWindow_hbitmap != nullptr);
+    SelectObject(TestWindow_hdc, TestWindow_hbitmap);
+
+    TestWindow_width  = clientWidth;
+    TestWindow_height = clientHeight;
+}
+void TestWindow_PaintBitmap()
+{
+    PAINTSTRUCT paint;
+
+    HDC device_context = BeginPaint(TestWindow_hwnd, &paint);
+
+    BitBlt(device_context,
+            paint.rcPaint.left, paint.rcPaint.top,
+            paint.rcPaint.right - paint.rcPaint.left,
+            paint.rcPaint.bottom - paint.rcPaint.top,
+            TestWindow_hdc,
+            paint.rcPaint.left, paint.rcPaint.top,
+            SRCCOPY);
+
+    EndPaint(TestWindow_hwnd, &paint);
+}
 LRESULT CALLBACK TestWindow_MessageHandler(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    // if (TestWindow_hdc == 0)
+    //     TestWindow_InitBitmap();
+
     switch(message)
     {
         case WM_QUIT:
@@ -24,40 +64,14 @@ LRESULT CALLBACK TestWindow_MessageHandler(HWND hwnd, UINT message, WPARAM wPara
         }
         case WM_PAINT:
         {
-            PAINTSTRUCT paint;
-
-            HDC device_context = BeginPaint(hwnd, &paint);
-
-            BitBlt(device_context,
-                   paint.rcPaint.left, paint.rcPaint.top,
-                   paint.rcPaint.right - paint.rcPaint.left,
-                   paint.rcPaint.bottom - paint.rcPaint.top,
-                   TestWindow_hdc,
-                   paint.rcPaint.left, paint.rcPaint.top,
-                   SRCCOPY);
-
-            EndPaint(hwnd, &paint);
-
+            TestWindow_PaintBitmap();
             break;
         }
         case WM_SIZE:
         {
-            int windowWidth = LOWORD(lParam);
-            int windowHeight = HIWORD(lParam);
-
-            cout << windowWidth << endl;
-
-            TestWindow_bitmapinfo.bmiHeader.biWidth  = windowWidth;
-            TestWindow_bitmapinfo.bmiHeader.biHeight = windowHeight;
-
-            if (TestWindow_hbitmap) DeleteObject(TestWindow_hbitmap);
-            TestWindow_hbitmap = CreateDIBSection(NULL, &TestWindow_bitmapinfo, DIB_RGB_COLORS, (void**)&TestWindow_pixels, 0, 0);
-            assert(TestWindow_hbitmap != nullptr);
-            SelectObject(TestWindow_hdc, TestWindow_hbitmap);
-
-            TestWindow_width  = windowWidth;
-            TestWindow_height = windowHeight;
-
+            int clientWidth = LOWORD(lParam);
+            int clientHeight = HIWORD(lParam);
+            TestWindow_ResetBitmap(clientWidth, clientHeight);
             break;
         }
         default: return DefWindowProc(hwnd, message, wParam, lParam);
