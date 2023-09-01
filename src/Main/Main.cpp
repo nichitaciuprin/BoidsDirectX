@@ -1,14 +1,4 @@
-#include <windows.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <assert.h>
-#include <stdint.h>
-#include <iostream>
-#include <algorithm>
-#include <string>
-#include <memory>
-#include <vector>
-using namespace std;
+#include "../Base/Base.h"
 #include "TestWindow.h"
 
 #if RAND_MAX == 32767

@@ -3,6 +3,7 @@
 HWND           TestWindow_hwnd = 0;
 bool           TestWindow_windowClassRegistered = false;
 const LPCWSTR  TestWindow_windowClassName = L"WindowClass1";
+const LPCWSTR  TestWindow_windowsName = L"WindowName1";
 
 HDC         TestWindow_hdc = 0;
 HBITMAP     TestWindow_hbitmap = 0;
@@ -75,7 +76,7 @@ void TestWindow_Create()
         WNDCLASS window_class = {};
         window_class.lpfnWndProc = TestWindow_MessageHandler;
         window_class.hInstance = hInstance;
-        window_class.lpszClassName = (LPCSTR)TestWindow_windowClassName;
+        window_class.lpszClassName = TestWindow_windowClassName;
         RegisterClass(&window_class);
     }
 
@@ -95,10 +96,11 @@ void TestWindow_Create()
     //                             CW_USEDEFAULT, CW_USEDEFAULT, width2, height2,
     //                             nullptr, nullptr, hInstance, nullptr);
 
-    TestWindow_hwnd = CreateWindow((PCSTR)TestWindow_windowClassName, "TestWindow",
-                                 WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                                 0, 0, windowWidth, windowsHeight,
-                                 NULL, NULL, hInstance, NULL);
+    TestWindow_hwnd = CreateWindow(TestWindow_windowClassName,
+                                   TestWindow_windowsName,
+                                   WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                                   0, 0, windowWidth, windowsHeight,
+                                   NULL, NULL, hInstance, NULL);
 
     assert(TestWindow_hwnd != NULL);
 }
