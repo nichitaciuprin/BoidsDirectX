@@ -23,8 +23,8 @@ public:
             RegisterClass(&window_class);
         }
 
-        int clientWidth = 640;
-        int clientHeight = 480;
+        int clientWidth = 40;
+        int clientHeight = 400;
         RECT rc = { 0, 0, clientWidth, clientHeight };
         AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
         auto windowWidth = rc.right - rc.left;
@@ -32,14 +32,14 @@ public:
 
         _hwnd = CreateWindow(_windowClassName, _windowName,
                              WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                             0, 0, windowWidth, windowsHeight,
+                             500, 0, windowWidth, windowsHeight,
                              NULL, NULL, hInstance, NULL);
 
         // Removes window border
-        // LONG lStyle = GetWindowLong(_hwnd, GWL_STYLE);
-        // lStyle &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
-        // SetWindowLong(_hwnd, GWL_STYLE, lStyle);
-        // SetWindowPos(_hwnd, NULL, 0,0,0,0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
+        LONG lStyle = GetWindowLong(_hwnd, GWL_STYLE);
+        lStyle &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
+        SetWindowLong(_hwnd, GWL_STYLE, lStyle);
+        SetWindowPos(_hwnd, NULL, 0,0,0,0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
 
         assert(_hwnd != NULL);
     }
@@ -150,13 +150,19 @@ private:
             case WM_KEYDOWN:
             case WM_KEYUP:
             {
-                // bool isDown = (message == WM_KEYDOWN);
                 switch (wParam)
                 {
-                    case VK_ESCAPE : { DestroyWindow(hwnd);               break; }
-                    default        : {                                    break; }
+                    case VK_ESCAPE : { DestroyWindow(hwnd); break; }
+                    default        : {                      break; }
                 }
                 break;
+            }
+            case WM_GETMINMAXINFO:
+            {
+                // Sets windows size defaults
+                LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
+                lpMMI->ptMinTrackSize.x = 10;
+                lpMMI->ptMinTrackSize.y = 10;
             }
             default: return DefWindowProc(hwnd, message, wParam, lParam);
         }

@@ -1,5 +1,4 @@
 #include "../Base/Base.h"
-#include "BitmapWindow.h"
 
 int pixelIndex = 0;
 void ChangePixelsRandomly(uint32_t* pixels, int width, int height)

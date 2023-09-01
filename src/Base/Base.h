@@ -26,3 +26,4 @@ using namespace std;
 #include "Time.h"
 #include "Subgen.h"
 #include "Physics.h"
+#include "BitmapWindow.h"
