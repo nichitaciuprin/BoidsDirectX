@@ -3,7 +3,7 @@
 HWND           TestWindow_hwnd = 0;
 bool           TestWindow_windowClassRegistered = false;
 const LPCWSTR  TestWindow_windowClassName = L"WindowClass1";
-const LPCWSTR  TestWindow_windowsName = L"WindowName1";
+const LPCWSTR  TestWindow_windowName = L"WindowName1";
 
 HDC         TestWindow_hdc = 0;
 HBITMAP     TestWindow_hbitmap = 0;
@@ -92,12 +92,9 @@ void TestWindow_Create()
     AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
     auto windowWidth = rc.right - rc.left;
     auto windowsHeight = rc.bottom - rc.top;
-    // m_hwnd = CreateWindowExW(0, className, className, WS_OVERLAPPEDWINDOW,
-    //                             CW_USEDEFAULT, CW_USEDEFAULT, width2, height2,
-    //                             nullptr, nullptr, hInstance, nullptr);
 
     TestWindow_hwnd = CreateWindow(TestWindow_windowClassName,
-                                   TestWindow_windowsName,
+                                   TestWindow_windowName,
                                    WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                                    0, 0, windowWidth, windowsHeight,
                                    NULL, NULL, hInstance, NULL);
@@ -119,14 +116,14 @@ void TestWindow_Update()
         DispatchMessage(&message);
     }
 
-    // ChangePixelsRandomly(frame.pixels, frame.width, frame.height);
-
     InvalidateRect(TestWindow_hwnd, NULL, FALSE);
     UpdateWindow(TestWindow_hwnd);
 }
 void TestWindow_Delete()
 {
     if (TestWindow_hwnd == 0) return;
+
     DestroyWindow(TestWindow_hwnd);
+
     TestWindow_hwnd = 0;
 }
