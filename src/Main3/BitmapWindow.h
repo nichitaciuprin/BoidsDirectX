@@ -56,50 +56,19 @@ public:
 
         _hwnd = 0;
     }
-private:
-    static HWND           _hwnd;
-    static bool           _windowClassRegistered;
-    static const LPCWSTR  _windowClassName;
-    static const LPCWSTR  _windowName;
-    static LRESULT CALLBACK _MessageHandler(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
-    {
-        if (_hdc == 0)
-            _InitBitmap();
-
-        switch(message)
-        {
-            case WM_QUIT:
-            case WM_DESTROY:
-            {
-                _hwnd = 0;
-                break;
-            }
-            case WM_PAINT:
-            {
-                _PaintBitmap();
-                break;
-            }
-            case WM_SIZE:
-            {
-                int clientWidth = LOWORD(lParam);
-                int clientHeight = HIWORD(lParam);
-                _ResetBitmap(clientWidth, clientHeight);
-                break;
-            }
-            default: return DefWindowProc(hwnd, message, wParam, lParam);
-        }
-        return 0;
-    }
-
-//==============BITMAP==============
-public:
     static void GetBitmapInfo(uint32_t** outPixels, int* outWidth, int* outHeight)
     {
         *outPixels = _pixels;
         *outWidth = _width;
         *outHeight = _height;
     }
+
 private:
+    static HWND           _hwnd;
+    static bool           _windowClassRegistered;
+    static const LPCWSTR  _windowClassName;
+    static const LPCWSTR  _windowName;
+
     static HDC         _hdc;
     static HBITMAP     _hbitmap;
     static BITMAPINFO  _bitmapinfo;
@@ -146,8 +115,38 @@ private:
 
         EndPaint(_hwnd, &paint);
     }
-//==================================
+
+    static LRESULT CALLBACK _MessageHandler(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+    {
+        if (_hdc == 0)
+            _InitBitmap();
+
+        switch(message)
+        {
+            case WM_QUIT:
+            case WM_DESTROY:
+            {
+                _hwnd = 0;
+                break;
+            }
+            case WM_PAINT:
+            {
+                _PaintBitmap();
+                break;
+            }
+            case WM_SIZE:
+            {
+                int clientWidth = LOWORD(lParam);
+                int clientHeight = HIWORD(lParam);
+                _ResetBitmap(clientWidth, clientHeight);
+                break;
+            }
+            default: return DefWindowProc(hwnd, message, wParam, lParam);
+        }
+        return 0;
+    }
 };
+
 HWND           BitmapWindow::_hwnd = 0;
 bool           BitmapWindow::_windowClassRegistered = false;
 const LPCWSTR  BitmapWindow::_windowClassName = L"WindowClass1";
