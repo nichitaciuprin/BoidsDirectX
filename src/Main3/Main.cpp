@@ -26,6 +26,8 @@ int main()
 
     while (BitmapWindow::Exists())
     {
+        CheckFPS();
+
         uint32_t* pixels;
         int width;
         int height;

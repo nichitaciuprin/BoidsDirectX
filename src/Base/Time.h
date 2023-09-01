@@ -43,6 +43,30 @@ TICKS GetCalcTime(TICKS oldTime, TICKS newTime)
        return LLONG_MAX - oldTime + newTime;
     return newTime - oldTime;
 }
+size_t ToMilliseconds(TICKS ticks)
+{
+    return (ticks/TicksPerMillisecond());
+}
+void CheckFPS()
+{
+    if (TimeOld == 0)
+    {
+        TimeOld = GetTime();
+        return;
+    }
+    TimeNew = GetTime();
+
+    auto diff = GetCalcTime(TimeOld,TimeNew);
+
+    TimeOld = TimeNew;
+
+    auto milliseconds = ToMilliseconds(diff);
+    if (milliseconds > 16)
+    {
+        auto fps = 1000/milliseconds;
+        cout << "=== " << "FPS:" << fps << " ===" << endl;
+    }
+}
 void WaitAfterRender()
 {
     TICKS waitTicks = 0;
