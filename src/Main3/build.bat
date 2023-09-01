@@ -44,5 +44,3 @@ set _options=^
 %_cl% %_input% %_output% %_options% %LINKER_FLAGS% %SYSTEM_LIBS%
 
 if %errorlevel% neq 0 exit /b %errorlevel%
-
-copy %_build%\..\shaders.hlsl %_build%\shaders.hlsl > NUL
