@@ -62,9 +62,20 @@ public:
 
         _hwnd = 0;
     }
-    static void GetBitmapInfo(uint32_t** outPixels, size_t* outWidth, size_t* outHeight)
+    static void SetPixels(uint32_t* pixels)
     {
-        *outPixels = _pixels;
+        if (!Exists()) return;
+
+        for (size_t row = 0; row < _height; row++)
+        for (size_t column = 0; column < _width; column++)
+        {
+            auto index1 = column+row*_width;
+            auto index2 = column+(_height-1-row)*_width;
+            _pixels[index2] = pixels[index1];
+        }
+    }
+    static void GetBitmapInfo(size_t* outWidth, size_t* outHeight)
+    {
         *outWidth = _width;
         *outHeight = _height;
     }

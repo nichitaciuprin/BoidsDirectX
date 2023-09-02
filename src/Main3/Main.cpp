@@ -16,17 +16,18 @@ int main()
     BitmapWindow::Create();
 
     size_t pixelIndex = 0;
+    size_t pixelCount = 1920*1080;
+    auto pixels = (uint32_t*)malloc(sizeof(uint32_t)*pixelCount);
 
     while (BitmapWindow::Exists())
     {
         CheckFPS();
 
-        uint32_t* pixels;
         size_t width;
         size_t height;
-        BitmapWindow::GetBitmapInfo(&pixels, &width, &height);
-
+        BitmapWindow::GetBitmapInfo(&width, &height);
         ChangePixelsRandomly(pixels, width, height, pixelIndex);
+        BitmapWindow::SetPixels(pixels);
         pixelIndex++;
 
         BitmapWindow::Update();

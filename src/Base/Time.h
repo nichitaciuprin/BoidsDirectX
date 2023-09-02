@@ -54,6 +54,7 @@ void CheckFPS()
         TimeOld = GetTime();
         return;
     }
+
     TimeNew = GetTime();
 
     auto diff = GetCalcTime(TimeOld,TimeNew);
@@ -61,11 +62,11 @@ void CheckFPS()
     TimeOld = TimeNew;
 
     auto milliseconds = ToMilliseconds(diff);
-    if (milliseconds > 16)
-    {
-        auto fps = 1000/milliseconds;
+    if (milliseconds == 0) return;
+
+    auto fps = 1000/milliseconds;
+    if (fps < 120)
         cout << "=== " << "FPS:" << fps << " ===" << endl;
-    }
 }
 void WaitAfterRender()
 {
