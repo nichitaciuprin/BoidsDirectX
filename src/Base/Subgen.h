@@ -1,5 +1,8 @@
 #pragma once
 
+// https://rosettacode.org/wiki/Subtractive_generator#C
+// https://www.pcg-random.org/download.html
+
 #if RAND_MAX == 32767
 #define Rand32() ((rand() << 16) + (rand() << 1) + (rand() & 1))
 #else
