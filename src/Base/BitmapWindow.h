@@ -73,13 +73,17 @@ public:
             // Column index must be reversed
             // For some reason, window bitmap starts with the last row
             auto index2 = column+(_height-1-row)*_width;
+            // _pixels[index2] = (255 << 16);
             _pixels[index2] = pixels[index1];
         }
     }
-    static void GetBitmapInfo(uint32_t* outWidth, uint32_t* outHeight)
+    static uint32_t GetClientWidth()
     {
-        *outWidth = _width;
-        *outHeight = _height;
+        return _width;
+    }
+    static uint32_t GetClientHeight()
+    {
+        return _height;
     }
 
 private:
