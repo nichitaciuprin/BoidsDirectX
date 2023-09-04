@@ -2,11 +2,11 @@
 
 typedef uint32_t Pixel;
 
-const Pixel BLACK = 0;
-const Pixel WHITE = ~BLACK;
-const Pixel BLUE  = 255;
-const Pixel RED   = BLUE << 16;
-const Pixel GREEN = BLUE <<  8;
+const Pixel BLACK = 0x00000000;
+const Pixel WHITE = 0xFFFFFFFF;
+const Pixel RED   = 0x00FF0000;
+const Pixel GREEN = 0x0000FF00;
+const Pixel BLUE  = 0x000000FF;
 
 class Bitmap
 {
