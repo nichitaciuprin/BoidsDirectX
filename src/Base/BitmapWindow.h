@@ -32,7 +32,7 @@ public:
 
         _hwnd = CreateWindow(_windowClassName, _windowName,
                              WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                             500, 0, windowWidth, windowsHeight,
+                             500, 0, windowWidth, windowHeight,
                              NULL, NULL, hInstance, NULL);
 
         // Removes window border
