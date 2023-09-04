@@ -6,6 +6,8 @@ int main()
 
     auto width = BitmapWindow::GetClientWidth();
     auto height = BitmapWindow::GetClientHeight();
+    // width = 50;
+    // height = 50;
     auto bitmap = make_unique<Bitmap>(width,height);
 
     size_t animationIncrement = 0;

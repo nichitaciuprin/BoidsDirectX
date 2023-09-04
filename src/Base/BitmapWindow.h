@@ -28,7 +28,7 @@ public:
         RECT rect = { 0, 0, clientWidth, clientHeight };
         AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
         auto windowWidth = rect.right - rect.left;
-        auto windowsHeight = rect.bottom - rect.top;
+        auto windowHeight = rect.bottom - rect.top;
 
         _hwnd = CreateWindow(_windowClassName, _windowName,
                              WS_OVERLAPPEDWINDOW | WS_VISIBLE,
@@ -73,7 +73,8 @@ public:
             // Column index must be reversed
             // For some reason, window bitmap starts with the last row
             auto index2 = column+(_height-1-row)*_width;
-            // _pixels[index2] = (255 << 16);
+            // _pixels[index2] = (0x00FF0000);
+            // _pixels[index2] = pixels[0];
             _pixels[index2] = pixels[index1];
         }
     }
