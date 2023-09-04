@@ -15,9 +15,9 @@ int main()
     {
         CheckFPS();
 
-        bitmap->ScanEffectRandom(animationIncrement);
-        bitmap->DrawSquare(GREEN);
-        bitmap->DrawLine(0,0,20,40,RED);
+        // bitmap->ScanEffectRandom(animationIncrement);
+        bitmap->DrawSquare(BLUE);
+        bitmap->DrawLine(0,0,width-1,height-1,RED);
         BitmapWindow::SetPixels(bitmap->pixels.data());
         animationIncrement++;
 

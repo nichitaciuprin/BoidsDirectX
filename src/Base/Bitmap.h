@@ -4,9 +4,9 @@ typedef uint32_t Pixel;
 
 const Pixel BLACK = 0;
 const Pixel WHITE = ~BLACK;
-const Pixel BLUE = 255;
-const Pixel RED = BLUE << 16;
-const Pixel GREEN = BLUE << 8;
+const Pixel BLUE  = 255;
+const Pixel RED   = BLUE << 16;
+const Pixel GREEN = BLUE <<  8;
 
 class Bitmap
 {
