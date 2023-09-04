@@ -62,7 +62,7 @@ public:
 
         _hwnd = 0;
     }
-    static void SetPixels(uint32_t* pixels)
+    static void SetPixels(const uint32_t* pixels)
     {
         if (!Exists()) return;
 
@@ -70,11 +70,13 @@ public:
         for (size_t column = 0; column < _width; column++)
         {
             auto index1 = column+row*_width;
+            // Column index must be reversed
+            // For some reason, window bitmap starts with the last row
             auto index2 = column+(_height-1-row)*_width;
             _pixels[index2] = pixels[index1];
         }
     }
-    static void GetBitmapInfo(size_t* outWidth, size_t* outHeight)
+    static void GetBitmapInfo(uint32_t* outWidth, uint32_t* outHeight)
     {
         *outWidth = _width;
         *outHeight = _height;

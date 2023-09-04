@@ -4,22 +4,22 @@ int main()
 {
     BitmapWindow::Create();
 
-    size_t pixelIndex = 0;
-    size_t pixelCount = 1920*1080;
-    auto pixels = (uint32_t*)malloc(sizeof(uint32_t)*pixelCount);
+    uint32_t width;
+    uint32_t height;
+    BitmapWindow::GetBitmapInfo(&width, &height);
+    auto bitmap = make_unique<Bitmap>(width,height);
+
+    size_t animationIncrement = 0;
 
     while (BitmapWindow::Exists())
     {
         CheckFPS();
 
-        size_t width;
-        size_t height;
-        BitmapWindow::GetBitmapInfo(&width, &height);
-        ChangePixelsRandomly(pixels, width, height, pixelIndex);
-        DrawSquare(pixels, width);
+        bitmap->ScanEffectRandom(animationIncrement);
+        bitmap->DrawSquare();
         // Line(0,0,10,10);
-        BitmapWindow::SetPixels(pixels);
-        pixelIndex++;
+        BitmapWindow::SetPixels(bitmap->pixels.data());
+        animationIncrement++;
 
         BitmapWindow::Update();
     }
