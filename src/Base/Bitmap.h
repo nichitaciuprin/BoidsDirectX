@@ -2,12 +2,16 @@
 
 typedef uint32_t Pixel;
 
+const Pixel BLACK = 0;
+const Pixel WHITE = ~BLACK;
+const Pixel BLUE = 255;
+const Pixel RED = BLUE << 16;
+const Pixel GREEN = BLUE << 8;
+
 class Bitmap
 {
 public:
     vector<uint32_t> pixels;
-    const Pixel BLACK = 0;
-    const Pixel WHITE = ~BLACK;
 
     Bitmap(uint32_t _width, uint32_t _height)
     {
@@ -16,6 +20,7 @@ public:
         pixels = vector<uint32_t>();
         pixels.resize(width*height);
     }
+
     void Clear(Pixel pixel)
     {
         fill(pixels.begin(), pixels.end(), pixel);
@@ -26,11 +31,11 @@ public:
         if (y > height) return;
         pixels[x+y*width] = pixel;
     }
-    void DrawSquare()
+    void DrawSquare(Pixel pixel)
     {
-        for (int x = 0; x < 20; x++)
-        for (int y = 0; y < 20; y++)
-            SetPixel(x,y,WHITE);
+        for (uint32_t x = 0; x < 20; x++)
+        for (uint32_t y = 0; y < 20; y++)
+            SetPixel(x,y,pixel);
     }
     void ScanEffectRandom(size_t iteration)
     {
