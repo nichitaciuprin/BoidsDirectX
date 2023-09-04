@@ -30,6 +30,9 @@ public:
         auto windowWidth = rect.right - rect.left;
         auto windowHeight = rect.bottom - rect.top;
 
+        // LONG style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+        // style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
+
         _hwnd = CreateWindow(_windowClassName, _windowName,
                              WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                              500, 0, windowWidth, windowHeight,
@@ -77,6 +80,10 @@ public:
             // _pixels[index2] = pixels[0];
             _pixels[index2] = pixels[index1];
         }
+        // SetPixel(_hdc,0,0,0x000000FF);
+        // SetPixel(_hdc,1,0,0x000000FF);
+        // SetPixel(_hdc,2,0,0x000000FF);
+        // SetPixel(_hdc,3,0,0x000000FF);
     }
     static uint32_t GetClientWidth()
     {
