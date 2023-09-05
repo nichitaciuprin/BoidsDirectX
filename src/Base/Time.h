@@ -80,8 +80,9 @@ void CheckPerfEnd()
 
     auto diff = GetCalcTime(PerfTimeStart,PerfTimeEnd);
     auto milliseconds = ToMilliseconds(diff);
-    if (milliseconds == 0) return;
-    cout << "Perf:" << milliseconds << endl;
+    cout << milliseconds << "ms" << endl;
+    // cout << "ABORT CALLED" << endl;
+    // abort();
 }
 void WaitAfterRender()
 {

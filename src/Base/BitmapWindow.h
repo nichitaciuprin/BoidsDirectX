@@ -30,9 +30,6 @@ public:
         auto windowWidth = rect.right - rect.left;
         auto windowHeight = rect.bottom - rect.top;
 
-        // LONG style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-        // style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
-
         _hwnd = CreateWindow(_windowClassName, _windowName,
                              WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                              500, 0, windowWidth, windowHeight,
@@ -60,28 +57,32 @@ public:
     static void Delete()
     {
         if (!Exists()) return;
-
         DestroyWindow(_hwnd);
-
         _hwnd = 0;
     }
-    static void SetPixels(const vector<uint32_t>& pixels)
+    static uint32_t GetPixel(uint32_t x, uint32_t y)
+    {
+        if (x > _width) return 0;
+        if (y > _height) return 0;
+        y = _height-1-y;
+        return _pixels[x+y*_width];
+    }
+    static void SetPixel(uint32_t x, uint32_t y, uint32_t pixel)
+    {
+        if (x > _width) return;
+        if (y > _height) return;
+        y = _height-1-y;
+        _pixels[x+y*_width] = pixel;
+    }
+    static void SetPixels(const unique_ptr<Bitmap>& bitmap)
     {
         if (!Exists()) return;
-        // cout << _width << endl;
-        // cout << _height << endl;
-        for (size_t row = 0; row < _height; row++)
-        for (size_t column = 0; column < _width; column++)
+        for (uint32_t y = 0; y < _height; y++)
+        for (uint32_t x = 0; x < _width; x++)
         {
-            auto index1 = column+row*_width;
-            // Column index must be reversed
-            // For some reason, window bitmap starts with the last row
-            auto index2 = column+(_height-1-row)*_width;
-            // _pixels[index2] = (0x00FF0000);
-            // _pixels[index2] = pixels[0];
-            _pixels[index2] = pixels[index1];
+            auto pixel = bitmap->GetPixel(x,y);
+            SetPixel(x,y,pixel);
         }
-        // SetPixel(_hdc,3,0,0x000000FF);
     }
     static uint32_t GetClientWidth()
     {
@@ -102,8 +103,8 @@ private:
     static HBITMAP     _hbitmap;
     static BITMAPINFO  _bitmapinfo;
     static uint32_t*   _pixels;
-    static int         _width;
-    static int         _height;
+    static uint32_t    _width;
+    static uint32_t    _height;
 
     static void _InitBitmap()
     {
@@ -202,5 +203,5 @@ HDC         BitmapWindow::_hdc = 0;
 HBITMAP     BitmapWindow::_hbitmap = 0;
 BITMAPINFO  BitmapWindow::_bitmapinfo = {};
 uint32_t*   BitmapWindow::_pixels = 0;
-int         BitmapWindow::_width = 0;
-int         BitmapWindow::_height = 0;
+uint32_t    BitmapWindow::_width = 0;
+uint32_t    BitmapWindow::_height = 0;

@@ -30,6 +30,12 @@ public:
     {
         fill(pixels.begin(), pixels.end(), pixel);
     }
+    Pixel GetPixel(uint32_t x, uint32_t y) const
+    {
+        if (x > width) return 0x00000000;
+        if (y > height) return 0x00000000;
+        return pixels[x+y*width];
+    }
     void SetPixel(uint32_t x, uint32_t y, Pixel pixel)
     {
         if (x > width) return;

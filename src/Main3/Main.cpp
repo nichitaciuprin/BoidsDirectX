@@ -3,11 +3,10 @@
 int main()
 {
     BitmapWindow::Create();
-
-    auto bitmap = make_unique<Bitmap>();
-
     auto width = BitmapWindow::GetClientWidth();
     auto height = BitmapWindow::GetClientHeight();
+
+    auto bitmap = make_unique<Bitmap>();
     bitmap->Resize(width,height);
 
     size_t animationIteration = 0;
@@ -16,15 +15,11 @@ int main()
     {
         CheckFPS();
 
-        width = BitmapWindow::GetClientWidth();
-        height = BitmapWindow::GetClientHeight();
-        bitmap->Resize(width,height);
-
         bitmap->ScanEffectRandom(animationIteration);
         animationIteration++;
-        bitmap->DrawSquare(BLACK);
         bitmap->DrawBorder(GREEN);
-        BitmapWindow::SetPixels(bitmap->pixels);
+
+        BitmapWindow::SetPixels(bitmap);
 
         BitmapWindow::Update();
     }
