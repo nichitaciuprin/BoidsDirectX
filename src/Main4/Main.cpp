@@ -9,18 +9,11 @@ int main()
     auto bitmap = make_unique<Bitmap>();
     bitmap->Resize(width,height);
 
-    size_t animationIteration = 0;
-
     while (BitmapWindow::Exists())
     {
         CheckFPS();
-
-        bitmap->ScanEffectRandom(animationIteration);
-        animationIteration++;
         bitmap->DrawBorder(GREEN);
-
         BitmapWindow::SetPixels2(bitmap);
-
         BitmapWindow::Update();
     }
 
