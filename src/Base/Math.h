@@ -25,6 +25,7 @@ struct Camera
     float yaw;
     float pitch;
 };
+
 inline int MathSign(float value)
 {
     if (value > 0) { return  1; }
@@ -71,6 +72,10 @@ inline float MathPingPong(float value, float length)
 inline float MathToRadians(float degs)
 {
     return degs * ((float)M_PI / 180.0f);
+}
+inline void Vector3Print(Vector3 v)
+{
+    cout << "<" << v.x << "," << v.y << "," << v.z << ">" << endl;
 }
 inline Vector3 Vector3Zero()
 {
@@ -321,7 +326,9 @@ inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
 {
     Vector3 zaxis = direction;
             zaxis = Vector3Normalize(zaxis);
+
     Vector3 xaxis = Vector3Cross(Vector3Up(),zaxis);
+
     Vector3 yaxis = Vector3Cross(zaxis,xaxis);
 
     return
