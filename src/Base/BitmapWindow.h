@@ -7,7 +7,7 @@ public:
     {
         return _hwnd != 0;
     }
-    static void Create(uint32_t clientWidth, uint32_t clientHeight)
+    static void Create(uint32_t x, uint32_t y, uint32_t clientWidth, uint32_t clientHeight)
     {
         if (Exists()) return;
 
@@ -30,7 +30,7 @@ public:
 
         _hwnd = CreateWindow(_windowClassName, _windowName,
                              WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                             500, 0, windowWidth, windowHeight,
+                             (LONG)x, (LONG)y, windowWidth, windowHeight,
                              NULL, NULL, hInstance, NULL);
 
         // Removes window border

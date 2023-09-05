@@ -2,7 +2,7 @@
 
 int main()
 {
-    BitmapWindow::Create(400,300);
+    BitmapWindow::Create(700,0,400,300);
     auto width = BitmapWindow::GetClientWidth();
     auto height = BitmapWindow::GetClientHeight();
 
