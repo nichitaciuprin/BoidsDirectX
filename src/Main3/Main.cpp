@@ -10,7 +10,7 @@ int main()
     auto height = BitmapWindow::GetClientHeight();
     bitmap->Resize(width,height);
 
-    size_t animationIncrement = 0;
+    size_t animationIteration = 0;
 
     while (BitmapWindow::Exists())
     {
@@ -20,8 +20,8 @@ int main()
         height = BitmapWindow::GetClientHeight();
         bitmap->Resize(width,height);
 
-        bitmap->ScanEffectRandom(animationIncrement);
-        animationIncrement++;
+        bitmap->ScanEffectRandom(animationIteration);
+        animationIteration++;
         bitmap->DrawSquare(BLACK);
         bitmap->DrawBorder(GREEN);
         BitmapWindow::SetPixels(bitmap->pixels);
