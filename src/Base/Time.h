@@ -7,6 +7,8 @@ TICKS TicksPerMillisecondCache = 0;
 TICKS FixedTimeStepCache = 0;
 TICKS TimeOld = 0;
 TICKS TimeNew = 0;
+TICKS PerfTimeStart = 0;
+TICKS PerfTimeEnd = 0;
 
 TICKS TicksPerSecond()
 {
@@ -65,8 +67,21 @@ void CheckFPS()
     if (milliseconds == 0) return;
 
     auto fps = 1000/milliseconds;
-    if (fps < 120)
+    if (fps < 240)
         cout << "=== " << "FPS:" << fps << " ===" << endl;
+}
+void CheckPerfStart()
+{
+    PerfTimeStart = GetTime();
+}
+void CheckPerfEnd()
+{
+    PerfTimeEnd = GetTime();
+
+    auto diff = GetCalcTime(PerfTimeStart,PerfTimeEnd);
+    auto milliseconds = ToMilliseconds(diff);
+    if (milliseconds == 0) return;
+    cout << "Perf:" << milliseconds << endl;
 }
 void WaitAfterRender()
 {

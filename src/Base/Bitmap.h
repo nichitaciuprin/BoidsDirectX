@@ -13,14 +13,19 @@ class Bitmap
 public:
     vector<uint32_t> pixels;
 
-    Bitmap(uint32_t _width, uint32_t _height)
+    Bitmap()
+    {
+        pixels = vector<uint32_t>();
+    }
+
+    void Resize(uint32_t _width, uint32_t _height)
     {
         width = _width;
         height = _height;
-        pixels = vector<uint32_t>();
-        pixels.resize(width*height);
+        auto pixelCount = width*height;
+        if (pixels.size() < pixelCount)
+            pixels.resize(pixelCount);
     }
-
     void Clear(Pixel pixel)
     {
         fill(pixels.begin(), pixels.end(), pixel);

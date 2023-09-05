@@ -65,10 +65,11 @@ public:
 
         _hwnd = 0;
     }
-    static void SetPixels(const uint32_t* pixels)
+    static void SetPixels(const vector<uint32_t>& pixels)
     {
         if (!Exists()) return;
-
+        // cout << _width << endl;
+        // cout << _height << endl;
         for (size_t row = 0; row < _height; row++)
         for (size_t column = 0; column < _width; column++)
         {
@@ -80,9 +81,6 @@ public:
             // _pixels[index2] = pixels[0];
             _pixels[index2] = pixels[index1];
         }
-        // SetPixel(_hdc,0,0,0x000000FF);
-        // SetPixel(_hdc,1,0,0x000000FF);
-        // SetPixel(_hdc,2,0,0x000000FF);
         // SetPixel(_hdc,3,0,0x000000FF);
     }
     static uint32_t GetClientWidth()
