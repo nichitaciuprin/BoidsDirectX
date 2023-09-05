@@ -31,6 +31,18 @@ public:
         if (y > height) return;
         pixels[x+y*width] = pixel;
     }
+    void DrawBorder(Pixel pixel)
+    {
+        DrawLine(0      ,0       ,0      ,height-1,pixel);
+        DrawLine(0      ,0       ,width-1,0       ,pixel);
+        DrawLine(width-1,height-1,width-1,0       ,pixel);
+        DrawLine(width-1,height-1,0      ,height-1,pixel);
+    }
+    void DrawX(Pixel pixel)
+    {
+        DrawLine(0,0,width-1,height-1,pixel);
+        DrawLine(width-1,0,0,height-1,pixel);
+    }
     void DrawSquare(Pixel pixel)
     {
         for (uint32_t x = 0; x < 20; x++)
