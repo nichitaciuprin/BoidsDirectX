@@ -7,7 +7,7 @@ public:
     {
         return _hwnd != 0;
     }
-    static void Create()
+    static void Create(uint32_t clientWidth, uint32_t clientHeight)
     {
         if (Exists()) return;
 
@@ -23,9 +23,7 @@ public:
             RegisterClass(&window_class);
         }
 
-        int clientWidth = 40;
-        int clientHeight = 400;
-        RECT rect = { 0, 0, clientWidth, clientHeight };
+        RECT rect = { 0, 0, (LONG)clientWidth, (LONG)clientHeight };
         AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
         auto windowWidth = rect.right - rect.left;
         auto windowHeight = rect.bottom - rect.top;
@@ -82,6 +80,28 @@ public:
         {
             auto pixel = bitmap->GetPixel(x,y);
             SetPixel(x,y,pixel);
+        }
+    }
+    static void SetPixels2(const unique_ptr<Bitmap>& bitmap)
+    {
+        if (!Exists()) return;
+
+        auto width = bitmap->Width();
+        auto height = bitmap->Height();
+
+        if (width > _width)
+            width = _width;
+
+        if (height > _height)
+            height = _height;
+
+        // memcpy(bitmap->pixels.data(),_pixels,width*height);
+        for (uint32_t y = 0; y < height; y++)
+        for (uint32_t x = 0; x < width; x++)
+        {
+            auto pixel = bitmap->pixels[x+y*width];
+            auto y2 = _height-1-y;
+            _pixels[x+y2*_width] = pixel;
         }
     }
     static uint32_t GetClientWidth()

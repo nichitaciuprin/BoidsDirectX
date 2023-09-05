@@ -18,6 +18,14 @@ public:
         pixels = vector<uint32_t>();
     }
 
+    uint32_t Width() const
+    {
+        return width;
+    }
+    uint32_t Height() const
+    {
+        return height;
+    }
     void Resize(uint32_t _width, uint32_t _height)
     {
         width = _width;

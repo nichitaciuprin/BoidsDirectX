@@ -2,7 +2,7 @@
 
 int main()
 {
-    BitmapWindow::Create();
+    BitmapWindow::Create(400,300);
     auto width = BitmapWindow::GetClientWidth();
     auto height = BitmapWindow::GetClientHeight();
 
@@ -19,7 +19,7 @@ int main()
         animationIteration++;
         bitmap->DrawBorder(GREEN);
 
-        BitmapWindow::SetPixels(bitmap);
+        BitmapWindow::SetPixels2(bitmap);
 
         BitmapWindow::Update();
     }
