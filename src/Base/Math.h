@@ -32,6 +32,14 @@ inline int MathSign(float value)
     if (value < 0) { return -1; }
                      return  0;
 }
+inline float MathSin(float f)
+{
+    return sinf(f);
+}
+inline float MathCos(float f)
+{
+    return cosf(f);
+}
 inline float MathMin(float value1, float value2)
 {
     return fminf(value1,value2);

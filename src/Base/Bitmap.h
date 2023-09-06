@@ -18,7 +18,7 @@ public:
         pixels = vector<uint32_t>();
     }
 
-    void DrawCube(Vector3 position)
+    void DrawCube(Vector3 position, Vector3 direction)
     {
         Vector3 vertices[] =
         {
@@ -48,7 +48,7 @@ public:
             4,6
         };
 
-        auto world = MatrixWorld(position,Vector3Forward()+Vector3Up()+Vector3Right());
+        auto world = MatrixWorld(position,direction);
 
         for (size_t i = 0; i < 8; i++)
         {
