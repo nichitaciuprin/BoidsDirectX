@@ -18,6 +18,12 @@ public:
         pixels = vector<uint32_t>();
     }
 
+    void ToScreenSpace(Vector2 point, uint32_t* outX, uint32_t* outY)
+    {
+        auto scale = 100;
+        *outX = (width  / 2) + (uint32_t)(point.x * scale);
+        *outY = (height / 2) - (uint32_t)(point.y * scale);
+    }
     uint32_t Width() const
     {
         return width;
@@ -62,11 +68,13 @@ public:
         while (true)
         {
             SetPixel(x0,y0,pixel);
+            // cout << "<" << x0 << "," << y0 << ">" << endl;
             if (x0 == x1 && y0 == y1) break;
             e2 = err;
             if (e2 > -dx) { err -= dy; x0 += sx; }
             if (e2 <  dy) { err += dx; y0 += sy; }
         }
+        // abort();
     }
 
     void DrawBorder(Pixel pixel)
@@ -80,6 +88,11 @@ public:
     {
         DrawLine(0,0,width-1,height-1,pixel);
         DrawLine(width-1,0,0,height-1,pixel);
+    }
+    void DrawCross(Pixel pixel)
+    {
+        DrawLine(width/2,0,width/2,height-1,pixel);
+        DrawLine(0,height/2,width-1,height/2,pixel);
     }
     void DrawSquare(Pixel pixel)
     {
