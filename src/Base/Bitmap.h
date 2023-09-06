@@ -18,7 +18,59 @@ public:
         pixels = vector<uint32_t>();
     }
 
-    void ToScreenSpace(Vector2 point, uint32_t* outX, uint32_t* outY)
+    void DrawCube(Vector3 position)
+    {
+        Vector3 vertices[] =
+        {
+            Vector3{-0.5f,-0.5f,-0.5f},
+            Vector3{-0.5f,-0.5f, 0.5f},
+            Vector3{-0.5f, 0.5f,-0.5f},
+            Vector3{-0.5f, 0.5f, 0.5f},
+            Vector3{ 0.5f,-0.5f,-0.5f},
+            Vector3{ 0.5f,-0.5f, 0.5f},
+            Vector3{ 0.5f, 0.5f,-0.5f},
+            Vector3{ 0.5f, 0.5f, 0.5f}
+        };
+
+        uint16_t indices[12][2] =
+        {
+            0,1,
+            1,5,
+            5,4,
+            4,0,
+            2,3,
+            3,7,
+            7,6,
+            6,2,
+            0,2,
+            1,3,
+            5,7,
+            4,6
+        };
+
+        auto world = MatrixWorld(position,Vector3Forward()+Vector3Up()+Vector3Right());
+
+        for (size_t i = 0; i < 8; i++)
+        {
+            vertices[i] = world * vertices[i];
+        }
+
+        for (size_t i = 0; i < 12; i++)
+        {
+            auto i0 = indices[i][0];
+            auto i1 = indices[i][1];
+            DrawLine(vertices[i0],vertices[i1]);
+        }
+    }
+    void DrawLine(Vector3 v0, Vector3 v1)
+    {
+        uint32_t outX0, outY0;
+        uint32_t outX1, outY1;
+        ToScreenSpace(v0,&outX0,&outY0);
+        ToScreenSpace(v1,&outX1,&outY1);
+        DrawLine(outX0,outY0,outX1,outY1,RED);
+    }
+    void ToScreenSpace(Vector3 point, uint32_t* outX, uint32_t* outY)
     {
         auto scale = 100;
         *outX = (width  / 2) + (uint32_t)(point.x * scale);

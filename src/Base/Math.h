@@ -268,6 +268,28 @@ inline Matrix operator * (Matrix a, Matrix b)
 
     return result;
 }
+inline Vector3 operator * (Matrix m, Vector3 v)
+{
+    Vector4 row0 = { m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3] };
+    Vector4 row1 = { m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3] };
+    Vector4 row2 = { m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3] };
+    Vector4 row3 = { m.m[3][0], m.m[3][1], m.m[3][2], m.m[3][3] };
+
+    Vector4 col0 = { v.x, v.y, v.z, 1 };
+
+    float x = Vector4Dot(row0,col0);
+    float y = Vector4Dot(row1,col0);
+    float z = Vector4Dot(row2,col0);
+
+    return { x, y, z };
+}
+inline void MatrixPrint(Matrix m)
+{
+    cout << m.m[0][0] << "," << m.m[0][1] << "," << m.m[0][2] << "," << m.m[0][3] << endl;
+    cout << m.m[1][0] << "," << m.m[1][1] << "," << m.m[1][2] << "," << m.m[1][3] << endl;
+    cout << m.m[2][0] << "," << m.m[2][1] << "," << m.m[2][2] << "," << m.m[2][3] << endl;
+    cout << m.m[3][0] << "," << m.m[3][1] << "," << m.m[3][2] << "," << m.m[3][3] << endl;
+}
 inline Matrix MatrixIdentity()
 {
     return
