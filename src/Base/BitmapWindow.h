@@ -133,18 +133,18 @@ private:
     }
     static void _ResetBitmap(int clientWidth, int clientHeight)
     {
-        BITMAPINFO _bitmapinfo = {};
-        _bitmapinfo.bmiHeader.biSize = sizeof(_bitmapinfo.bmiHeader);
-        _bitmapinfo.bmiHeader.biPlanes = 1;
-        _bitmapinfo.bmiHeader.biBitCount = 32;
-        _bitmapinfo.bmiHeader.biCompression = BI_RGB;
-        _bitmapinfo.bmiHeader.biWidth  = clientWidth;
-        _bitmapinfo.bmiHeader.biHeight = clientHeight;
+        BITMAPINFO bitmapinfo = {};
+        bitmapinfo.bmiHeader.biSize = sizeof(bitmapinfo.bmiHeader);
+        bitmapinfo.bmiHeader.biPlanes = 1;
+        bitmapinfo.bmiHeader.biBitCount = 32;
+        bitmapinfo.bmiHeader.biCompression = BI_RGB;
+        bitmapinfo.bmiHeader.biWidth  = clientWidth;
+        bitmapinfo.bmiHeader.biHeight = clientHeight;
 
         if (_hbitmap)
             DeleteObject(_hbitmap);
 
-        _hbitmap = CreateDIBSection(NULL, &_bitmapinfo, DIB_RGB_COLORS, (void**)&_pixels, 0, 0);
+        _hbitmap = CreateDIBSection(NULL, &bitmapinfo, DIB_RGB_COLORS, (void**)&_pixels, 0, 0);
         assert(_hbitmap != nullptr);
         SelectObject(_hdc, _hbitmap);
 
