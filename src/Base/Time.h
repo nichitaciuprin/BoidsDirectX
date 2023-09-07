@@ -68,7 +68,7 @@ void CheckFPS()
 
     auto fps = 1000/milliseconds;
     if (fps < 240)
-        cout << "=== " << "FPS:" << fps << " ===" << endl;
+        printf("=== FPS:%zu ===\n",fps);
 }
 void CheckPerfStart()
 {
