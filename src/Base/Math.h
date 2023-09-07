@@ -40,6 +40,14 @@ inline float MathCos(float f)
 {
     return cosf(f);
 }
+inline uint32_t MathMin(uint32_t v1, uint32_t v2)
+{
+    return min(v1,v2);
+}
+inline uint32_t MathMax(uint32_t v1, uint32_t v2)
+{
+    return max(v1,v2);
+}
 inline float MathMin(float value1, float value2)
 {
     return fminf(value1,value2);

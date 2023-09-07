@@ -62,44 +62,14 @@ public:
         DestroyWindow(_hwnd);
         _hwnd = 0;
     }
-    static uint32_t GetPixel(uint32_t x, uint32_t y)
-    {
-        if (x > _width) return 0;
-        if (y > _height) return 0;
-        y = _height-1-y;
-        return _pixels[x+y*_width];
-    }
-    static void SetPixel(uint32_t x, uint32_t y, uint32_t pixel)
-    {
-        if (x > _width) return;
-        if (y > _height) return;
-        y = _height-1-y;
-        _pixels[x+y*_width] = pixel;
-    }
     static void SetPixels(const unique_ptr<Bitmap>& bitmap)
     {
         if (!Exists()) return;
-        for (uint32_t y = 0; y < _height; y++)
-        for (uint32_t x = 0; x < _width; x++)
-        {
-            auto pixel = bitmap->GetPixel(x,y);
-            SetPixel(x,y,pixel);
-        }
-    }
-    static void SetPixels2(const unique_ptr<Bitmap>& bitmap)
-    {
-        if (!Exists()) return;
 
-        auto width = bitmap->Width();
-        auto height = bitmap->Height();
+        auto width = MathMin(bitmap->Width(),_width);
+        auto height = MathMin(bitmap->Height(),_height);
 
-        if (width > _width)
-            width = _width;
-
-        if (height > _height)
-            height = _height;
-
-        // memcpy(bitmap->pixels.data(),_pixels,width*height);
+        // copying from Top-Down bitmap to Bottom-Up bitmap
         for (uint32_t y = 0; y < height; y++)
         for (uint32_t x = 0; x < width; x++)
         {
@@ -187,9 +157,16 @@ private:
             }
             case WM_SIZE:
             {
-                int clientWidth = LOWORD(lParam);
-                int clientHeight = HIWORD(lParam);
-                ResetBitmap(clientWidth, clientHeight);
+                uint32_t clientWidth = LOWORD(lParam);
+                uint32_t clientHeight = HIWORD(lParam);
+
+                auto sizeChanged =
+                    _width != clientWidth ||
+                    _height != clientHeight;
+
+                if (sizeChanged)
+                    ResetBitmap(clientWidth, clientHeight);
+
                 break;
             }
             case WM_KEYDOWN:
@@ -208,6 +185,7 @@ private:
                 LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
                 lpMMI->ptMinTrackSize.x = 10;
                 lpMMI->ptMinTrackSize.y = 10;
+                break;
             }
             default: return DefWindowProc(hwnd, message, wParam, lParam);
         }

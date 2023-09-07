@@ -19,7 +19,7 @@ int main()
         animationIteration++;
         bitmap->DrawBorder(GREEN);
 
-        BitmapWindow::SetPixels2(bitmap);
+        BitmapWindow::SetPixels(bitmap);
 
         BitmapWindow::Update();
     }

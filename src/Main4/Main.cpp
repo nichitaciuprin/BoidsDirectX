@@ -28,7 +28,7 @@ int main()
         bitmap->DrawCube(position,direction);
 
         bitmap->DrawBorder(GREEN);
-        BitmapWindow::SetPixels2(bitmap);
+        BitmapWindow::SetPixels(bitmap);
         BitmapWindow::Update();
     }
 
