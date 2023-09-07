@@ -28,6 +28,8 @@ public:
         auto windowWidth = rect.right - rect.left;
         auto windowHeight = rect.bottom - rect.top;
 
+        _InitBitmap();
+
         _hwnd = CreateWindow(_windowClassName, _windowName,
                              WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                              (LONG)x, (LONG)y, windowWidth, windowHeight,
@@ -121,21 +123,21 @@ private:
 
     static HDC         _hdc;
     static HBITMAP     _hbitmap;
-    static BITMAPINFO  _bitmapinfo;
     static uint32_t*   _pixels;
     static uint32_t    _width;
     static uint32_t    _height;
 
     static void _InitBitmap()
     {
-        _bitmapinfo.bmiHeader.biSize = sizeof(_bitmapinfo.bmiHeader);
-        _bitmapinfo.bmiHeader.biPlanes = 1;
-        _bitmapinfo.bmiHeader.biBitCount = 32;
-        _bitmapinfo.bmiHeader.biCompression = BI_RGB;
         _hdc = CreateCompatibleDC(0);
     }
     static void _ResetBitmap(int clientWidth, int clientHeight)
     {
+        BITMAPINFO _bitmapinfo = {};
+        _bitmapinfo.bmiHeader.biSize = sizeof(_bitmapinfo.bmiHeader);
+        _bitmapinfo.bmiHeader.biPlanes = 1;
+        _bitmapinfo.bmiHeader.biBitCount = 32;
+        _bitmapinfo.bmiHeader.biCompression = BI_RGB;
         _bitmapinfo.bmiHeader.biWidth  = clientWidth;
         _bitmapinfo.bmiHeader.biHeight = clientHeight;
 
@@ -168,9 +170,6 @@ private:
 
     static LRESULT CALLBACK _MessageHandler(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
-        if (_hdc == 0)
-            _InitBitmap();
-
         switch(message)
         {
             case WM_QUIT:
@@ -221,7 +220,6 @@ const LPCWSTR  BitmapWindow::_windowName = L"WindowName1";
 
 HDC         BitmapWindow::_hdc = 0;
 HBITMAP     BitmapWindow::_hbitmap = 0;
-BITMAPINFO  BitmapWindow::_bitmapinfo = {};
 uint32_t*   BitmapWindow::_pixels = 0;
 uint32_t    BitmapWindow::_width = 0;
 uint32_t    BitmapWindow::_height = 0;
