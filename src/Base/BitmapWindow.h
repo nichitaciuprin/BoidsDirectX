@@ -23,25 +23,27 @@ public:
             RegisterClass(&window_class);
         }
 
+        LONG lStyle = WS_VISIBLE;
+
+        // Makes default window
+        // lStyle += WS_OVERLAPPEDWINDOW;
+
         RECT rect = { 0, 0, (LONG)clientWidth, (LONG)clientHeight };
-        AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
+        AdjustWindowRect(&rect, lStyle, FALSE);
         auto windowWidth = rect.right - rect.left;
         auto windowHeight = rect.bottom - rect.top;
 
         InitBitmap();
 
-        _hwnd = CreateWindow(_windowClassName, _windowName,
-                             WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+        _hwnd = CreateWindow(_windowClassName, _windowName, lStyle,
                              (LONG)x, (LONG)y, windowWidth, windowHeight,
                              NULL, NULL, hInstance, NULL);
 
-        // Removes window border
-        LONG lStyle = GetWindowLong(_hwnd, GWL_STYLE);
-        lStyle &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
+        assert(_hwnd != NULL);
+
+        // Forces window to update style
         SetWindowLong(_hwnd, GWL_STYLE, lStyle);
         SetWindowPos(_hwnd, NULL, 0,0,0,0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
-
-        assert(_hwnd != NULL);
     }
     static void Update()
     {

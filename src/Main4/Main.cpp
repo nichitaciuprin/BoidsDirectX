@@ -2,13 +2,13 @@
 
 int main()
 {
-    auto width = 401;
-    auto height = 401;
+    auto width = 400;
+    auto height = 400;
 
     auto bitmap = make_unique<Bitmap>();
     bitmap->Resize(width,height);
 
-    BitmapWindow::Create(700,0,width,height);
+    BitmapWindow::Create(700,100,width,height);
 
     while (true)
     {

@@ -65,23 +65,22 @@ public:
     void DrawLine(Vector3 v0, Vector3 v1)
     {
         if (v0.z < 0 && v1.z < 0) return;
-
-        if (v0.z < 0)
-        {
-            // auto slope = (v1.z-v0.z)*v1.z;
-            // v0 -= v1;
-            // if (slope != 0)
-            // v0 /= slope;
-            // v0 += v1;
-        }
-        else if (v1.z < 0)
-        {
-            // auto slope = (v0.z-v1.z)*v0.z;
-            // v1 -= v0;
-            // if (slope != 0)
-            // v1 /= slope;
-            // v1 += v0;
-        }
+        // if (v0.z < 0)
+        // {
+        //     auto slope = (v1.z-v0.z)*v1.z;
+        //     v0 -= v1;
+        //     if (slope != 0)
+        //     v0 /= slope;
+        //     v0 += v1;
+        // }
+        // else if (v1.z < 0)
+        // {
+        //     auto slope = (v0.z-v1.z)*v0.z;
+        //     v1 -= v0;
+        //     if (slope != 0)
+        //     v1 /= slope;
+        //     v1 += v0;
+        // }
 
         uint32_t outX0, outY0;
         uint32_t outX1, outY1;
