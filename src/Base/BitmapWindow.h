@@ -17,7 +17,7 @@ public:
         {
             _windowClassRegistered = true;
             WNDCLASS window_class = {};
-            window_class.lpfnWndProc = _MessageHandler;
+            window_class.lpfnWndProc = MessageHandler;
             window_class.hInstance = hInstance;
             window_class.lpszClassName = _windowClassName;
             RegisterClass(&window_class);
@@ -28,7 +28,7 @@ public:
         auto windowWidth = rect.right - rect.left;
         auto windowHeight = rect.bottom - rect.top;
 
-        _InitBitmap();
+        InitBitmap();
 
         _hwnd = CreateWindow(_windowClassName, _windowName,
                              WS_OVERLAPPEDWINDOW | WS_VISIBLE,
@@ -127,11 +127,11 @@ private:
     static uint32_t    _width;
     static uint32_t    _height;
 
-    static void _InitBitmap()
+    static void InitBitmap()
     {
         _hdc = CreateCompatibleDC(0);
     }
-    static void _ResetBitmap(int clientWidth, int clientHeight)
+    static void ResetBitmap(int clientWidth, int clientHeight)
     {
         BITMAPINFO bitmapinfo = {};
         bitmapinfo.bmiHeader.biSize = sizeof(bitmapinfo.bmiHeader);
@@ -151,7 +151,7 @@ private:
         _width  = clientWidth;
         _height = clientHeight;
     }
-    static void _PaintBitmap()
+    static void PaintBitmap()
     {
         PAINTSTRUCT paint;
 
@@ -168,7 +168,7 @@ private:
         EndPaint(_hwnd, &paint);
     }
 
-    static LRESULT CALLBACK _MessageHandler(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+    static LRESULT CALLBACK MessageHandler(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         switch(message)
         {
@@ -180,14 +180,14 @@ private:
             }
             case WM_PAINT:
             {
-                _PaintBitmap();
+                PaintBitmap();
                 break;
             }
             case WM_SIZE:
             {
                 int clientWidth = LOWORD(lParam);
                 int clientHeight = HIWORD(lParam);
-                _ResetBitmap(clientWidth, clientHeight);
+                ResetBitmap(clientWidth, clientHeight);
                 break;
             }
             case WM_KEYDOWN:

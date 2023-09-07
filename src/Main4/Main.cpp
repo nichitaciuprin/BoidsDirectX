@@ -10,8 +10,10 @@ int main()
 
     BitmapWindow::Create(700,0,width,height);
 
-    while (BitmapWindow::Exists())
+    while (true)
     {
+        if (!BitmapWindow::Exists()) break;
+
         CheckFPS();
         bitmap->Clear(BLACK);
 
