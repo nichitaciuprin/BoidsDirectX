@@ -13,12 +13,11 @@ int main()
     while (true)
     {
         if (!BitmapWindow::Exists()) break;
-
         CheckFPS();
-        bitmap->Clear(BLACK);
 
+        bitmap->Clear(BLACK);
         auto position = Vector3Zero();
-        auto time = (float)clock()/800;
+        auto time = (float)clock()/2000;
         auto t1 = MathSin(time);
         auto t2 = MathCos(time);
         Vector3 direction = {};
@@ -26,9 +25,10 @@ int main()
         direction += Vector3{t1/2,t2/2,0};
         direction = Vector3Normalize(direction);
         bitmap->DrawCube(position,direction);
-
         bitmap->DrawBorder(GREEN);
+
         BitmapWindow::SetPixels(bitmap);
+
         BitmapWindow::Update();
     }
 

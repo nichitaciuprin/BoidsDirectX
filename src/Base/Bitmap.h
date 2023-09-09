@@ -68,17 +68,11 @@ public:
 
         if (v0.z < 0)
         {
-            v0 -= v1;
-            v0 /= (-v0.z);
-            v0 *= v1.z;
-            v0 += v1;
+            v0 += (v0-v1)/(v1.z-v0.z)*v0.z;
         }
-        else if (v1.z < 0)
+        if (v1.z < 0)
         {
-            v1 -= v0;
-            v1 /= (-v1.z);
-            v1 *= v0.z;
-            v1 += v0;
+            v1 += (v1-v0)/(v0.z-v1.z)*v1.z;
         }
 
         uint32_t outX0, outY0;
