@@ -70,7 +70,7 @@ public:
         {
             v0 += (v0-v1)/(v1.z-v0.z)*v0.z;
         }
-        if (v1.z < 0)
+        else if (v1.z < 0)
         {
             v1 += (v1-v0)/(v0.z-v1.z)*v1.z;
         }
