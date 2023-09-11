@@ -50,7 +50,7 @@ public:
     Matrix GetPerspective()
     {
         auto aspectRatio = (float)width/(float)height;
-        return MatrixProj2(aspectRatio, (float)(M_PI / 4.f), 0.1f, 1000.f);
+        return MatrixProj2(aspectRatio, (float)(M_PI_2), 0.1f, 1000.f);
     }
     void Present()
     {
