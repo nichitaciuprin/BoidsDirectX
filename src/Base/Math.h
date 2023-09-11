@@ -444,6 +444,23 @@ inline Matrix MatrixProj2(float aspectRatio, float fovYRadians, float zNear, flo
     };
     return result;
 }
+inline Matrix MatrixProj3(float aspectRatio, float zNear, float zFar)
+{
+    float fov = (float)(M_PI_2);
+    float yScale = tanf(0.5f * fov);
+    float xScale = yScale / aspectRatio;
+    float zRangeInverse = 1.0f / (zNear - zFar);
+    float zScale = zFar * zRangeInverse;
+    float zTranslation = zFar * zNear * zRangeInverse;
+    Matrix result =
+    {
+        xScale, 0, 0, 0,
+        0, yScale, 0, 0,
+        0, 0, zScale, -zTranslation,
+        0, 0, 1, 0
+    };
+    return result;
+}
 inline Matrix MatrixTransformaton(Matrix model, Matrix view, Matrix proj)
 {
     return proj * view * model;
