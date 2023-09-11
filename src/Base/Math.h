@@ -432,7 +432,7 @@ inline Matrix MatrixProj2(float aspectRatio, float fovYRadians, float zNear, flo
 {
     float yScale = tanf(0.5f * ((float)M_PI - fovYRadians));
     float xScale = yScale / aspectRatio;
-    float zRangeInverse = 1.f / (zNear - zFar);
+    float zRangeInverse = 1.0f / (zNear - zFar);
     float zScale = zFar * zRangeInverse;
     float zTranslation = zFar * zNear * zRangeInverse;
     Matrix result =
