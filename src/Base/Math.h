@@ -91,7 +91,13 @@ inline float MathToRadians(float degs)
 }
 inline void Vector3Print(Vector3 v)
 {
+    // printf("<%f,%f,%f>",v.x,v.y,v.z);
     cout << "<" << v.x << "," << v.y << "," << v.z << ">" << endl;
+}
+inline void Vector4Print(Vector4 v)
+{
+    // printf("<%f,%f,%f,%f>",v.x,v.y,v.z,v.w);
+    cout << "<" << v.x << "," << v.y << "," << v.z << "," << v.w << ">" << endl;
 }
 inline Vector3 Vector3Zero()
 {
@@ -289,7 +295,6 @@ inline Vector3 operator * (Matrix m, Vector3 v)
     Vector4 row0 = { m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3] };
     Vector4 row1 = { m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3] };
     Vector4 row2 = { m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3] };
-    Vector4 row3 = { m.m[3][0], m.m[3][1], m.m[3][2], m.m[3][3] };
 
     Vector4 col0 = { v.x, v.y, v.z, 1 };
 
@@ -298,6 +303,22 @@ inline Vector3 operator * (Matrix m, Vector3 v)
     float z = Vector4Dot(row2,col0);
 
     return { x, y, z };
+}
+inline Vector4 operator * (Matrix m, Vector4 v)
+{
+    Vector4 row0 = { m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3] };
+    Vector4 row1 = { m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3] };
+    Vector4 row2 = { m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3] };
+    Vector4 row3 = { m.m[3][0], m.m[3][1], m.m[3][2], m.m[3][3] };
+
+    Vector4 col0 = { v.x, v.y, v.z, v.w };
+
+    float x = Vector4Dot(row0,col0);
+    float y = Vector4Dot(row1,col0);
+    float z = Vector4Dot(row2,col0);
+    float w = Vector4Dot(row3,col0);
+
+    return { x, y, z, w };
 }
 inline void MatrixPrint(Matrix m)
 {
@@ -447,7 +468,7 @@ inline Matrix MatrixProj2(float aspectRatio, float fovYRadians, float zNear, flo
 inline Matrix MatrixProj3(float aspectRatio, float zNear, float zFar)
 {
     float fov = (float)(M_PI_2);
-    float yScale = tanf(0.5f * fov);
+    float yScale = tanf(fov/2);
     float xScale = yScale / aspectRatio;
     float zRangeInverse = 1.0f / (zNear - zFar);
     float zScale = zFar * zRangeInverse;
