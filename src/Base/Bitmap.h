@@ -181,6 +181,7 @@ public:
     }
     void SetPixel(uint32_t x, uint32_t y, Pixel pixel)
     {
+        // TODO check should be removed
         if (x > width) return;
         if (y > height) return;
         pixels[x+y*width] = pixel;
