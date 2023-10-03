@@ -64,7 +64,7 @@ inline float MathMin(float value1, float value2)
 }
 inline float MathMax(float value1, float value2)
 {
-    return fmaxf(value1, value2);
+    return fmaxf(value1,value2);
 }
 inline float MathAbs(float value)
 {
@@ -419,7 +419,7 @@ inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
     Vector3 xaxis = Vector3Cross(Vector3Up(), zaxis);
             xaxis = Vector3Normalize(xaxis);
 
-    Vector3 yaxis = Vector3Cross(zaxis,xaxis);
+    Vector3 yaxis = Vector3Cross(zaxis, xaxis);
 
     auto x = position.x;
     auto y = position.y;
