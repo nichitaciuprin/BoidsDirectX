@@ -42,6 +42,7 @@ public:
         assert(_hwnd != NULL);
 
         // Forces window to update style
+        // Seting lStyle before CreateWindow() wont work
         SetWindowLong(_hwnd, GWL_STYLE, lStyle);
         SetWindowPos(_hwnd, NULL, 0,0,0,0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
     }
