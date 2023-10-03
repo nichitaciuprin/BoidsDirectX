@@ -422,10 +422,10 @@ inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
 
     return
     {
-           xaxis.x,    xaxis.y,    xaxis.z,   0.0f,
-           yaxis.x,    yaxis.y,    yaxis.z,   0.0f,
-           zaxis.x,    zaxis.y,    zaxis.z,   0.0f,
-        position.x, position.y, position.z,   1.0f
+           xaxis.x,     xaxis.y,     xaxis.z,   0.0f,
+           yaxis.x,     yaxis.y,     yaxis.z,   0.0f,
+           zaxis.x,     zaxis.y,     zaxis.z,   0.0f,
+        position.x,  position.y,  position.z,   1.0f
     };
 }
 inline Matrix MatrixView(Vector3 eye, float yaw, float pitch)
