@@ -7,7 +7,7 @@ public:
     {
         return _hwnd != 0;
     }
-    static void Create(uint32_t x, uint32_t y, uint32_t clientWidth, uint32_t clientHeight)
+    static void Create(int x, int y, int clientWidth, int clientHeight)
     {
         if (Exists()) return;
 
