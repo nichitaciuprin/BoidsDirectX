@@ -6,6 +6,7 @@
 // https://www.youtube.com/watch?v=4p-E_31XOPM
 // https://groups.csail.mit.edu/graphics/classes/6.837/F04/lectures/07_Pipeline_II.pdf
 // https://www.youtube.com/watch?v=NYW1TKZG-58&ab_channel=CedricMartens
+// https://www.braynzarsoft.net/viewtutorial/q16390-transformations-and-world-view-projection-space-matrices
 
 #pragma once
 
@@ -189,6 +190,14 @@ inline Vector3 operator / (Vector3 v, float f)
     v.x /= f;
     v.y /= f;
     v.z /= f;
+    return v;
+}
+inline Vector4 operator / (Vector4 v, float f)
+{
+    v.x /= f;
+    v.y /= f;
+    v.z /= f;
+    v.w /= f;
     return v;
 }
 inline Vector3 operator += (Vector3& left, Vector3 right)
@@ -390,6 +399,18 @@ inline Matrix MatrixRotateY(float rad)
         0,    0,   0,    1
     };
 }
+inline Matrix MatrixRotateZ(float rad)
+{
+    float sin = sinf(rad);
+    float cos = cosf(rad);
+    return
+    {
+        cos, -sin,  0,   0,
+        sin,  cos,  0,   0,
+        0,    0,    1,   0,
+        0,    0,    0,   1
+    };
+}
 inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
 {
     Vector3 zaxis = direction;
@@ -445,7 +466,7 @@ inline Matrix MatrixOrthographic(float width, float height, float zNear, float z
     float w = 2.0f / width;
     float h = 2.0f / height;
     float a = 1.0f / (zFar - zNear);
-    float b = -a * zNear;
+    float b = a * -zNear;
     return
     {
         w, 0, 0, 0,
@@ -461,7 +482,7 @@ inline Matrix MatrixPerspective(float width, float height, float zNear, float zF
     float h = 1.0f / tanf(fov / 2);
     float w = h / aspectRatio;
     float a = zFar / (zFar - zNear);
-    float b = (-zNear * zFar) / (zFar - zNear);
+    float b = a * -zNear;
     return
     {
         w, 0, 0, 0,
