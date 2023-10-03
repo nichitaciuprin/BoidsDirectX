@@ -14,7 +14,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     auto renderer = make_unique<Renderer>(hInstance);
     renderer->Render(&world->camera, world->boidWorld.boids);
 
-    while(true)
+    while (true)
     {
         world->Update(0.02f,
             renderer->Keydown_VK_LEFT(),

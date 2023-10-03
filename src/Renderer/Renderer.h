@@ -8,6 +8,7 @@
 #include "Window.h"
 #include "ModelCube.h"
 #include "ModelBird.h"
+#include "ModelTriangle3.h"
 #include "ShaderBasic.h"
 
 class Renderer
@@ -31,16 +32,15 @@ public:
         Matrix view;
         Matrix proj;
 
-        proj = window->GetPerspective();
         view = MatrixView(camera);
+        proj = window->GetPerspective();
 
         auto length = boids.size();
         for (size_t i = 0; i < length; i++)
         {
             auto boid = boids[i];
-
             world = MatrixWorld(boid.position,Vector3Normalize(boid.velocity));
-            auto transformation = MatrixTransformaton(world,view,proj);
+            auto transformation = world * view * proj;
             shader->UpdateConstantBuffer(transformation);
             model->Draw();
         }

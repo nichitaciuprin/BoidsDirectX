@@ -8,6 +8,67 @@ const Pixel RED   = 0x00FF0000;
 const Pixel GREEN = 0x0000FF00;
 const Pixel BLUE  = 0x000000FF;
 
+const int INSIDE = 0; // 0000
+const int LEFT = 1;   // 0001
+const int RIGHT = 2;  // 0010
+const int BOTTOM = 4; // 0100
+const int TOP = 8;    // 1000
+
+const int xmin = -1;
+const int xmax =  1;
+const int ymin = -1;
+const int ymax =  1;
+
+int ComputeOutCode(float x, float y)
+{
+	int code = INSIDE;
+	if      (x < xmin) code |= LEFT;
+	else if (x > xmax) code |= RIGHT;
+	if      (y < ymin) code |= BOTTOM;
+	else if (y > ymax) code |= TOP;
+	return code;
+}
+
+// ignore uninitialized float x, y;
+#pragma warning(push)
+#pragma warning(disable:6001)
+#pragma warning(disable:4701)
+bool ClipLine(float& x0, float& y0, float& x1, float& y1)
+{
+	int code0 = ComputeOutCode(x0, y0);
+	int code1 = ComputeOutCode(x1, y1);
+
+	while (true)
+    {
+		if (!(code0 | code1)) return true;  // points inside
+        if (  code0 & code1 ) return false; // points in same outside zone
+
+        int code =
+            code1 > code0 ?
+            code1 : code0;
+
+        float x, y;
+
+        if (code & TOP)    { x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0); y = ymax; } // point is above the clip window
+        if (code & BOTTOM) { x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0); y = ymin; } // point is below the clip window
+        if (code & RIGHT)  { y = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0); x = xmax; } // point is to the right of clip window
+        if (code & LEFT)   { y = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0); x = xmin; } // point is to the left of clip window
+
+        if (code == code0) { x0 = x; y0 = y; code0 = ComputeOutCode(x0, y0); }
+        else               { x1 = x; y1 = y; code1 = ComputeOutCode(x1, y1); }
+	}
+
+	return true;
+}
+#pragma warning(pop)
+
+bool InFrustum(Vector3 point)
+{
+    if (point.z / MathAbs(point.x) < 1) return false;
+    if (point.z / MathAbs(point.y) < 1) return false;
+    return true;
+}
+
 class Bitmap
 {
 public:
@@ -32,6 +93,9 @@ public:
             Vector3{ 0.5f, 0.5f, 0.5f}
         };
 
+        for (auto& v : vertices)
+            v *= 2;
+
         uint16_t indices[12][2] =
         {
             0,1,
@@ -49,11 +113,13 @@ public:
         };
 
         auto world = MatrixWorld(position,direction);
-
         for (size_t i = 0; i < 8; i++)
         {
-            vertices[i] = world * vertices[i];
+            vertices[i] = vertices[i] * world;
         }
+
+        for (auto& v : vertices)
+            v /= v.z;
 
         for (size_t i = 0; i < 12; i++)
         {

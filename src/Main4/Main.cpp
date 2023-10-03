@@ -17,6 +17,8 @@ int main()
 
         bitmap->Clear(BLACK);
         auto position = Vector3Zero();
+        auto offset = Vector3Forward()*6;
+        position += offset;
         auto time = (float)clock()/2000;
         auto t1 = MathSin(time);
         auto t2 = MathCos(time);

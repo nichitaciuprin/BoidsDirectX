@@ -23,9 +23,11 @@ public:
     }
     void UpdateConstantBuffer(Matrix modelViewProj)
     {
-        // HLSL will transopose any matrix in constant buffer
         auto deviceContext = DeviceRecources::GetInstance()->GetDeviceContext();
+
+        // HLSL will transopose any matrix in constant buffer
         modelViewProj = MatrixTranspose(modelViewProj);
+
         D3D11_MAPPED_SUBRESOURCE mappedSubresource;
         deviceContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         Constants* constants = (Constants*)(mappedSubresource.pData);
@@ -46,6 +48,7 @@ private:
         auto device = DeviceRecources::GetInstance()->GetDevice();
 
         UINT shaderCompileFlags = 0;
+
         // Compiling with this flag allows debugging shaders with Visual Studio
         #if defined(DEBUG_BUILD)
         shaderCompileFlags |= D3DCOMPILE_DEBUG;
@@ -62,7 +65,7 @@ private:
 
         {
             HRESULT hResult = D3DCompileFromFile(fileName, nullptr, nullptr, "vs_main", "vs_5_0", shaderCompileFlags, 0, &vsBlob, &shaderCompileErrorsBlob);
-            if(FAILED(hResult))
+            if (FAILED(hResult))
             {
                 const char* errorString = (const char*)shaderCompileErrorsBlob->GetBufferPointer();
                 shaderCompileErrorsBlob->Release();
@@ -76,7 +79,7 @@ private:
 
         {
             HRESULT hResult = D3DCompileFromFile(fileName, nullptr, nullptr, "ps_main", "ps_5_0", shaderCompileFlags, 0, &psBlob, &shaderCompileErrorsBlob);
-            if(FAILED(hResult))
+            if (FAILED(hResult))
             {
                 const char* errorString = (const char*)shaderCompileErrorsBlob->GetBufferPointer();
                 shaderCompileErrorsBlob->Release();
@@ -122,6 +125,7 @@ private:
         rasterizerDesc.FillMode = D3D11_FILL_SOLID;
         rasterizerDesc.CullMode = D3D11_CULL_BACK;
         rasterizerDesc.FrontCounterClockwise = FALSE;
+        rasterizerDesc.DepthClipEnable = TRUE;
         device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
     }
     void CreateDepthStencilState()

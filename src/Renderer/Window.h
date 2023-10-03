@@ -43,15 +43,13 @@ public:
     {
         auto deviceContext = DeviceRecources::GetInstance()->GetDeviceContext();
         FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
-        deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
-        deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
         deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+        deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+        deviceContext->ClearRenderTargetView(renderTargetView, backgroundColor);
     }
     Matrix GetPerspective()
     {
-        auto aspectRatio = (float)width/(float)height;
-        return MatrixProj2(aspectRatio, (float)(M_PI_2), 0.1f, 1000.f);
-        // return MatrixProj3(aspectRatio, 0.1f, 1000.f);
+        return MatrixPerspective((float)width,(float)height,0.1f,1000.f);
     }
     void Present()
     {
@@ -60,9 +58,9 @@ public:
     void Update()
     {
         MSG msg = {};
-        while(PeekMessageW(&msg, 0, 0, 0, PM_REMOVE))
+        while (PeekMessageW(&msg, 0, 0, 0, PM_REMOVE))
         {
-            if(msg.message == WM_QUIT)
+            if (msg.message == WM_QUIT)
             {
                 windowClosed = true;
             }
@@ -126,10 +124,13 @@ private:
                 window->windowClosed = true;
                 break;
             }
-            case WM_SIZE: // Window size was changed
+            case WM_SIZE:
+            {
+                // Window size was changed
                 window->GetWindowInfo(&window->width,&window->height);
                 window->OnWindowResize(window->width,window->height);
                 break;
+            }
             case WM_KEYDOWN:
             case WM_KEYUP:
             {

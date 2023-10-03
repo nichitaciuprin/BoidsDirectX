@@ -1,3 +1,12 @@
+// https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/projection-matrix-GPU-rendering-pipeline-clipping.html
+// https://carmencincotti.com/2022-11-28/from-clip-space-to-ndc-space/
+// https://www.youtube.com/watch?v=pThw0S8MR7w&t=3s
+// https://www.youtube.com/watch?v=t7Ztio8cwqM
+// https://www.mdpi.com/1999-4893/16/4/201
+// https://www.youtube.com/watch?v=4p-E_31XOPM
+// https://groups.csail.mit.edu/graphics/classes/6.837/F04/lectures/07_Pipeline_II.pdf
+// https://www.youtube.com/watch?v=NYW1TKZG-58&ab_channel=CedricMartens
+
 #pragma once
 
 #define _USE_MATH_DEFINES
@@ -213,8 +222,8 @@ inline Vector3 operator /= (Vector3& v, float f)
 inline Vector3 Vector3ClampLength(Vector3 vector, float min, float max)
 {
     auto length2 = Vector3Length(vector);
-    if (length2 > max) return vector*(max/length2);
-    if (length2 < min) return vector*(min/length2);
+    if (length2 > max) return vector * (max / length2);
+    if (length2 < min) return vector * (min / length2);
     return vector;
 }
 inline Vector3 Vector3Normalize(Vector3 v)
@@ -225,9 +234,9 @@ inline Vector3 Vector3Cross(Vector3 a, Vector3 b)
 {
     return
     {
-        a.y*b.z - a.z*b.y,
-        a.z*b.x - a.x*b.z,
-        a.x*b.y - a.y*b.x
+        a.y * b.z - a.z * b.y,
+        a.z * b.x - a.x * b.z,
+        a.x * b.y - a.y * b.x
     };
 }
 inline Vector3 Vector3MoveTowards(Vector3 fromVector, Vector3 toVector, float delta)
@@ -246,7 +255,7 @@ inline Vector3 Vector3PositionUpdateSimple(Vector3 position, Vector3 velocity, f
 }
 inline Vector3 Vector3PositionUpdateAdvanced(Vector3 position, Vector3 oldVelocity, Vector3 newVelocity, float deltaTime)
 {
-    return position + (oldVelocity+newVelocity)/2 * deltaTime;
+    return position + (oldVelocity+newVelocity) / 2 * deltaTime;
 }
 inline Matrix operator * (Matrix a, Matrix b)
 {
@@ -290,33 +299,33 @@ inline Matrix operator * (Matrix a, Matrix b)
 
     return result;
 }
-inline Vector3 operator * (Matrix m, Vector3 v)
+inline Vector3 operator * (Vector3 v, Matrix m)
 {
-    Vector4 row0 = { m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3] };
-    Vector4 row1 = { m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3] };
-    Vector4 row2 = { m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3] };
+    Vector4 col0 = { m.m[0][0], m.m[1][0], m.m[2][0], m.m[3][0] };
+    Vector4 col1 = { m.m[0][1], m.m[1][1], m.m[2][1], m.m[3][1] };
+    Vector4 col2 = { m.m[0][2], m.m[1][2], m.m[2][2], m.m[3][2] };
 
-    Vector4 col0 = { v.x, v.y, v.z, 1 };
+    Vector4 row0 = { v.x, v.y, v.z, 1 };
 
     float x = Vector4Dot(row0,col0);
-    float y = Vector4Dot(row1,col0);
-    float z = Vector4Dot(row2,col0);
+    float y = Vector4Dot(row0,col1);
+    float z = Vector4Dot(row0,col2);
 
     return { x, y, z };
 }
-inline Vector4 operator * (Matrix m, Vector4 v)
+inline Vector4 operator * (Vector4 v, Matrix m)
 {
-    Vector4 row0 = { m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3] };
-    Vector4 row1 = { m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3] };
-    Vector4 row2 = { m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3] };
-    Vector4 row3 = { m.m[3][0], m.m[3][1], m.m[3][2], m.m[3][3] };
+    Vector4 col0 = { m.m[0][0], m.m[1][0], m.m[2][0], m.m[3][0] };
+    Vector4 col1 = { m.m[0][1], m.m[1][1], m.m[2][1], m.m[3][1] };
+    Vector4 col2 = { m.m[0][2], m.m[1][2], m.m[2][2], m.m[3][2] };
+    Vector4 col3 = { m.m[0][3], m.m[1][3], m.m[2][3], m.m[3][3] };
 
-    Vector4 col0 = { v.x, v.y, v.z, v.w };
+    Vector4 row0 = { v.x, v.y, v.z, 1 };
 
     float x = Vector4Dot(row0,col0);
-    float y = Vector4Dot(row1,col0);
-    float z = Vector4Dot(row2,col0);
-    float w = Vector4Dot(row3,col0);
+    float y = Vector4Dot(row0,col1);
+    float z = Vector4Dot(row0,col2);
+    float w = Vector4Dot(row0,col3);
 
     return { x, y, z, w };
 }
@@ -351,10 +360,10 @@ inline Matrix MatrixTranslate(Vector3 v)
 {
     return
     {
-        1, 0, 0, v.x,
-        0, 1, 0, v.y,
-        0, 0, 1, v.z,
-        0, 0, 0, 1
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        v.x, v.y, v.z, 1
     };
 }
 inline Matrix MatrixRotateX(float rad)
@@ -364,7 +373,7 @@ inline Matrix MatrixRotateX(float rad)
     return
     {
         1,   0,    0,    0,
-        0,   cos,  -sin, 0,
+        0,   cos, -sin,  0,
         0,   sin,  cos,  0,
         0,   0,    0,    1
     };
@@ -375,10 +384,10 @@ inline Matrix MatrixRotateY(float rad)
     float cos = cosf(rad);
     return
     {
-        cos,   0,  sin,  0,
-        0,     1,  0,    0,
-        -sin,  0,  cos,  0,
-        0,     0,  0,    1
+        cos,  0,  -sin,  0,
+        0,    1,   0,    0,
+        sin,  0,   cos,  0,
+        0,    0,   0,    1
     };
 }
 inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
@@ -392,135 +401,128 @@ inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
 
     return
     {
-        xaxis.x, yaxis.x, zaxis.x, position.x,
-        xaxis.y, yaxis.y, zaxis.y, position.y,
-        xaxis.z, yaxis.z, zaxis.z, position.z,
-        0.0f, 0.0f, 0.0f, 1.0f
+           xaxis.x,    xaxis.y,    xaxis.z,   0.0f,
+           yaxis.x,    yaxis.y,    yaxis.z,   0.0f,
+           zaxis.x,    zaxis.y,    zaxis.z,   0.0f,
+        position.x, position.y, position.z,   1.0f
     };
 }
 inline Matrix MatrixView(Vector3 eye, float yaw, float pitch)
 {
     return
-        MatrixRotateX(-pitch) *
+        MatrixTranslate(-eye) *
         MatrixRotateY(-yaw) *
-        MatrixTranslate(-eye);
+        MatrixRotateX(-pitch);
 }
 inline Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
 {
     Vector3 zaxis = target - eye;
             zaxis = Vector3Normalize(zaxis);
 
-    Vector3 xaxis = Vector3Cross(up,zaxis);
+    Vector3 xaxis = Vector3Cross(up, zaxis);
             xaxis = Vector3Normalize(xaxis);
 
-    Vector3 yaxis = Vector3Cross(zaxis,xaxis);
+    Vector3 yaxis = Vector3Cross(zaxis, xaxis);
+
+    auto x = -Vector3Dot(xaxis, eye);
+    auto y = -Vector3Dot(yaxis, eye);
+    auto z = -Vector3Dot(zaxis, eye);
 
     return
     {
-        xaxis.x, xaxis.y, xaxis.z, -Vector3Dot(xaxis, eye),
-        yaxis.x, yaxis.y, yaxis.z, -Vector3Dot(yaxis, eye),
-        zaxis.x, zaxis.y, zaxis.z, -Vector3Dot(zaxis, eye),
-        0.0f, 0.0f, 0.0f, 1.0f
+        xaxis.x, xaxis.y, xaxis.z,  0.0f,
+        yaxis.x, yaxis.y, yaxis.z,  0.0f,
+        zaxis.x, zaxis.y, zaxis.z,  0.0f,
+              x,       y,       z,  1.0f
     };
 }
 inline Matrix MatrixView(const Camera* camera)
 {
     return MatrixView(camera->position,camera->yaw,camera->pitch);
 }
-inline Matrix MatrixProj1(float left, float right, float bottom, float top, float front, float back)
+inline Matrix MatrixOrthographic(float width, float height, float zNear, float zFar)
 {
-    float rl = right - left;
-    float tb = top - bottom;
-    float fn = back - front;
-
-    float sx = 2.0f/rl;
-    float sy = 2.0f/tb;
-    float sz = -2.0f/fn;
-
-    float x = -(left + right)  / rl;
-    float y = -(top  + bottom) / tb;
-    float z = -(back + front)  / fn;
-
+    float w = 2.0f / width;
+    float h = 2.0f / height;
+    float a = 1.0f / (zFar - zNear);
+    float b = -a * zNear;
     return
     {
-        sx, 0 , 0,  x,
-        0 , sy, 0,  y,
-        0 , 0 , sz, z,
-        0 , 0 , 0,  1
+        w, 0, 0, 0,
+        0, h, 0, 0,
+        0, 0, a, 0,
+        0, 0, b, 1
     };
 }
-inline Matrix MatrixProj2(float aspectRatio, float fovYRadians, float zNear, float zFar)
+inline Matrix MatrixPerspective(float width, float height, float zNear, float zFar)
 {
-    float yScale = tanf(0.5f * ((float)M_PI - fovYRadians));
-    float xScale = yScale / aspectRatio;
-    float zRangeInverse = 1.0f / (zNear - zFar);
-    float zScale = zFar * zRangeInverse;
-    float zTranslation = zFar * zNear * zRangeInverse;
-    Matrix result =
+    float aspectRatio = width / height;
+    float fov = (float)(M_PI_2); // 90 degree
+    float h = 1.0f / tanf(fov / 2);
+    float w = h / aspectRatio;
+    float a = zFar / (zFar - zNear);
+    float b = (-zNear * zFar) / (zFar - zNear);
+    return
     {
-        xScale, 0, 0, 0,
-        0, yScale, 0, 0,
-        0, 0, zScale, -zTranslation,
-        0, 0, 1, 0
+        w, 0, 0, 0,
+        0, h, 0, 0,
+        0, 0, a, 1,
+        0, 0, b, 0
     };
-    return result;
-}
-inline Matrix MatrixProj3(float aspectRatio, float zNear, float zFar)
-{
-    float fov = (float)(M_PI_2);
-    float yScale = tanf(fov/2);
-    float xScale = yScale / aspectRatio;
-    float zRangeInverse = 1.0f / (zNear - zFar);
-    float zScale = zFar * zRangeInverse;
-    float zTranslation = zFar * zNear * zRangeInverse;
-    Matrix result =
-    {
-        xScale, 0, 0, 0,
-        0, yScale, 0, 0,
-        0, 0, zScale, -zTranslation,
-        0, 0, 1, 0
-    };
-    return result;
-}
-inline Matrix MatrixTransformaton(Matrix model, Matrix view, Matrix proj)
-{
-    return proj * view * model;
 }
 void UpdateCameraRotation(Camera* camera, float deltaTime, bool left, bool up, bool down, bool right)
 {
-    float speed = (float)M_PI; // in radians per second
-    float result = speed * deltaTime;
-    if(left)   camera->yaw -= result;
-    if(up)     camera->pitch -= result;
-    if(down)   camera->pitch += result;
-    if(right)  camera->yaw += result;
+    float speed = (float)M_PI;
+    float speedDelta = speed * deltaTime;
+    if (up)    camera->pitch += speedDelta;
+    if (down)  camera->pitch -= speedDelta;
+    if (right) camera->yaw   += speedDelta;
+    if (left)  camera->yaw   -= speedDelta;
 
+    // TODO review
     // Wrap yaw to avoid floating-point errors if we turn too far
     float M_PI2 = 2*(float)M_PI;
-    while(camera->yaw >=  M_PI2) camera->yaw -= M_PI2;
-    while(camera->yaw <= -M_PI2) camera->yaw += M_PI2;
+    while (camera->yaw >=  M_PI2) camera->yaw -= M_PI2;
+    while (camera->yaw <= -M_PI2) camera->yaw += M_PI2;
 
     // Clamp pitch to stop camera flipping upside down
     float degree = MathToRadians(85);
-    if(camera->pitch >  degree) camera->pitch =  degree;
-    if(camera->pitch < -degree) camera->pitch = -degree;
+    if (camera->pitch >  degree) camera->pitch =  degree;
+    if (camera->pitch < -degree) camera->pitch = -degree;
 }
 void UpdateCameraPosition(Camera* camera, float deltaTime, bool w, bool a, bool s, bool d, bool e, bool q)
 {
     Matrix matrix = MatrixView(camera);
 
-    Vector3 forward = { matrix.m[2][0], matrix.m[2][1], matrix.m[2][2] };
+    Vector3 forward = { matrix.m[0][2], matrix.m[1][2], matrix.m[2][2] };
     Vector3 up = Vector3Up();
-    Vector3 right = Vector3Cross(forward, Vector3Up());
-            right = Vector3Normalize(right);
-            right = -right;
+    Vector3 right = Vector3Cross(up,forward);
 
-    const float CAM_MOVE_SPEED = 50.0f; // in metres per second
-    const float CAM_MOVE_AMOUNT = CAM_MOVE_SPEED * deltaTime;
-    if(w) camera->position   += forward * CAM_MOVE_AMOUNT;
-    if(s) camera->position   -= forward * CAM_MOVE_AMOUNT;
-    if(a) camera->position   -= right * CAM_MOVE_AMOUNT;
-    if(d) camera->position   += right * CAM_MOVE_AMOUNT;
-    if(e) camera->position.y += CAM_MOVE_AMOUNT;
-    if(q) camera->position.y -= CAM_MOVE_AMOUNT;
+    auto speed = 50.0f;
+    auto speedDelta = speed * deltaTime;
+
+    if (w) camera->position += forward * speedDelta;
+    if (s) camera->position -= forward * speedDelta;
+    if (d) camera->position += right   * speedDelta;
+    if (a) camera->position -= right   * speedDelta;
+    if (e) camera->position += up      * speedDelta;
+    if (q) camera->position -= up      * speedDelta;
+}
+
+// TODO review
+inline Matrix MatrixProj2(float aspectRatio, float fovYRadians, float zNear, float zFar)
+{
+
+    float yScale = tanf(0.5f * ((float)M_PI - fovYRadians));
+    float xScale = yScale / aspectRatio;
+    float zRangeInverse = 1.0f / (zNear - zFar);
+    float zScale = zFar * zRangeInverse;
+    float zTranslation = zFar * zNear * zRangeInverse;
+    return
+    {
+        xScale, 0, 0, 0,
+        0, yScale, 0, 0,
+        0, 0, zScale, -zTranslation,
+        0, 0, 1, 0
+    };
 }
