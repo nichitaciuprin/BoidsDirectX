@@ -414,18 +414,23 @@ inline Matrix MatrixRotateZ(float rad)
 inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
 {
     Vector3 zaxis = direction;
-            zaxis = Vector3Normalize(zaxis);
+            zaxis = Vector3Normalize(zaxis); // maybe remove
 
-    Vector3 xaxis = Vector3Cross(Vector3Up(),zaxis);
+    Vector3 xaxis = Vector3Cross(Vector3Up(), zaxis);
+            xaxis = Vector3Normalize(xaxis);
 
     Vector3 yaxis = Vector3Cross(zaxis,xaxis);
 
+    auto x = position.x;
+    auto y = position.y;
+    auto z = position.z;
+
     return
     {
-           xaxis.x,     xaxis.y,     xaxis.z,   0.0f,
-           yaxis.x,     yaxis.y,     yaxis.z,   0.0f,
-           zaxis.x,     zaxis.y,     zaxis.z,   0.0f,
-        position.x,  position.y,  position.z,   1.0f
+        xaxis.x, xaxis.y, xaxis.z, 0.0f,
+        yaxis.x, yaxis.y, yaxis.z, 0.0f,
+        zaxis.x, zaxis.y, zaxis.z, 0.0f,
+              x,       y,       z, 1.0f
     };
 }
 inline Matrix MatrixView(Vector3 eye, float yaw, float pitch)
@@ -451,10 +456,10 @@ inline Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
 
     return
     {
-        xaxis.x, xaxis.y, xaxis.z,  0.0f,
-        yaxis.x, yaxis.y, yaxis.z,  0.0f,
-        zaxis.x, zaxis.y, zaxis.z,  0.0f,
-              x,       y,       z,  1.0f
+        xaxis.x, xaxis.y, xaxis.z, 0.0f,
+        yaxis.x, yaxis.y, yaxis.z, 0.0f,
+        zaxis.x, zaxis.y, zaxis.z, 0.0f,
+              x,       y,       z, 1.0f
     };
 }
 inline Matrix MatrixView(const Camera* camera)
