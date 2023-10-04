@@ -413,13 +413,13 @@ inline Matrix MatrixRotateZ(float rad)
 }
 inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
 {
-    Vector3 zaxis = direction;
-            zaxis = Vector3Normalize(zaxis); // maybe remove
+    Vector3 zAxis = direction;
+            zAxis = Vector3Normalize(zAxis); // maybe remove
 
-    Vector3 xaxis = Vector3Cross(Vector3Up(), zaxis);
-            xaxis = Vector3Normalize(xaxis);
+    Vector3 xAxis = Vector3Cross(Vector3Up(), zAxis);
+            xAxis = Vector3Normalize(xAxis);
 
-    Vector3 yaxis = Vector3Cross(zaxis, xaxis);
+    Vector3 yAxis = Vector3Cross(zAxis, xAxis);
 
     auto x = position.x;
     auto y = position.y;
@@ -427,9 +427,9 @@ inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
 
     return
     {
-        xaxis.x, xaxis.y, xaxis.z, 0.0f,
-        yaxis.x, yaxis.y, yaxis.z, 0.0f,
-        zaxis.x, zaxis.y, zaxis.z, 0.0f,
+        xAxis.x, xAxis.y, xAxis.z, 0.0f,
+        yAxis.x, yAxis.y, yAxis.z, 0.0f,
+        zAxis.x, zAxis.y, zAxis.z, 0.0f,
               x,       y,       z, 1.0f
     };
 }
@@ -442,23 +442,23 @@ inline Matrix MatrixView(Vector3 eye, float yaw, float pitch)
 }
 inline Matrix MatrixView(Vector3 eye, Vector3 target, Vector3 up)
 {
-    Vector3 zaxis = target - eye;
-            zaxis = Vector3Normalize(zaxis);
+    Vector3 zAxis = target - eye;
+            zAxis = Vector3Normalize(zAxis);
 
-    Vector3 xaxis = Vector3Cross(up, zaxis);
-            xaxis = Vector3Normalize(xaxis);
+    Vector3 xAxis = Vector3Cross(up, zAxis);
+            xAxis = Vector3Normalize(xAxis);
 
-    Vector3 yaxis = Vector3Cross(zaxis, xaxis);
+    Vector3 yAxis = Vector3Cross(zAxis, xAxis);
 
-    auto x = -Vector3Dot(xaxis, eye);
-    auto y = -Vector3Dot(yaxis, eye);
-    auto z = -Vector3Dot(zaxis, eye);
+    auto x = -Vector3Dot(xAxis, eye);
+    auto y = -Vector3Dot(yAxis, eye);
+    auto z = -Vector3Dot(zAxis, eye);
 
     return
     {
-        xaxis.x, xaxis.y, xaxis.z, 0.0f,
-        yaxis.x, yaxis.y, yaxis.z, 0.0f,
-        zaxis.x, zaxis.y, zaxis.z, 0.0f,
+        xAxis.x, xAxis.y, xAxis.z, 0.0f,
+        yAxis.x, yAxis.y, yAxis.z, 0.0f,
+        zAxis.x, zAxis.y, zAxis.z, 0.0f,
               x,       y,       z, 1.0f
     };
 }
@@ -483,7 +483,7 @@ inline Matrix MatrixOrthographic(float width, float height, float zNear, float z
 inline Matrix MatrixPerspective(float width, float height, float zNear, float zFar)
 {
     float aspectRatio = width / height;
-    float fov = (float)(M_PI_2); // 90 degree
+    float fov = (float)(M_PI_2);
     float h = 1.0f / tanf(fov / 2);
     float w = h / aspectRatio;
     float a = zFar / (zFar - zNear);
