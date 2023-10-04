@@ -237,7 +237,7 @@ inline Vector3 Vector3ClampLength(Vector3 vector, float min, float max)
 }
 inline Vector3 Vector3Normalize(Vector3 v)
 {
-    return v * (1.f / Vector3Length(v));
+    return v / Vector3Length(v);
 }
 inline Vector3 Vector3Cross(Vector3 a, Vector3 b)
 {
