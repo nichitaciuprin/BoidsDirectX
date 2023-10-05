@@ -1,12 +1,18 @@
-// https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/projection-matrix-GPU-rendering-pipeline-clipping.html
-// https://carmencincotti.com/2022-11-28/from-clip-space-to-ndc-space/
 // https://www.youtube.com/watch?v=pThw0S8MR7w&t=3s
 // https://www.youtube.com/watch?v=t7Ztio8cwqM
-// https://www.mdpi.com/1999-4893/16/4/201
 // https://www.youtube.com/watch?v=4p-E_31XOPM
-// https://groups.csail.mit.edu/graphics/classes/6.837/F04/lectures/07_Pipeline_II.pdf
+// https://www.youtube.com/watch?v=PahbNFypubE&ab_channel=Bisqwit
+// https://www.youtube.com/watch?v=hxOw_p0kLfI&t=346s&ab_channel=Bisqwit
 // https://www.youtube.com/watch?v=NYW1TKZG-58&ab_channel=CedricMartens
+// https://www.youtube.com/watch?v=f4s1h2YETNY&ab_channel=kishimisu
+// https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/projection-matrix-GPU-rendering-pipeline-clipping.html
+// https://www.mdpi.com/1999-4893/16/4/201
 // https://www.braynzarsoft.net/viewtutorial/q16390-transformations-and-world-view-projection-space-matrices
+// https://www.ijirt.org/master/publishedpaper/IJIRT100119_PAPER.pdf
+// https://carmencincotti.com/2022-11-28/from-clip-space-to-ndc-space/
+// https://groups.csail.mit.edu/graphics/classes/6.837/F04/lectures/07_Pipeline_II.pdf
+// https://gabrielgambetta.com/computer-graphics-from-scratch/11-clipping.html
+// https://www.youtube.com/watch?v=HXSuNxpCzdM&ab_channel=javidx9
 
 #pragma once
 
