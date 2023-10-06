@@ -112,7 +112,7 @@ public:
             4,6
         };
 
-        auto world = MatrixWorld(position,direction);
+        auto world = MatrixWorld(position, direction);
         for (size_t i = 0; i < 8; i++)
         {
             vertices[i] = vertices[i] * world;
@@ -132,7 +132,7 @@ public:
     {
         if (v0.z < 0 && v1.z < 0) return;
 
-        ClipLine(v0,v1);
+        ClipLine(v0, v1);
 
         uint32_t outX0, outY0;
         uint32_t outX1, outY1;
@@ -158,7 +158,7 @@ public:
     {
         width = _width;
         height = _height;
-        auto pixelCount = width*height;
+        auto pixelCount = width * height;
         if (pixels.size() < pixelCount)
             pixels.resize(pixelCount);
     }
@@ -190,7 +190,7 @@ public:
 
         while (true)
         {
-            SetPixel(x0,y0,pixel);
+            SetPixel(x0, y0, pixel);
             if (x0 == x1 && y0 == y1) break;
             e2 = err;
             if (e2 > -dx) { err -= dy; x0 += sx; }
