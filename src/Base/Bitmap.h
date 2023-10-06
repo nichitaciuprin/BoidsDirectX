@@ -118,8 +118,8 @@ public:
             vertices[i] = vertices[i] * world;
         }
 
-        for (auto& v : vertices)
-            v /= v.z;
+        // for (auto& v : vertices)
+        //     v /= v.z;
 
         for (size_t i = 0; i < 12; i++)
         {
@@ -209,25 +209,34 @@ public:
 
     void DrawBorder(Pixel pixel)
     {
-        DrawLine(0      ,0       ,0      ,height-1,pixel);
-        DrawLine(0      ,0       ,width-1,0       ,pixel);
-        DrawLine(width-1,height-1,width-1,0       ,pixel);
-        DrawLine(width-1,height-1,0      ,height-1,pixel);
+        int x = width - 1;
+        int y = height - 1;
+        DrawLine(0, 0, 0, y, pixel);
+        DrawLine(0, 0, x, 0, pixel);
+        DrawLine(x, y, x, 0, pixel);
+        DrawLine(x, y, 0, y, pixel);
     }
     void DrawX(Pixel pixel)
     {
-        DrawLine(0,0,width-1,height-1,pixel);
-        DrawLine(width-1,0,0,height-1,pixel);
+        int x = width - 1;
+        int y = height - 1;
+        DrawLine(0, 0, x, y, pixel);
+        DrawLine(x, 0, 0, y, pixel);
     }
     void DrawCross(Pixel pixel)
     {
-        DrawLine(width/2,0,width/2,height-1,pixel);
-        DrawLine(0,height/2,width-1,height/2,pixel);
+        int centerX = width / 2;
+        int centerY = height / 2;
+        int x = width - 1;
+        int y = height - 1;
+        DrawLine(centerX, 0, centerX, y, pixel);
+        DrawLine(0, centerY, x, centerY, pixel);
     }
     void DrawSquare(Pixel pixel)
     {
-        for (uint32_t x = 0; x < 20; x++)
-        for (uint32_t y = 0; y < 20; y++)
+        uint32_t size = 20;
+        for (uint32_t x = 0; x < size; x++)
+        for (uint32_t y = 0; y < size; y++)
             SetPixel(x,y,pixel);
     }
     void ScanEffectRandom(size_t iteration)

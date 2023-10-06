@@ -542,8 +542,8 @@ void UpdateCameraPosition(Camera* camera, float deltaTime, bool w, bool a, bool 
 }
 void ClipLine(Vector3& v0, Vector3& v1)
 {
-    if (v0.z < 0 && v1.z > 0) { v0 += (v0 - v1) / (v1.z - v0.z) * v0.z; return; }
-    if (v1.z < 0 && v0.z > 0) { v1 += (v1 - v0) / (v0.z - v1.z) * v1.z; return; }
+    if (v0.z < 0 && v1.z > 0) { v0 += (v0 - v1) * v0.z / (v1.z - v0.z); return; }
+    if (v1.z < 0 && v0.z > 0) { v1 += (v1 - v0) * v1.z / (v0.z - v1.z); return; }
 }
 
 // TODO review
