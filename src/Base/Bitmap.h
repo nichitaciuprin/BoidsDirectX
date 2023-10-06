@@ -130,13 +130,13 @@ public:
 
         ClipLine(v0, v1);
 
-        uint32_t outX0, outY0;
-        uint32_t outX1, outY1;
+        int outX0, outY0;
+        int outX1, outY1;
         ToScreenSpace(v0, &outX0, &outY0);
         ToScreenSpace(v1, &outX1, &outY1);
         DrawLine(outX0, outY0, outX1, outY1, RED);
     }
-    void ToScreenSpace(Vector3 point, uint32_t* outX, uint32_t* outY)
+    void ToScreenSpace(Vector3 point, int* outX, int* outY)
     {
         // auto scale = 100;
         // *outX = (width  / 2) + (uint32_t)(point.x * scale);
@@ -146,11 +146,17 @@ public:
         // *outX = (uint32_t)result.x;
         // *outY = (uint32_t)result.y;
 
-        point.x += 0.5f;
-        point.y += 0.5f;
+        // point.x += 0.5f;
+        // point.y += 0.5f;
+
+        point.x += 1.0f;
+        point.y += 1.0f;
+
         // point.y = -point.y;
-        *outX = (uint32_t)((float)width  * point.x);
-        *outY = (uint32_t)((float)height * point.y);
+
+        *outX = (int)(width  * point.x);
+        *outY = (int)(height * point.y);
+
         // *outX = 0;
         // *outY = 0;
     }
@@ -195,17 +201,19 @@ public:
     inline void SetPixel(int x, int y, Pixel pixel)
     {
         // TODO check should be removed
-        // if (x > width) return;
-        // if (y > height) return;
-        pixels[x + y * width] = pixel;
+        if (x > width) return;
+        if (y > height) return;
+        auto val = x + y * width;
+        cout << val << endl;
+        pixels[val] = pixel;
     }
     void DrawLine(int x0, int y0, int x1, int y1, Pixel pixel)
     {
         // TODO check should be removed
-        if (x0 < 0 && x0 < width) return;
-        if (x1 < 0 && x1 < width) return;
-        if (y0 < 0 && y0 < height) return;
-        if (y1 < 0 && y1 < height) return;
+        // if (x0 < 0 || x0 < width) return;
+        // if (x1 < 0 || x1 < width) return;
+        // if (y0 < 0 || y0 < height) return;
+        // if (y1 < 0 || y1 < height) return;
 
         int dx = abs(x1 - x0);
         int dy = abs(y1 - y0);
