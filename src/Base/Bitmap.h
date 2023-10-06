@@ -106,16 +106,15 @@ public:
             4,6
         };
 
-        for (auto& v : vertices)
-            v *= 4;
+        // for (auto& v : vertices)
+        //     v *= 4;
 
         auto world = MatrixWorld(position, direction);
-
         for (size_t i = 0; i < 8; i++)
             vertices[i] = vertices[i] * world;
 
-        for (auto& v : vertices)
-            v /= v.z;
+        // for (auto& v : vertices)
+        //     v /= v.z;
 
         for (size_t i = 0; i < 12; i++)
         {
@@ -134,6 +133,7 @@ public:
         int outX1, outY1;
         ToScreenSpace(v0, &outX0, &outY0);
         ToScreenSpace(v1, &outX1, &outY1);
+
         DrawLine(outX0, outY0, outX1, outY1, RED);
     }
     void ToScreenSpace(Vector3 point, int* outX, int* outY)
@@ -151,6 +151,11 @@ public:
 
         point.x += 1.0f;
         point.y += 1.0f;
+
+        point.x /= 2;
+        point.y /= 2;
+
+        // cout << point.x << endl;
 
         // point.y = -point.y;
 
@@ -204,7 +209,6 @@ public:
         if (x > width) return;
         if (y > height) return;
         auto val = x + y * width;
-        cout << val << endl;
         pixels[val] = pixel;
     }
     void DrawLine(int x0, int y0, int x1, int y1, Pixel pixel)
