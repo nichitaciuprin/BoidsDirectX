@@ -48,7 +48,7 @@ public:
         DestroyWindow(_hwnd);
         _hwnd = 0;
     }
-    bool Exists()
+    bool Exists() const
     {
         return _hwnd != 0;
     }
@@ -79,8 +79,14 @@ public:
             _pixels[x+y2*_width] = pixel;
         }
     }
-    uint32_t GetClientWidth()  { return _width;  }
-    uint32_t GetClientHeight() { return _height; }
+    uint32_t GetClientWidth() const
+    {
+        return _width;
+    }
+    uint32_t GetClientHeight() const
+    {
+        return _height;
+    }
 
 private:
     static bool           _windowClassRegistered;
