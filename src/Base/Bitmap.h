@@ -166,18 +166,18 @@ public:
     //     point.x += 1;
     //     point.y += 1;
     // }
-    uint32_t Width() const
+    int Width() const
     {
         return width;
     }
-    uint32_t Height() const
+    int Height() const
     {
         return height;
     }
-    void Resize(uint32_t _width, uint32_t _height)
+    void Resize(int widthNew, int heightNew)
     {
-        width = _width;
-        height = _height;
+        width = widthNew;
+        height = heightNew;
         auto pixelCount = width * height;
         if (pixels.size() < pixelCount)
             pixels.resize(pixelCount);
@@ -186,13 +186,13 @@ public:
     {
         fill(pixels.begin(), pixels.end(), pixel);
     }
-    Pixel GetPixel(uint32_t x, uint32_t y) const
+    Pixel GetPixel(int x, int y) const
     {
         if (x > width) return 0x00000000;
         if (y > height) return 0x00000000;
         return pixels[x + y * width];
     }
-    inline void SetPixel(uint32_t x, uint32_t y, Pixel pixel)
+    inline void SetPixel(int x, int y, Pixel pixel)
     {
         // TODO check should be removed
         // if (x > width) return;
@@ -202,10 +202,10 @@ public:
     void DrawLine(int x0, int y0, int x1, int y1, Pixel pixel)
     {
         // TODO check should be removed
-        if (x0 < 0 && x0 < (int)width) return;
-        if (x1 < 0 && x1 < (int)width) return;
-        if (y0 < 0 && y0 < (int)height) return;
-        if (y1 < 0 && y1 < (int)height) return;
+        if (x0 < 0 && x0 < width) return;
+        if (x1 < 0 && x1 < width) return;
+        if (y0 < 0 && y0 < height) return;
+        if (y1 < 0 && y1 < height) return;
 
         int dx = abs(x1 - x0);
         int dy = abs(y1 - y0);
@@ -268,6 +268,6 @@ public:
     }
 
 private:
-    uint32_t width = 0;
-    uint32_t height = 0;
+    int width = 0;
+    int height = 0;
 };
