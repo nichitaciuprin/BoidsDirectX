@@ -8,11 +8,11 @@ int main()
     auto bitmap = make_unique<Bitmap>();
     bitmap->Resize(width,height);
 
-    BitmapWindow::Create(700,100,width,height);
+    BitmapWindow1::Create(700,100,width,height);
 
     while (true)
     {
-        if (!BitmapWindow::Exists()) break;
+        if (!BitmapWindow1::Exists()) break;
         CheckFPS();
 
         bitmap->Clear(BLACK);
@@ -29,9 +29,9 @@ int main()
         bitmap->DrawCube(position,direction);
         bitmap->DrawBorder(GREEN);
 
-        BitmapWindow::SetPixels(bitmap);
+        BitmapWindow1::SetPixels(bitmap);
 
-        BitmapWindow::Update();
+        BitmapWindow1::Update();
     }
 
     return 0;

@@ -3,14 +3,8 @@
 class BitmapWindow
 {
 public:
-    static bool Exists()
+    BitmapWindow(int x, int y, int clientWidth, int clientHeight)
     {
-        return _hwnd != 0;
-    }
-    static void Create(int x, int y, int clientWidth, int clientHeight)
-    {
-        if (Exists()) return;
-
         HINSTANCE hInstance = GetModuleHandle(NULL);
 
         if (!_windowClassRegistered)
@@ -41,12 +35,24 @@ public:
 
         assert(_hwnd != NULL);
 
+        SetInstance(_hwnd, this);
+
         // Forces window to update style
         // Setting lStyle before CreateWindow() wont work
         SetWindowLong(_hwnd, GWL_STYLE, lStyle);
         SetWindowPos(_hwnd, NULL, 0,0,0,0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
     }
-    static void Update()
+    ~BitmapWindow()
+    {
+        if (!Exists()) return;
+        DestroyWindow(_hwnd);
+        _hwnd = 0;
+    }
+    bool Exists()
+    {
+        return _hwnd != 0;
+    }
+    void Update()
     {
         if (!Exists()) return;
 
@@ -57,13 +63,7 @@ public:
         InvalidateRect(_hwnd, NULL, FALSE);
         UpdateWindow(_hwnd);
     }
-    static void Delete()
-    {
-        if (!Exists()) return;
-        DestroyWindow(_hwnd);
-        _hwnd = 0;
-    }
-    static void SetPixels(const unique_ptr<Bitmap>& bitmap)
+    void SetPixels(const unique_ptr<Bitmap>& bitmap)
     {
         if (!Exists()) return;
 
@@ -79,32 +79,27 @@ public:
             _pixels[x+y2*_width] = pixel;
         }
     }
-    static uint32_t GetClientWidth()
-    {
-        return _width;
-    }
-    static uint32_t GetClientHeight()
-    {
-        return _height;
-    }
+    uint32_t GetClientWidth()  { return _width;  }
+    uint32_t GetClientHeight() { return _height; }
 
 private:
-    static HWND           _hwnd;
     static bool           _windowClassRegistered;
     static const LPCWSTR  _windowClassName;
     static const LPCWSTR  _windowName;
 
-    static HDC         _hdc;
-    static HBITMAP     _hbitmap;
-    static uint32_t*   _pixels;
-    static uint32_t    _width;
-    static uint32_t    _height;
+    HWND       _hwnd;
 
-    static void InitBitmap()
+    HDC        _hdc;
+    HBITMAP    _hbitmap;
+    uint32_t*  _pixels;
+    uint32_t   _width;
+    uint32_t   _height;
+
+    void InitBitmap()
     {
         _hdc = CreateCompatibleDC(0);
     }
-    static void ResetBitmap(int clientWidth, int clientHeight)
+    void ResetBitmap(int clientWidth, int clientHeight)
     {
         BITMAPINFO bitmapinfo = {};
         bitmapinfo.bmiHeader.biSize = sizeof(bitmapinfo.bmiHeader);
@@ -124,7 +119,7 @@ private:
         _width  = clientWidth;
         _height = clientHeight;
     }
-    static void PaintBitmap()
+    void PaintBitmap()
     {
         PAINTSTRUCT paint;
 
@@ -141,19 +136,32 @@ private:
         EndPaint(_hwnd, &paint);
     }
 
+    static void SetInstance(HWND hwnd, BitmapWindow* window)
+    {
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(window));
+    }
+    static BitmapWindow* GetInstance(HWND hwnd)
+    {
+        return reinterpret_cast<BitmapWindow*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+    }
     static LRESULT CALLBACK MessageHandler(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
+        auto bitmapWindow = GetInstance(hwnd);
+
+        if (bitmapWindow == NULL)
+            return DefWindowProc(hwnd, message, wParam, lParam);
+
         switch(message)
         {
             case WM_QUIT:
             case WM_DESTROY:
             {
-                _hwnd = 0;
+                bitmapWindow->_hwnd = 0;
                 break;
             }
             case WM_PAINT:
             {
-                PaintBitmap();
+                bitmapWindow->PaintBitmap();
                 break;
             }
             case WM_SIZE:
@@ -162,11 +170,11 @@ private:
                 uint32_t clientHeight = HIWORD(lParam);
 
                 auto sizeChanged =
-                    _width != clientWidth ||
-                    _height != clientHeight;
+                    bitmapWindow->_width != clientWidth ||
+                    bitmapWindow->_height != clientHeight;
 
                 if (sizeChanged)
-                    ResetBitmap(clientWidth, clientHeight);
+                    bitmapWindow->ResetBitmap(clientWidth, clientHeight);
 
                 break;
             }
@@ -194,13 +202,6 @@ private:
     }
 };
 
-HWND           BitmapWindow::_hwnd = 0;
 bool           BitmapWindow::_windowClassRegistered = false;
 const LPCWSTR  BitmapWindow::_windowClassName = L"WindowClass1";
 const LPCWSTR  BitmapWindow::_windowName = L"WindowName1";
-
-HDC         BitmapWindow::_hdc = 0;
-HBITMAP     BitmapWindow::_hbitmap = 0;
-uint32_t*   BitmapWindow::_pixels = 0;
-uint32_t    BitmapWindow::_width = 0;
-uint32_t    BitmapWindow::_height = 0;

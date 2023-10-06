@@ -28,3 +28,4 @@ using namespace std;
 #include "Physics.h"
 #include "Bitmap.h"
 #include "BitmapWindow.h"
+#include "BitmapWindow1.h"
