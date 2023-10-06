@@ -13,6 +13,7 @@ int main()
     while (true)
     {
         if (!BitmapWindow1::Exists()) break;
+
         CheckFPS();
 
         bitmap->Clear(BLACK);
