@@ -29,10 +29,6 @@ int ComputeOutCode(float x, float y)
 	return code;
 }
 
-// ignore uninitialized float x, y;
-#pragma warning(push)
-#pragma warning(disable:6001)
-#pragma warning(disable:4701)
 bool ClipLine(float& x0, float& y0, float& x1, float& y1)
 {
 	int code0 = ComputeOutCode(x0, y0);
@@ -47,7 +43,8 @@ bool ClipLine(float& x0, float& y0, float& x1, float& y1)
             code1 > code0 ?
             code1 : code0;
 
-        float x, y;
+        float x = 0;
+        float y = 0;
 
         if (code & TOP)    { x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0); y = ymax; } // point is above the clip window
         if (code & BOTTOM) { x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0); y = ymin; } // point is below the clip window
@@ -60,7 +57,6 @@ bool ClipLine(float& x0, float& y0, float& x1, float& y1)
 
 	return true;
 }
-#pragma warning(pop)
 
 bool InFrustum(Vector3 point)
 {
@@ -113,10 +109,9 @@ public:
         };
 
         auto world = MatrixWorld(position, direction);
+
         for (size_t i = 0; i < 8; i++)
-        {
             vertices[i] = vertices[i] * world;
-        }
 
         for (auto& v : vertices)
             v /= v.z;
