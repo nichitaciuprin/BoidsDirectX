@@ -9,10 +9,10 @@ const Pixel GREEN = 0x0000FF00;
 const Pixel BLUE  = 0x000000FF;
 
 const int INSIDE = 0; // 0000
-const int LEFT = 1;   // 0001
-const int RIGHT = 2;  // 0010
+const int LEFT   = 1; // 0001
+const int RIGHT  = 2; // 0010
 const int BOTTOM = 4; // 0100
-const int TOP = 8;    // 1000
+const int TOP    = 8; // 1000
 
 const int xmin = -1;
 const int xmax =  1;
@@ -118,14 +118,14 @@ public:
             vertices[i] = vertices[i] * world;
         }
 
-        // for (auto& v : vertices)
-        //     v /= v.z;
+        for (auto& v : vertices)
+            v /= v.z;
 
         for (size_t i = 0; i < 12; i++)
         {
             auto i0 = indices[i][0];
             auto i1 = indices[i][1];
-            DrawLine(vertices[i0],vertices[i1]);
+            DrawLine(vertices[i0], vertices[i1]);
         }
     }
     void DrawLine(Vector3 v0, Vector3 v1)
@@ -134,20 +134,11 @@ public:
 
         ClipLine(v0,v1);
 
-        // if (v0.z < 0)
-        // {
-        //     v0 += (v0-v1)/(v1.z-v0.z)*v0.z;
-        // }
-        // else if (v1.z < 0)
-        // {
-        //     v1 += (v1-v0)/(v0.z-v1.z)*v1.z;
-        // }
-
         uint32_t outX0, outY0;
         uint32_t outX1, outY1;
-        ToScreenSpace(v0,&outX0,&outY0);
-        ToScreenSpace(v1,&outX1,&outY1);
-        DrawLine(outX0,outY0,outX1,outY1,RED);
+        ToScreenSpace(v0, &outX0, &outY0);
+        ToScreenSpace(v1, &outX1, &outY1);
+        DrawLine(outX0, outY0, outX1, outY1, RED);
     }
     void ToScreenSpace(Vector3 point, uint32_t* outX, uint32_t* outY)
     {
@@ -179,14 +170,14 @@ public:
     {
         if (x > width) return 0x00000000;
         if (y > height) return 0x00000000;
-        return pixels[x+y*width];
+        return pixels[x + y * width];
     }
     void SetPixel(uint32_t x, uint32_t y, Pixel pixel)
     {
         // TODO check should be removed
         if (x > width) return;
         if (y > height) return;
-        pixels[x+y*width] = pixel;
+        pixels[x + y * width] = pixel;
     }
     void DrawLine(int x0, int y0, int x1, int y1, Pixel pixel)
     {
