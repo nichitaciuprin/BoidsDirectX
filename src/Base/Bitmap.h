@@ -77,16 +77,17 @@ public:
 
     void DrawCube(Vector3 position, Vector3 direction)
     {
+        float h = 0.5f;
         Vector3 vertices[] =
         {
-            Vector3{-0.5f,-0.5f,-0.5f},
-            Vector3{-0.5f,-0.5f, 0.5f},
-            Vector3{-0.5f, 0.5f,-0.5f},
-            Vector3{-0.5f, 0.5f, 0.5f},
-            Vector3{ 0.5f,-0.5f,-0.5f},
-            Vector3{ 0.5f,-0.5f, 0.5f},
-            Vector3{ 0.5f, 0.5f,-0.5f},
-            Vector3{ 0.5f, 0.5f, 0.5f}
+            Vector3{-h,-h,-h},
+            Vector3{-h,-h, h},
+            Vector3{-h, h,-h},
+            Vector3{-h, h, h},
+            Vector3{ h,-h,-h},
+            Vector3{ h,-h, h},
+            Vector3{ h, h,-h},
+            Vector3{ h, h, h}
         };
 
         for (auto& v : vertices)
