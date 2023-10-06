@@ -154,7 +154,7 @@ private:
     {
         auto bitmapWindow = GetInstance(hwnd);
 
-        if (bitmapWindow == NULL)
+        if (bitmapWindow == nullptr)
             return DefWindowProc(hwnd, message, wParam, lParam);
 
         switch(message)
