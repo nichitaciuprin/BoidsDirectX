@@ -90,9 +90,6 @@ public:
             Vector3{ h, h, h}
         };
 
-        for (auto& v : vertices)
-            v *= 2;
-
         uint16_t indices[12][2] =
         {
             0,1,
@@ -108,6 +105,9 @@ public:
             5,7,
             4,6
         };
+
+        for (auto& v : vertices)
+            v *= 4;
 
         auto world = MatrixWorld(position, direction);
 
@@ -138,10 +138,34 @@ public:
     }
     void ToScreenSpace(Vector3 point, uint32_t* outX, uint32_t* outY)
     {
-        auto scale = 100;
-        *outX = (width  / 2) + (uint32_t)(point.x * scale);
-        *outY = (height / 2) - (uint32_t)(point.y * scale);
+        // auto scale = 100;
+        // *outX = (width  / 2) + (uint32_t)(point.x * scale);
+        // *outY = (height / 2) - (uint32_t)(point.y * scale);
+
+        // auto result = ToScreenSpace(point);
+        // *outX = (uint32_t)result.x;
+        // *outY = (uint32_t)result.y;
+
+        point.x += 0.5f;
+        point.y += 0.5f;
+        // point.y = -point.y;
+        *outX = (uint32_t)((float)width  * point.x);
+        *outY = (uint32_t)((float)height * point.y);
+        // *outX = 0;
+        // *outY = 0;
     }
+    Vector3 ToScreenSpace(Vector3 point)
+    {
+        Vector3 center = {(float)width / 2, (float)height / 2};
+        point.y = -point.y;
+        center += point * 100;
+        return center;
+    }
+    // Vector3 NDCToPixelSpace(Vector3 point)
+    // {
+    //     point.x += 1;
+    //     point.y += 1;
+    // }
     uint32_t Width() const
     {
         return width;
@@ -168,15 +192,21 @@ public:
         if (y > height) return 0x00000000;
         return pixels[x + y * width];
     }
-    void SetPixel(uint32_t x, uint32_t y, Pixel pixel)
+    inline void SetPixel(uint32_t x, uint32_t y, Pixel pixel)
     {
         // TODO check should be removed
-        if (x > width) return;
-        if (y > height) return;
+        // if (x > width) return;
+        // if (y > height) return;
         pixels[x + y * width] = pixel;
     }
     void DrawLine(int x0, int y0, int x1, int y1, Pixel pixel)
     {
+        // TODO check should be removed
+        if (x0 < 0 && x0 < (int)width) return;
+        if (x1 < 0 && x1 < (int)width) return;
+        if (y0 < 0 && y0 < (int)height) return;
+        if (y1 < 0 && y1 < (int)height) return;
+
         int dx = abs(x1 - x0);
         int dy = abs(y1 - y0);
         int sx = x0 < x1 ? 1 : -1;
@@ -230,7 +260,7 @@ public:
     {
         size_t i1 = iteration;
         size_t i2 = Subgen::StaticNext();
-        size_t pixelCount = width*height;
+        size_t pixelCount = width * height;
         i1 %= pixelCount;
         i2 %= pixelCount;
         pixels[i1] = Subgen::StaticNext();
