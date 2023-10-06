@@ -149,15 +149,11 @@ public:
         // point.x += 0.5f;
         // point.y += 0.5f;
 
+        point.y = -point.y;
         point.x += 1.0f;
         point.y += 1.0f;
-
         point.x /= 2;
         point.y /= 2;
-
-        // cout << point.x << endl;
-
-        // point.y = -point.y;
 
         *outX = (int)(width  * point.x);
         *outY = (int)(height * point.y);
