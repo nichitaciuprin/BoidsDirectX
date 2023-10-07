@@ -47,20 +47,19 @@ public:
     void DrawLine(Vector3 v0, Vector3 v1)
     {
         if (v0.z < 0 && v1.z < 0) return;
-
         ClipLineByZ(v0, v1);
-
         v0 /= v0.z;
         v1 /= v1.z;
-
+        DrawLine(v0, v1, RED);
+    }
+    void DrawLine(Vector3 v0, Vector3 v1, Pixel pixel)
+    {
         if (!ClipLine(v0.x, v0.y, v1.x, v1.y)) return;
-
         int outX0, outY0;
         int outX1, outY1;
         ToScreenSpace(v0, &outX0, &outY0);
         ToScreenSpace(v1, &outX1, &outY1);
-
-        DrawLine(outX0, outY0, outX1, outY1, RED);
+        DrawLine(outX0, outY0, outX1, outY1, pixel);
     }
     void DrawLine(int x0, int y0, int x1, int y1, Pixel pixel)
     {

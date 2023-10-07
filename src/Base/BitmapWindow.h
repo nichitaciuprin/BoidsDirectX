@@ -5,7 +5,7 @@ class BitmapWindow
 public:
     BitmapWindow(int x, int y, int clientWidth, int clientHeight)
     {
-        HINSTANCE hInstance = GetModuleHandle(NULL);
+        HINSTANCE hInstance = GetModuleHandle(nullptr);
 
         if (!_windowClassRegistered)
         {
@@ -14,6 +14,7 @@ public:
             window_class.lpfnWndProc = MessageHandler;
             window_class.hInstance = hInstance;
             window_class.lpszClassName = _windowClassName;
+            window_class.hCursor = LoadCursorW(nullptr, IDC_ARROW);
             RegisterClass(&window_class);
         }
 
@@ -165,6 +166,11 @@ private:
                 bitmapWindow->_hwnd = 0;
                 break;
             }
+            // case WM_SETCURSOR:
+            // {
+            //     SetCursor(duno1);
+            //     return 0;
+            // }
             case WM_PAINT:
             {
                 bitmapWindow->PaintBitmap();
