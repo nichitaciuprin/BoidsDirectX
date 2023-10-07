@@ -580,20 +580,19 @@ void ClipLineByZ(Vector3& v0, Vector3& v1)
     if (v0.z < 0 && v1.z > 0) { v0 += (v0 - v1) * v0.z / (v1.z - v0.z); return; }
     if (v1.z < 0 && v0.z > 0) { v1 += (v1 - v0) * v1.z / (v0.z - v1.z); return; }
 }
-
-const int INSIDE = 0; // 0000
-const int LEFT   = 1; // 0001
-const int RIGHT  = 2; // 0010
-const int BOTTOM = 4; // 0100
-const int TOP    = 8; // 1000
-
-const int xmin = -1;
-const int xmax =  1;
-const int ymin = -1;
-const int ymax =  1;
-
 int PointState(float x, float y)
 {
+    const int INSIDE = 0; // 0000
+    const int LEFT   = 1; // 0001
+    const int RIGHT  = 2; // 0010
+    const int BOTTOM = 4; // 0100
+    const int TOP    = 8; // 1000
+
+    const int xmin = -1;
+    const int xmax =  1;
+    const int ymin = -1;
+    const int ymax =  1;
+
 	int code = INSIDE;
 	if      (x < xmin) code |= LEFT;
 	else if (x > xmax) code |= RIGHT;
@@ -603,6 +602,16 @@ int PointState(float x, float y)
 }
 bool ClipLine(float& x0, float& y0, float& x1, float& y1)
 {
+    const int LEFT   = 1; // 0001
+    const int RIGHT  = 2; // 0010
+    const int BOTTOM = 4; // 0100
+    const int TOP    = 8; // 1000
+
+    const int xmin = -1;
+    const int xmax =  1;
+    const int ymin = -1;
+    const int ymax =  1;
+
 	int code0 = PointState(x0, y0);
 	int code1 = PointState(x1, y1);
 
@@ -628,22 +637,4 @@ bool ClipLine(float& x0, float& y0, float& x1, float& y1)
 	}
 
 	return true;
-}
-
-// TODO review
-inline Matrix MatrixProj2(float aspectRatio, float fovYRadians, float zNear, float zFar)
-{
-
-    float yScale = tanf(0.5f * ((float)M_PI - fovYRadians));
-    float xScale = yScale / aspectRatio;
-    float zRangeInverse = 1.0f / (zNear - zFar);
-    float zScale = zFar * zRangeInverse;
-    float zTranslation = zFar * zNear * zRangeInverse;
-    return
-    {
-        xScale, 0, 0, 0,
-        0, yScale, 0, 0,
-        0, 0, zScale, -zTranslation,
-        0, 0, 1, 0
-    };
 }
