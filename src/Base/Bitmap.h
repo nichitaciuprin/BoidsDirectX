@@ -130,12 +130,7 @@ public:
 
         auto world = MatrixWorld(position, direction);
         for (size_t i = 0; i < 8; i++)
-            vertices[i] = vertices[i] * world;
-
-        // ClipLineByZ2(vertices, (int*)indices, 12);
-
-        // for (auto& v : vertices)
-        //     v /= v.z;
+            vertices[i] *= world;
 
         for (size_t i = 0; i < 12; i++)
         {

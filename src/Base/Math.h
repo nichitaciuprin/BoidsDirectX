@@ -344,6 +344,22 @@ inline Vector4 operator * (Vector4 v, Matrix m)
 
     return { x, y, z, w };
 }
+inline Vector3 operator *= (Vector3& v, Matrix m)
+{
+    Vector4 col0 = { m.m[0][0], m.m[1][0], m.m[2][0], m.m[3][0] };
+    Vector4 col1 = { m.m[0][1], m.m[1][1], m.m[2][1], m.m[3][1] };
+    Vector4 col2 = { m.m[0][2], m.m[1][2], m.m[2][2], m.m[3][2] };
+
+    Vector4 row0 = { v.x, v.y, v.z, 1 };
+
+    float x = Vector4Dot(row0,col0);
+    float y = Vector4Dot(row0,col1);
+    float z = Vector4Dot(row0,col2);
+
+    v = { x, y, z };
+
+    return v;
+}
 inline void MatrixPrint(Matrix m)
 {
     cout << m.m[0][0] << "," << m.m[0][1] << "," << m.m[0][2] << "," << m.m[0][3] << endl;

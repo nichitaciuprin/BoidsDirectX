@@ -75,9 +75,9 @@ public:
         for (uint32_t y = 0; y < height; y++)
         for (uint32_t x = 0; x < width; x++)
         {
-            auto pixel = bitmap->pixels[x+y*width];
-            auto y2 = _height-1-y;
-            _pixels[x+y2*_width] = pixel;
+            auto pixel = bitmap->pixels[x + y * width];
+            auto y2 = _height - 1 - y;
+            _pixels[x + y2 * _width] = pixel;
         }
     }
     uint32_t GetClientWidth() const
