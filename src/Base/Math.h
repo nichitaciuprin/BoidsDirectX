@@ -592,7 +592,7 @@ const int xmax =  1;
 const int ymin = -1;
 const int ymax =  1;
 
-int ClipLineOutCode(float x, float y)
+int PointState(float x, float y)
 {
 	int code = INSIDE;
 	if      (x < xmin) code |= LEFT;
@@ -603,8 +603,8 @@ int ClipLineOutCode(float x, float y)
 }
 bool ClipLine(float& x0, float& y0, float& x1, float& y1)
 {
-	int code0 = ClipLineOutCode(x0, y0);
-	int code1 = ClipLineOutCode(x1, y1);
+	int code0 = PointState(x0, y0);
+	int code1 = PointState(x1, y1);
 
 	while (true)
     {
@@ -612,19 +612,19 @@ bool ClipLine(float& x0, float& y0, float& x1, float& y1)
         if (  code0 & code1 ) return false; // points in same outside zone
 
         int code =
-            code1 > code0 ?
-            code1 : code0;
+            code0 > code1 ?
+            code0 : code1;
 
         float x = 0;
         float y = 0;
 
-        if (code & TOP)    { x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0); y = ymax; } // point is above the clip window
-        if (code & BOTTOM) { x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0); y = ymin; } // point is below the clip window
-        if (code & RIGHT)  { y = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0); x = xmax; } // point is to the right of clip window
-        if (code & LEFT)   { y = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0); x = xmin; } // point is to the left of clip window
+        if      (code & LEFT)   { y = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0); x = xmin; } // point is to the left of clip window
+        else if (code & RIGHT)  { y = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0); x = xmax; } // point is to the right of clip window
+        if      (code & BOTTOM) { x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0); y = ymin; } // point is below the clip window
+        else if (code & TOP)    { x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0); y = ymax; } // point is above the clip window
 
-        if (code == code0) { x0 = x; y0 = y; code0 = ClipLineOutCode(x0, y0); }
-        else               { x1 = x; y1 = y; code1 = ClipLineOutCode(x1, y1); }
+        if (code == code0) { x0 = x; y0 = y; code0 = PointState(x0, y0); }
+        else               { x1 = x; y1 = y; code1 = PointState(x1, y1); }
 	}
 
 	return true;

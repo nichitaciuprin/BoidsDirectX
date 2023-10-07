@@ -53,7 +53,7 @@ public:
         v0 /= v0.z;
         v1 /= v1.z;
 
-        ClipLine(v0.x, v0.y, v1.x, v1.y);
+        if (!ClipLine(v0.x, v0.y, v1.x, v1.y)) return;
 
         int outX0, outY0;
         int outX1, outY1;
