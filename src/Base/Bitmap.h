@@ -35,22 +35,13 @@ public:
     {
         if (v0.z < 0 && v1.z < 0) return;
         ClipLineByZ(v0, v1);
-
         if (v0.z != 0) v0 /= v0.z;
         if (v1.z != 0) v1 /= v1.z;
-
-        // cout << v0.x << "," << v0.y << "," << v1.x << "," << v1.y << endl;
         DrawLine(v0, v1, RED);
     }
     void DrawLine(Vector3 v0, Vector3 v1, Pixel pixel)
     {
         if (!ClipLine(v0.x, v0.y, v1.x, v1.y)) return;
-
-        // if (v0.x < -1 || v0.x > 1) { cout << "ABORT v0.x == " << v0.x << endl; abort(); }
-        // if (v0.y < -1 || v0.y > 1) { cout << "ABORT v0.y == " << v0.y << endl; abort(); }
-        // if (v1.x < -1 || v1.x > 1) { cout << "ABORT v1.x == " << v1.x << endl; abort(); }
-        // if (v1.y < -1 || v1.y > 1) { cout << "ABORT v1.y == " << v1.y << endl; abort(); }
-
         int outX0, outY0;
         int outX1, outY1;
         ToScreenSpace(v0, &outX0, &outY0);
@@ -77,8 +68,10 @@ public:
     }
     inline void SetPixel(int x, int y, Pixel pixel)
     {
-        if (x > width - 1) return;
-        if (y > height - 1) return;
+        // TODO remove check
+        // if (x > width - 1) return;
+        // if (y > height - 1) return;
+
         auto i = x + y * width;
         pixels[i] = pixel;
     }
