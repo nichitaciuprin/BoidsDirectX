@@ -540,10 +540,94 @@ void UpdateCameraPosition(Camera* camera, float deltaTime, bool w, bool a, bool 
     if (e) camera->position += up      * speedDelta;
     if (q) camera->position -= up      * speedDelta;
 }
-void ClipLine(Vector3& v0, Vector3& v1)
+bool InFrustum(Vector3 point)
+{
+    if (point.z / MathAbs(point.x) < 1) return false;
+    if (point.z / MathAbs(point.y) < 1) return false;
+    return true;
+}
+void ClipLineByZ2(Vector3* points, int* indices, int lineCount)
+{
+    for (size_t i = 0; i < lineCount; i++)
+    {
+        auto start = i*2;
+        int& p0 = indices[start];
+        int& p1 = indices[start+1];
+
+        Vector3& v0 = points[p0];
+        Vector3& v1 = points[p1];
+
+        if (v0.z < 0 && v1.z > 0)
+        {
+            v0 += (v0 - v1) * v0.z / (v1.z - v0.z);
+            return;
+        }
+        if (v1.z < 0 && v0.z > 0)
+        {
+            v1 += (v1 - v0) * v1.z / (v0.z - v1.z);
+            return;
+        }
+        if (v0.z < 0 && v1.z < 0)
+        {
+            v0 = Vector3Zero();
+            v1 = Vector3Zero();
+            return;
+        }
+    }
+}
+void ClipLineByZ(Vector3& v0, Vector3& v1)
 {
     if (v0.z < 0 && v1.z > 0) { v0 += (v0 - v1) * v0.z / (v1.z - v0.z); return; }
     if (v1.z < 0 && v0.z > 0) { v1 += (v1 - v0) * v1.z / (v0.z - v1.z); return; }
+}
+
+const int INSIDE = 0; // 0000
+const int LEFT   = 1; // 0001
+const int RIGHT  = 2; // 0010
+const int BOTTOM = 4; // 0100
+const int TOP    = 8; // 1000
+
+const int xmin = -1;
+const int xmax =  1;
+const int ymin = -1;
+const int ymax =  1;
+
+int ClipLineOutCode(float x, float y)
+{
+	int code = INSIDE;
+	if      (x < xmin) code |= LEFT;
+	else if (x > xmax) code |= RIGHT;
+	if      (y < ymin) code |= BOTTOM;
+	else if (y > ymax) code |= TOP;
+	return code;
+}
+bool ClipLine(float& x0, float& y0, float& x1, float& y1)
+{
+	int code0 = ClipLineOutCode(x0, y0);
+	int code1 = ClipLineOutCode(x1, y1);
+
+	while (true)
+    {
+		if (!(code0 | code1)) return true;  // points inside
+        if (  code0 & code1 ) return false; // points in same outside zone
+
+        int code =
+            code1 > code0 ?
+            code1 : code0;
+
+        float x = 0;
+        float y = 0;
+
+        if (code & TOP)    { x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0); y = ymax; } // point is above the clip window
+        if (code & BOTTOM) { x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0); y = ymin; } // point is below the clip window
+        if (code & RIGHT)  { y = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0); x = xmax; } // point is to the right of clip window
+        if (code & LEFT)   { y = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0); x = xmin; } // point is to the left of clip window
+
+        if (code == code0) { x0 = x; y0 = y; code0 = ClipLineOutCode(x0, y0); }
+        else               { x1 = x; y1 = y; code1 = ClipLineOutCode(x1, y1); }
+	}
+
+	return true;
 }
 
 // TODO review
