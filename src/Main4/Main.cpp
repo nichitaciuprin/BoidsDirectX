@@ -5,8 +5,7 @@ int main()
     auto width = 400;
     auto height = 400;
 
-    auto bitmap = make_unique<Bitmap>();
-    bitmap->Resize(width, height);
+    auto bitmap = make_unique<Bitmap>(width, height);
 
     BitmapWindow1::Create(700, 100, width, height);
 
@@ -14,7 +13,7 @@ int main()
     {
         CheckFPS();
 
-        bitmap->Clear(BLACK);
+        bitmap->Fill(BLACK);
         auto position = Vector3Zero();
         // position += Vector3Forward() * 2;
         auto time = (float)clock() / 4000;

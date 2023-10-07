@@ -13,28 +13,51 @@ class Bitmap
 public:
     vector<uint32_t> pixels;
 
-    Bitmap()
+    Bitmap(int widthNew, int heightNew)
     {
         pixels = vector<uint32_t>();
+        Resize(widthNew, heightNew);
     }
 
-    inline int Width() const
+    void Resize(int widthNew, int heightNew)
+    {
+        width = widthNew;
+        height = heightNew;
+        auto pixelCount = width * height;
+        if (pixels.size() < pixelCount)
+            pixels.resize(pixelCount);
+    }
+    int Width() const
     {
         return width;
     }
-    inline int Height() const
+    int Height() const
     {
         return height;
     }
-    inline void Clear(Pixel pixel)
+
+    void Fill(Pixel pixel)
     {
         fill(pixels.begin(), pixels.end(), pixel);
+    }
+    void SetPixel(int x, int y, Pixel pixel)
+    {
+        // TODO remove guard
+        // if (x > width - 1) return;
+        // if (y > height - 1) return;
+
+        auto i = x + y * width;
+        pixels[i] = pixel;
     }
 
     void DrawLine(Vector3 v0, Vector3 v1)
     {
+        v0.z -= 1;
+        v1.z -= 1;
         if (v0.z < 0 && v1.z < 0) return;
         ClipLineByZ(v0, v1);
+        v0.z += 1;
+        v1.z += 1;
         if (v0.z != 0) v0 /= v0.z;
         if (v1.z != 0) v1 /= v1.z;
         DrawLine(v0, v1, RED);
@@ -65,15 +88,6 @@ public:
             if (e2 > -dx) { err -= dy; x0 += sx; }
             if (e2 <  dy) { err += dx; y0 += sy; }
         }
-    }
-    inline void SetPixel(int x, int y, Pixel pixel)
-    {
-        // TODO remove check
-        // if (x > width - 1) return;
-        // if (y > height - 1) return;
-
-        auto i = x + y * width;
-        pixels[i] = pixel;
     }
 
     void DrawCube(Vector3 position, Vector3 direction)
@@ -108,7 +122,11 @@ public:
         };
 
         for (auto& v : vertices)
+        {
             v *= 4;
+            v.z *= 4;
+            v.x *= 4;
+        }
 
         auto world = MatrixWorld(position, direction);
         for (size_t i = 0; i < 8; i++)
@@ -135,14 +153,6 @@ public:
         point.y /= 2;
         *outX = (int)((width - 1) * point.x);
         *outY = (int)((height - 1) * point.y);
-    }
-    void Resize(int widthNew, int heightNew)
-    {
-        width = widthNew;
-        height = heightNew;
-        auto pixelCount = width * height;
-        if (pixels.size() < pixelCount)
-            pixels.resize(pixelCount);
     }
 
     void DrawBorder(Pixel pixel)
