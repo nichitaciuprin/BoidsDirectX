@@ -16,7 +16,7 @@ int main()
 
         bitmap->Clear(BLACK);
         auto position = Vector3Zero();
-        position += Vector3Forward() * 5;
+        // position += Vector3Forward() * 2;
         auto time = (float)clock() / 4000;
         auto t1 = MathSin(time);
         auto t2 = MathCos(time);

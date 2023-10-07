@@ -18,19 +18,6 @@ public:
         pixels = vector<uint32_t>();
     }
 
-    inline void SetPixel(int x, int y, Pixel pixel)
-    {
-        if (x > width - 1) return;
-        if (y > height - 1) return;
-        auto i = x + y * width;
-        pixels[i] = pixel;
-    }
-    inline Pixel GetPixel(int x, int y) const
-    {
-        if (x > width) return 0x00000000;
-        if (y > height) return 0x00000000;
-        return pixels[x + y * width];
-    }
     inline int Width() const
     {
         return width;
@@ -48,13 +35,22 @@ public:
     {
         if (v0.z < 0 && v1.z < 0) return;
         ClipLineByZ(v0, v1);
-        v0 /= v0.z;
-        v1 /= v1.z;
+
+        if (v0.z != 0) v0 /= v0.z;
+        if (v1.z != 0) v1 /= v1.z;
+
+        // cout << v0.x << "," << v0.y << "," << v1.x << "," << v1.y << endl;
         DrawLine(v0, v1, RED);
     }
     void DrawLine(Vector3 v0, Vector3 v1, Pixel pixel)
     {
         if (!ClipLine(v0.x, v0.y, v1.x, v1.y)) return;
+
+        // if (v0.x < -1 || v0.x > 1) { cout << "ABORT v0.x == " << v0.x << endl; abort(); }
+        // if (v0.y < -1 || v0.y > 1) { cout << "ABORT v0.y == " << v0.y << endl; abort(); }
+        // if (v1.x < -1 || v1.x > 1) { cout << "ABORT v1.x == " << v1.x << endl; abort(); }
+        // if (v1.y < -1 || v1.y > 1) { cout << "ABORT v1.y == " << v1.y << endl; abort(); }
+
         int outX0, outY0;
         int outX1, outY1;
         ToScreenSpace(v0, &outX0, &outY0);
@@ -79,6 +75,14 @@ public:
             if (e2 <  dy) { err += dx; y0 += sy; }
         }
     }
+    inline void SetPixel(int x, int y, Pixel pixel)
+    {
+        if (x > width - 1) return;
+        if (y > height - 1) return;
+        auto i = x + y * width;
+        pixels[i] = pixel;
+    }
+
     void DrawCube(Vector3 position, Vector3 direction)
     {
         float h = 0.5f;
@@ -136,8 +140,8 @@ public:
         point.y += 1.0f;
         point.x /= 2;
         point.y /= 2;
-        *outX = (int)(width  * point.x);
-        *outY = (int)(height * point.y);
+        *outX = (int)((width - 1) * point.x);
+        *outY = (int)((height - 1) * point.y);
     }
     void Resize(int widthNew, int heightNew)
     {
