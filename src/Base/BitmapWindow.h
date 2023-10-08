@@ -68,8 +68,8 @@ public:
     {
         if (!Exists()) return;
 
-        auto width = MathMin(bitmap->Width(),_width);
-        auto height = MathMin(bitmap->Height(),_height);
+        auto width = MathMin(bitmap->Width(), _width);
+        auto height = MathMin(bitmap->Height(), _height);
 
         // copying from Top-Down bitmap to Bottom-Up bitmap
         for (uint32_t y = 0; y < height; y++)
@@ -166,11 +166,6 @@ private:
                 bitmapWindow->_hwnd = 0;
                 break;
             }
-            // case WM_SETCURSOR:
-            // {
-            //     SetCursor(duno1);
-            //     return 0;
-            // }
             case WM_PAINT:
             {
                 bitmapWindow->PaintBitmap();

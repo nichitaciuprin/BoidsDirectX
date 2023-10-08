@@ -179,9 +179,9 @@ public:
     }
     void DrawSquare(Pixel pixel)
     {
-        uint32_t size = 20;
-        for (uint32_t x = 0; x < size; x++)
-        for (uint32_t y = 0; y < size; y++)
+        int size = 20;
+        for (int x = 0; x < MathClamp(size, 0, width - 1); x++)
+        for (int y = 0; y < MathClamp(size, 0, height - 1); y++)
             SetPixel(x,y,pixel);
     }
     void ScanEffectRandom(size_t iteration)

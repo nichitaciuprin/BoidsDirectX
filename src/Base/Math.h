@@ -86,6 +86,12 @@ inline float MathClamp(float value, float min, float max)
     if (value > max) { return max; };
                        return value;
 }
+inline int MathClamp(int value, int min, int max)
+{
+    if (value < min) { return min; };
+    if (value > max) { return max; };
+                       return value;
+}
 inline float MathInverseLerp(float x, float y, float value)
 {
     return (value - x)/(y - x);

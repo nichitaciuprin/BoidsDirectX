@@ -2,8 +2,10 @@
 
 void main2()
 {
-    auto width = 400;
-    auto height = 400;
+    // auto width = 400;
+    // auto height = 400;
+    auto width = 15;
+    auto height = 15;
 
     auto bitmap = make_unique<Bitmap>(width, height);
 
@@ -24,6 +26,7 @@ void main2()
         // direction += Vector3{t1/2, t2/2, 0};
         direction = Vector3Normalize(direction);
         bitmap->DrawCube(position, direction);
+        bitmap->DrawSquare(BLUE);
         bitmap->DrawBorder(GREEN);
 
         BitmapWindow1::SetPixels(bitmap);
