@@ -597,10 +597,12 @@ void ClipLineByZ2(Vector3* points, int* indices, int lineCount)
         }
     }
 }
-void ClipLineByZ(Vector3& v0, Vector3& v1)
+bool ClipLineByZ(Vector3& v0, Vector3& v1)
 {
-    if (v0.z < 0 && v1.z > 0) { v0 += (v0 - v1) * v0.z / (v1.z - v0.z); return; }
-    if (v1.z < 0 && v0.z > 0) { v1 += (v1 - v0) * v1.z / (v0.z - v1.z); return; }
+    if (v0.z < 0 && v1.z < 0) return false;
+    if (v0.z < 0 && v1.z > 0) { v0 += (v0 - v1) * v0.z / (v1.z - v0.z); v0.z = 0; return true; }
+    if (v1.z < 0 && v0.z > 0) { v1 += (v1 - v0) * v1.z / (v0.z - v1.z); v1.z = 0; return true; }
+    return true;
 }
 int PointState(float x, float y)
 {

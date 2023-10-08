@@ -54,12 +54,12 @@ public:
 
     void DrawLine(Vector3 v0, Vector3 v1)
     {
-        v0.z -= 1;
-        v1.z -= 1;
-        if (v0.z < 0 && v1.z < 0) return;
-        ClipLineByZ(v0, v1);
-        v0.z += 1;
-        v1.z += 1;
+        float nearZ = 0.1f;
+        v0.z -= nearZ;
+        v1.z -= nearZ;
+        if (!ClipLineByZ(v0, v1)) return;
+        v0.z += nearZ;
+        v1.z += nearZ;
         if (v0.z != 0) v0 /= v0.z;
         if (v1.z != 0) v1 /= v1.z;
         DrawLine(v0, v1, RED);
