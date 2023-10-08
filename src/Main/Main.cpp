@@ -2,15 +2,11 @@
 #include "../Boids/World.h"
 #include "../Renderer/Renderer.h"
 
-int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
+void main2()
 {
-    UNREFERENCED_PARAMETER(hInstance);
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-    UNREFERENCED_PARAMETER(nCmdShow);
-
     auto world = make_unique<World>();
 
+    HINSTANCE hInstance = GetModuleHandle(nullptr);
     auto renderer = make_unique<Renderer>(hInstance);
     renderer->Render(&world->camera, world->boidWorld.boids);
 
@@ -31,6 +27,18 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         renderer->Render(&world->camera, world->boidWorld.boids);
         if (renderer->WindowIsClosed())
             break;
+    }
+}
+
+int main()
+{
+    try
+    {
+        main2();
+    }
+    catch (const exception& e)
+    {
+        cerr << e.what() << endl;
     }
 
     return 0;
