@@ -15,10 +15,24 @@ void main2()
         bitmap->Fill(BLACK);
 
         auto time = (float)clock() / 4000;
-        Vector3 position = { 0, 0, 0 };
-        Vector3 rotation = { 0, time, 0 };
-        Vector3 scale = { 1, 1, 4 };
-        bitmap->DrawCube(position, rotation, scale);
+
+        Camera camera = { Vector3Zero(), time, 0 };
+        auto view = MatrixView(&camera);
+
+        {
+            Vector3 position = { 0, 0, 0 };
+            Vector3 rotation = { 0, 0, 0 };
+            Vector3 scale = { 1, 1, 4 };
+            auto world = MatrixWorld(position, rotation, scale);
+            bitmap->DrawCube(world * view);
+        }
+        {
+            Vector3 position = { 1, 0, 0 };
+            Vector3 rotation = { 0, 0, 0 };
+            Vector3 scale = { 1, 1, 4 };
+            auto world = MatrixWorld(position, rotation, scale);
+            bitmap->DrawCube(world * view);
+        }
 
         bitmap->DrawBorder(GREEN);
         BitmapWindow1::SetPixels(bitmap);
