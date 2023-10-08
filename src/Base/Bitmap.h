@@ -92,7 +92,7 @@ public:
         }
     }
 
-    void DrawCube(Vector3 position, Vector3 direction)
+    void DrawCube(Vector3 position, Vector3 rotation, Vector3 scale)
     {
         float h = 0.5f;
         Vector3 vertices[] =
@@ -123,14 +123,14 @@ public:
             4,6
         };
 
-        for (auto& v : vertices)
-        {
-            v *= 4;
-            v.z *= 4;
-            v.x *= 4;
-        }
+        // for (auto& v : vertices)
+        // {
+        //     v *= 4;
+        //     v.z *= 4;
+        //     v.x *= 4;
+        // }
 
-        auto world = MatrixWorld(position, direction);
+        auto world = MatrixWorld(position, rotation, scale);
         for (size_t i = 0; i < 8; i++)
             vertices[i] *= world;
 

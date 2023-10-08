@@ -403,6 +403,7 @@ inline Matrix MatrixTranslate(Vector3 v)
         v.x, v.y, v.z, 1
     };
 }
+
 inline Matrix MatrixRotateX(float rad)
 {
     float sin = sinf(rad);
@@ -439,6 +440,26 @@ inline Matrix MatrixRotateZ(float rad)
         0,    0,    0,   1
     };
 }
+inline Matrix MatrixRotate(Vector3 rotation)
+{
+    return
+    MatrixRotateX(rotation.x) *
+    MatrixRotateY(rotation.y) *
+    MatrixRotateZ(rotation.z);
+}
+inline Matrix MatrixScale(Vector3 scale)
+{
+    float x = scale.x;
+    float y = scale.y;
+    float z = scale.z;
+    return
+    {
+        x, 0, 0, 0,
+        0, y, 0, 0,
+        0, 0, z, 0,
+        0, 0, 0, 1
+    };
+}
 inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
 {
     Vector3 zAxis = direction;
@@ -460,6 +481,13 @@ inline Matrix MatrixWorld(Vector3 position, Vector3 direction)
         zAxis.x, zAxis.y, zAxis.z, 0.0f,
               x,       y,       z, 1.0f
     };
+}
+inline Matrix MatrixWorld(Vector3 position, Vector3 rotation, Vector3 scale)
+{
+    return
+    MatrixScale(scale) *
+    MatrixRotate(rotation) *
+    MatrixTranslate(position);
 }
 inline Matrix MatrixView(Vector3 eye, float yaw, float pitch)
 {
