@@ -78,6 +78,7 @@
         "valarray": "cpp",
         "barrier": "cpp",
         "latch": "cpp",
-        "semaphore": "cpp"
+        "semaphore": "cpp",
+        "ranges": "cpp"
     }
 }
