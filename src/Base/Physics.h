@@ -76,6 +76,25 @@ Vector3 ClosesSurfacePoint(Vector3 point, Sphere sphere)
         return dir* sphere.radius;
     return sphere.position+dir*dist;
 }
+bool Raycast(Vector3 from, Vector3 dir, Sphere sphere)
+{
+    Vector3 diff = from - sphere.position;
+
+    float a = Vector3LengthNoRoot(dir);
+    float b = Vector3Dot(dir, diff) * 2.0f;
+    float c = Vector3LengthNoRoot(diff) - (sphere.radius * sphere.radius);
+    float delta = b * b - 4.0f * a * c;
+
+    if (delta < 0.0f)
+        return false;
+
+    float dist = (-b - MathSqrt(delta)) / (2.0f * a);
+
+    if (dist < 0.0f)
+        return false;
+
+    return true;
+}
 bool Raycast(Vector3 from, Vector3 dir, Sphere sphere, float* outDistance, Vector3* outPoint, Vector3* outNormal)
 {
     Vector3 diff = from - sphere.position;
