@@ -21,6 +21,8 @@ public:
 
     void Resize(int widthNew, int heightNew)
     {
+        if (widthNew < 1) throw exception("Bitmap widthNew < 1");
+        if (heightNew < 1) throw exception("Bitmap heightNew < 1");
         width = widthNew;
         height = heightNew;
         auto pixelCount = width * height;

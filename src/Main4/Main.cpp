@@ -1,6 +1,6 @@
 #include "../Base/Base.h"
 
-int main()
+void main2()
 {
     auto width = 400;
     auto height = 400;
@@ -29,6 +29,18 @@ int main()
         BitmapWindow1::SetPixels(bitmap);
 
         BitmapWindow1::Update();
+    }
+}
+
+int main()
+{
+    try
+    {
+        main2();
+    }
+    catch (const exception& e)
+    {
+        cerr << e.what() << endl;
     }
 
     return 0;
