@@ -2,10 +2,8 @@
 
 void main2()
 {
-    // auto width = 400;
-    // auto height = 400;
-    auto width = 15;
-    auto height = 15;
+    auto width = 400;
+    auto height = 400;
 
     auto bitmap = make_unique<Bitmap>(width, height);
 
