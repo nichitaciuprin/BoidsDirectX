@@ -24,7 +24,6 @@ void main2()
         // direction += Vector3{t1/2, t2/2, 0};
         direction = Vector3Normalize(direction);
         bitmap->DrawCube(position, direction);
-        bitmap->DrawSquare(BLUE);
         bitmap->DrawBorder(GREEN);
 
         BitmapWindow1::SetPixels(bitmap);
