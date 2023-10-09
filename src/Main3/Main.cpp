@@ -2,16 +2,15 @@
 
 int main()
 {
-    BitmapWindow::Create(700,0,40,400);
-    auto width = BitmapWindow::GetClientWidth();
-    auto height = BitmapWindow::GetClientHeight();
+    BitmapWindow1::Create(700,0,100,100);
+    auto width = BitmapWindow1::GetClientWidth();
+    auto height = BitmapWindow1::GetClientHeight();
 
-    auto bitmap = make_unique<Bitmap>();
-    bitmap->Resize(width,height);
+    auto bitmap = make_unique<Bitmap>(width,height);
 
     size_t animationIteration = 0;
 
-    while (BitmapWindow::Exists())
+    while (BitmapWindow1::Exists())
     {
         CheckFPS();
 
@@ -19,9 +18,9 @@ int main()
         animationIteration++;
         bitmap->DrawBorder(GREEN);
 
-        BitmapWindow::SetPixels(bitmap);
+        BitmapWindow1::SetPixels(bitmap);
 
-        BitmapWindow::Update();
+        BitmapWindow1::Update();
     }
 
     return 0;
