@@ -27,8 +27,8 @@ void main2()
             bitmap->DrawCube(world * view);
         }
         {
-            Vector3 position = { 1, 0, 0 };
-            Vector3 rotation = { 0, 0, 0 };
+            Vector3 position = { 0, 0, 0 };
+            Vector3 rotation = { 0, 90, 0 };
             Vector3 scale = { 1, 1, 4 };
             auto world = MatrixWorld(position, rotation, scale);
             bitmap->DrawCube(world * view);

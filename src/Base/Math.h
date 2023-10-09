@@ -443,9 +443,9 @@ inline Matrix MatrixRotateZ(float rad)
 inline Matrix MatrixRotate(Vector3 rotation)
 {
     return
-    MatrixRotateX(rotation.x) *
-    MatrixRotateY(rotation.y) *
-    MatrixRotateZ(rotation.z);
+    MatrixRotateX(MathToRadians(rotation.x)) *
+    MatrixRotateY(MathToRadians(rotation.y)) *
+    MatrixRotateZ(MathToRadians(rotation.z));
 }
 inline Matrix MatrixScale(Vector3 scale)
 {
