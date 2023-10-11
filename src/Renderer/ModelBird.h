@@ -37,10 +37,6 @@ private:
             -2.00f,  0.00f, -2.00f,
         };
 
-        // auto arraySize = ARRAYSIZE(vertexData);
-        // for (size_t i = 0; i < arraySize; i++)
-        //     vertexData[i] /= 4.75f;
-
         D3D11_BUFFER_DESC vertexBufferDesc = {};
         vertexBufferDesc.ByteWidth = sizeof(vertexData);
         vertexBufferDesc.Usage     = D3D11_USAGE_IMMUTABLE;
