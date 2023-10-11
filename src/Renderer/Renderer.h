@@ -8,7 +8,7 @@
 #include "Window.h"
 #include "ModelCube.h"
 #include "ModelBird.h"
-#include "ModelTriangle3.h"
+#include "ModelOverlapingTriangles.h"
 #include "ShaderBasic.h"
 
 class Renderer

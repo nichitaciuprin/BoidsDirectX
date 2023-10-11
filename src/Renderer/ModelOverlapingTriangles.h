@@ -1,9 +1,9 @@
 #pragma once
 
-class ModelTriangle3
+class ModelOverlapingTriangles
 {
 public:
-    ModelTriangle3()
+    ModelOverlapingTriangles()
     {
         CreateVertexBuffer();
         CreateIndexBuffer();

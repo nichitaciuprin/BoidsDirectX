@@ -6,9 +6,8 @@ public:
     static DeviceRecources* GetInstance()
     {
         if (instance == nullptr)
-        {
             instance = new DeviceRecources();
-        }
+
         return instance;
     }
 
