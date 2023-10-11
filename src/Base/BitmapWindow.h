@@ -72,19 +72,19 @@ public:
         auto height = MathMin(bitmap->Height(), _height);
 
         // copying from Top-Down bitmap to Bottom-Up bitmap
-        for (uint32_t y = 0; y < height; y++)
-        for (uint32_t x = 0; x < width; x++)
+        for (int y = 0; y < height; y++)
+        for (int x = 0; x < width; x++)
         {
             auto pixel = bitmap->pixels[x + y * width];
             auto y2 = _height - 1 - y;
             _pixels[x + y2 * _width] = pixel;
         }
     }
-    uint32_t GetClientWidth() const
+    int GetClientWidth() const
     {
         return _width;
     }
-    uint32_t GetClientHeight() const
+    int GetClientHeight() const
     {
         return _height;
     }
@@ -99,8 +99,8 @@ private:
     HDC        _hdc;
     HBITMAP    _hbitmap;
     uint32_t*  _pixels;
-    uint32_t   _width;
-    uint32_t   _height;
+    int        _width;
+    int        _height;
 
     void InitBitmap()
     {
@@ -173,8 +173,8 @@ private:
             }
             case WM_SIZE:
             {
-                uint32_t clientWidth = LOWORD(lParam);
-                uint32_t clientHeight = HIWORD(lParam);
+                int clientWidth = LOWORD(lParam);
+                int clientHeight = HIWORD(lParam);
 
                 auto sizeChanged =
                     bitmapWindow->_width != clientWidth ||

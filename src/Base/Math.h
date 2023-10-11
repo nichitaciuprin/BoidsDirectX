@@ -56,11 +56,11 @@ inline float MathCos(float f)
 {
     return cosf(f);
 }
-inline uint32_t MathMin(uint32_t v1, uint32_t v2)
+inline int MathMin(int v1, int v2)
 {
     return min(v1,v2);
 }
-inline uint32_t MathMax(uint32_t v1, uint32_t v2)
+inline int MathMax(int v1, int v2)
 {
     return max(v1,v2);
 }
