@@ -55,7 +55,7 @@ private:
     }
     void CreateIndexBuffer()
     {
-        int indices[] =
+        uint16_t indices[] =
         {
             0, 6, 4,
             0, 2, 6,
