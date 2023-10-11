@@ -6,19 +6,17 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #include "DeviceRecources.h"
 #include "Window.h"
+#include "Model.h"
 #include "ModelCube.h"
 #include "ModelBird.h"
 #include "ModelOverlapingTriangles.h"
 #include "ShaderBasic.h"
-#include "Model.h"
 
 class Renderer
 {
 public:
     Renderer(HINSTANCE hInstance)
     {
-        cout << Model::Cube::vertexData[1] << endl;
-
         window = make_unique<Window>(hInstance);
         model = make_unique<ModelBird>();
         shader = make_unique<ShaderBasic>();

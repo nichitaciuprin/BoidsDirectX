@@ -79,6 +79,7 @@
         "barrier": "cpp",
         "latch": "cpp",
         "semaphore": "cpp",
-        "ranges": "cpp"
+        "ranges": "cpp",
+        "span": "cpp"
     }
 }
