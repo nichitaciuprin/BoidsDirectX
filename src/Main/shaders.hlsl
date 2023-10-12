@@ -27,7 +27,7 @@ PS_Input vs_main(VS_Input input)
     PS_Input output;
 
     float4 vertexPosition = float4(input.vertexPosition, 1.0f);
-    output.screenSpace = mul(vertexPosition,modelViewProj);
+    output.screenSpace = mul(vertexPosition, modelViewProj);
 
     output.color = input.vertexPosition;
     output.color += float3(0.5f, 0.5f, 0.5f);
