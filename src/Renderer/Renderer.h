@@ -7,7 +7,7 @@
 #include "DeviceRecources.h"
 #include "Window.h"
 #include "Model.h"
-#include "ModelStatic.h"
+#include "ModelInfo.h"
 #include "ModelCube.h"
 #include "ModelBird.h"
 #include "ModelOverlapingTriangles.h"

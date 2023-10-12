@@ -29,12 +29,12 @@ private:
     void CreateVertexBuffer()
     {
         D3D11_BUFFER_DESC vertexBufferDesc = {};
-        vertexBufferDesc.ByteWidth = sizeof(ModelStatic::Bird::VertexData);
+        vertexBufferDesc.ByteWidth = sizeof(ModelInfo::Bird::VertexData);
         vertexBufferDesc.Usage     = D3D11_USAGE_IMMUTABLE;
         vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA subresourceData = {};
-        subresourceData.pSysMem = ModelStatic::Bird::VertexData.data();
+        subresourceData.pSysMem = ModelInfo::Bird::VertexData.data();
 
         auto device = DeviceRecources::GetInstance()->GetDevice();
 
@@ -43,15 +43,15 @@ private:
     }
     void CreateIndexBuffer()
     {
-        indexCount = (UINT)ModelStatic::Bird::IndexData.size();
+        indexCount = (UINT)ModelInfo::Bird::IndexData.size();
 
         D3D11_BUFFER_DESC indexBufferDesc = {};
-        indexBufferDesc.ByteWidth = sizeof(ModelStatic::Bird::IndexData);
+        indexBufferDesc.ByteWidth = sizeof(ModelInfo::Bird::IndexData);
         indexBufferDesc.Usage     = D3D11_USAGE_IMMUTABLE;
         indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA subresourceData = {};
-        subresourceData.pSysMem = ModelStatic::Bird::IndexData.data();
+        subresourceData.pSysMem = ModelInfo::Bird::IndexData.data();
 
         auto device = DeviceRecources::GetInstance()->GetDevice();
 
