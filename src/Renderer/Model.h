@@ -69,14 +69,14 @@ private:
 };
 const vector<float> ModelCube::VertexData =
 {
-    -0.5f,-0.5f,-0.5f,
-    -0.5f,-0.5f, 0.5f,
-    -0.5f, 0.5f,-0.5f,
-    -0.5f, 0.5f, 0.5f,
-     0.5f,-0.5f,-0.5f,
-     0.5f,-0.5f, 0.5f,
-     0.5f, 0.5f,-0.5f,
-     0.5f, 0.5f, 0.5f
+   -0.5f,-0.5f,-0.5f,
+   -0.5f,-0.5f, 0.5f,
+   -0.5f, 0.5f,-0.5f,
+   -0.5f, 0.5f, 0.5f,
+    0.5f,-0.5f,-0.5f,
+    0.5f,-0.5f, 0.5f,
+    0.5f, 0.5f,-0.5f,
+    0.5f, 0.5f, 0.5f
 };
 const vector<uint16_t> ModelCube::IndexData =
 {
