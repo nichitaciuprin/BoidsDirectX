@@ -28,22 +28,13 @@ private:
 
     void CreateVertexBuffer()
     {
-        float vertexData[] =
-        {
-             0.00f,  0.25f,  1.00f,
-             0.00f, -0.50f,  0.00f,
-             0.00f,  0.00f,  2.00f,
-             2.00f,  0.00f, -2.00f,
-            -2.00f,  0.00f, -2.00f,
-        };
-
         D3D11_BUFFER_DESC vertexBufferDesc = {};
-        vertexBufferDesc.ByteWidth = sizeof(vertexData);
+        vertexBufferDesc.ByteWidth = sizeof(Model::Bird::VertexData);
         vertexBufferDesc.Usage     = D3D11_USAGE_IMMUTABLE;
         vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA vertexSubresourceData = { };
-        vertexSubresourceData.pSysMem = vertexData;
+        vertexSubresourceData.pSysMem = Model::Bird::VertexData.data();
 
         auto device = DeviceRecources::GetInstance()->GetDevice();
 
@@ -52,24 +43,14 @@ private:
     }
     void CreateIndexBuffer()
     {
-        uint16_t indices[] =
-        {
-            0, 2, 3,
-            0, 4, 2,
-            2, 4, 1,
-            2, 1, 3,
-            0, 3, 1,
-            0, 1, 4
-        };
-
-        indexCount = ARRAYSIZE(indices);
+        indexCount = Model::Bird::IndexData.size();
 
         D3D11_BUFFER_DESC indexBufferDesc = {};
-        indexBufferDesc.ByteWidth = sizeof(indices);
+        indexBufferDesc.ByteWidth = sizeof(Model::Bird::IndexData);
         indexBufferDesc.Usage     = D3D11_USAGE_IMMUTABLE;
         indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-        D3D11_SUBRESOURCE_DATA indexSubresourceData = { indices };
+        D3D11_SUBRESOURCE_DATA indexSubresourceData = { Model::Bird::IndexData.data() };
 
         auto device = DeviceRecources::GetInstance()->GetDevice();
 

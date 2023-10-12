@@ -4,8 +4,7 @@ namespace Model
 {
     namespace Cube
     {
-        // const array<float,24> VertexData =
-        const float VertexData[] =
+        const array<float,24> VertexData =
         {
             -0.5f,-0.5f,-0.5f,
             -0.5f,-0.5f, 0.5f,
@@ -16,8 +15,7 @@ namespace Model
              0.5f, 0.5f,-0.5f,
              0.5f, 0.5f, 0.5f
         };
-        // const array<uint16_t,36> IndexData =
-        const uint16_t IndexData[] =
+        const array<uint16_t,36> IndexData =
         {
             0, 6, 4,
             0, 2, 6,
@@ -35,8 +33,7 @@ namespace Model
     }
     namespace Bird
     {
-        // const array<float,15> VertexData =
-        const float VertexData[] =
+        const array<float,15> VertexData =
         {
              0.00f,  0.25f,  1.00f,
              0.00f, -0.50f,  0.00f,
@@ -44,8 +41,7 @@ namespace Model
              2.00f,  0.00f, -2.00f,
             -2.00f,  0.00f, -2.00f,
         };
-        // const array<uint16_t,18> IndexData =
-        const uint16_t IndexData[] =
+        const array<uint16_t,18> IndexData =
         {
             0, 2, 3,
             0, 4, 2,
@@ -57,8 +53,7 @@ namespace Model
     }
     namespace OverlapingTrianlges
     {
-        // const array<float,27> VertexData =
-        const float VertexData[] =
+        const array<float,27> VertexData =
         {
              2, 3, 1,
              3, 1, 1,
@@ -70,8 +65,7 @@ namespace Model
             -1,-3, 1,
              2, 3, 0
         };
-        // const array<uint16_t,9> IndexData =
-        const uint16_t IndexData[] =
+        const array<uint16_t,9> IndexData =
         {
             0, 1, 2,
             3, 4, 5,
