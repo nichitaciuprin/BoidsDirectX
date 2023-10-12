@@ -19,7 +19,7 @@ public:
     Renderer(HINSTANCE hInstance)
     {
         window = make_unique<Window>(hInstance);
-        model = make_unique<ModelBird2>();
+        model = make_unique<ModelBird>();
         shader = make_unique<ShaderBasic>();
     }
 
@@ -66,6 +66,6 @@ public:
 
 private:
     unique_ptr<Window> window;
-    unique_ptr<ModelBird2> model;
+    unique_ptr<ModelBird> model;
     unique_ptr<ShaderBasic> shader;
 };

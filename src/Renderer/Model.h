@@ -52,7 +52,7 @@ private:
     }
     void CreateIndexBuffer()
     {
-        indexCount = IndexData().size();
+        indexCount = (UINT)IndexData().size();
 
         cout << indexCount << endl;
 
