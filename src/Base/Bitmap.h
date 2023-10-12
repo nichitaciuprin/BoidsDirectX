@@ -92,7 +92,10 @@ public:
         }
     }
 
-    // void DrawCube(Vector3 position, Vector3 rotation, Vector3 scale)
+    void DrawTriangle(Vector3 p0, Vector3 p1, Vector3 p2, Pixel pixel)
+    {
+        // TODO
+    }
     void DrawCube(Matrix modelView)
     {
         float h = 0.5f;
