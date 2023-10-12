@@ -7,6 +7,7 @@
 #include "DeviceRecources.h"
 #include "Window.h"
 #include "Model.h"
+#include "ModelStatic.h"
 #include "ModelCube.h"
 #include "ModelBird.h"
 #include "ModelOverlapingTriangles.h"
@@ -17,6 +18,7 @@ class Renderer
 public:
     Renderer(HINSTANCE hInstance)
     {
+        // Model duno;
         window = make_unique<Window>(hInstance);
         model = make_unique<ModelBird>();
         shader = make_unique<ShaderBasic>();
