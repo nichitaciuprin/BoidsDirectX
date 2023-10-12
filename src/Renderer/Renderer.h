@@ -7,10 +7,6 @@
 #include "DeviceRecources.h"
 #include "Window.h"
 #include "Model.h"
-#include "ModelInfo.h"
-#include "ModelCube.h"
-#include "ModelBird.h"
-#include "ModelOverlapingTriangles.h"
 #include "ShaderBasic.h"
 
 class Renderer
