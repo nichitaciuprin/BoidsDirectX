@@ -62,6 +62,6 @@ public:
 
 private:
     unique_ptr<Window> window;
-    unique_ptr<ModelBird> model;
+    unique_ptr<Model> model;
     unique_ptr<ShaderBasic> shader;
 };
