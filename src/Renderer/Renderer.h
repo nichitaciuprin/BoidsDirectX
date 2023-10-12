@@ -18,9 +18,8 @@ class Renderer
 public:
     Renderer(HINSTANCE hInstance)
     {
-        // Model duno;
         window = make_unique<Window>(hInstance);
-        model = make_unique<ModelBird>();
+        model = make_unique<ModelBird2>();
         shader = make_unique<ShaderBasic>();
     }
 
@@ -67,6 +66,6 @@ public:
 
 private:
     unique_ptr<Window> window;
-    unique_ptr<ModelBird> model;
+    unique_ptr<ModelBird2> model;
     unique_ptr<ShaderBasic> shader;
 };
