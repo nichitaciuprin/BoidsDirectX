@@ -92,10 +92,10 @@ public:
         }
     }
 
-    void DrawTriangle(Vector3 p0, Vector3 p1, Vector3 p2, Pixel pixel)
-    {
-        // TODO
-    }
+    // TODO
+    // void DrawTriangle(Vector3 p0, Vector3 p1, Vector3 p2, Pixel pixel)
+    // {
+    // }
     void DrawCube(Matrix modelView)
     {
         float h = 0.5f;

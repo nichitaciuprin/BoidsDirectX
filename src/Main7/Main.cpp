@@ -14,7 +14,7 @@ void main2()
         CheckFPS();
         bitmap->Fill(BLACK);
 
-        bitmap->Draw
+        // TODO
 
         bitmap->DrawBorder(GREEN);
         BitmapWindow1::SetPixels(bitmap);
