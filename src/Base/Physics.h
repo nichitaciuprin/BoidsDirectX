@@ -96,6 +96,30 @@ bool Raycast(Vector3 origin, Vector3 direction, Sphere sphere)
 
     return true;
 }
+bool RaycastLine(Vector3 start, Vector3 end, Sphere sphere)
+{
+    Vector3 diff = start - sphere.position;
+    Vector3 direction = end - start;
+
+    float a = Vector3LengthNoRoot(direction);
+    float b = Vector3Dot(direction, diff) * 2.0f;
+    float c = Vector3LengthNoRoot(diff) - (sphere.radius * sphere.radius);
+
+    float delta = b * b - 4.0f * a * c;
+
+    if (delta < 0.0f)
+        return false;
+
+    float dist = (-b - MathSqrt(delta)) / (a * 2.0f);
+
+    if (dist < 0.0f)
+        return false;
+
+    if (dist > MathSqrt(a))
+        return false;
+
+    return true;
+}
 bool Raycast(Vector3 origin, Vector3 direction, Sphere sphere, float* outDistance, Vector3* outPoint, Vector3* outNormal)
 {
     Vector3 diff = origin - sphere.position;
