@@ -83,6 +83,7 @@ bool Raycast(Vector3 from, Vector3 dir, Sphere sphere)
     float a = Vector3LengthNoRoot(dir);
     float b = Vector3Dot(dir, diff) * 2.0f;
     float c = Vector3LengthNoRoot(diff) - (sphere.radius * sphere.radius);
+
     float delta = b * b - 4.0f * a * c;
 
     if (delta < 0.0f)
@@ -102,6 +103,7 @@ bool Raycast(Vector3 from, Vector3 dir, Sphere sphere, float* outDistance, Vecto
     float a = Vector3LengthNoRoot(dir);
     float b = Vector3Dot(dir, diff) * 2.0f;
     float c = Vector3LengthNoRoot(diff) - (sphere.radius * sphere.radius);
+
     float delta = b * b - 4.0f * a * c;
 
     if (delta < 0.0f)
