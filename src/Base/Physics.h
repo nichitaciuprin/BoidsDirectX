@@ -76,12 +76,12 @@ Vector3 ClosesSurfacePoint(Vector3 point, Sphere sphere)
         return dir* sphere.radius;
     return sphere.position+dir*dist;
 }
-bool Raycast(Vector3 from, Vector3 dir, Sphere sphere)
+bool Raycast(Vector3 origin, Vector3 direction, Sphere sphere)
 {
-    Vector3 diff = from - sphere.position;
+    Vector3 diff = origin - sphere.position;
 
-    float a = Vector3LengthNoRoot(dir);
-    float b = Vector3Dot(dir, diff) * 2.0f;
+    float a = Vector3LengthNoRoot(direction);
+    float b = Vector3Dot(direction, diff) * 2.0f;
     float c = Vector3LengthNoRoot(diff) - (sphere.radius * sphere.radius);
 
     float delta = b * b - 4.0f * a * c;
@@ -96,12 +96,12 @@ bool Raycast(Vector3 from, Vector3 dir, Sphere sphere)
 
     return true;
 }
-bool Raycast(Vector3 from, Vector3 dir, Sphere sphere, float* outDistance, Vector3* outPoint, Vector3* outNormal)
+bool Raycast(Vector3 origin, Vector3 direction, Sphere sphere, float* outDistance, Vector3* outPoint, Vector3* outNormal)
 {
-    Vector3 diff = from - sphere.position;
+    Vector3 diff = origin - sphere.position;
 
-    float a = Vector3LengthNoRoot(dir);
-    float b = Vector3Dot(dir, diff) * 2.0f;
+    float a = Vector3LengthNoRoot(direction);
+    float b = Vector3Dot(direction, diff) * 2.0f;
     float c = Vector3LengthNoRoot(diff) - (sphere.radius * sphere.radius);
 
     float delta = b * b - 4.0f * a * c;
@@ -114,7 +114,7 @@ bool Raycast(Vector3 from, Vector3 dir, Sphere sphere, float* outDistance, Vecto
     if (dist < 0.0f)
         return false;
 
-    Vector3 point = from + dir * dist;
+    Vector3 point = origin + direction * dist;
     Vector3 normal = point - sphere.position;
 
     *outDistance = dist;
