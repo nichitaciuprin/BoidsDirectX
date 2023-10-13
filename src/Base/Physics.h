@@ -89,7 +89,7 @@ bool Raycast(Vector3 from, Vector3 dir, Sphere sphere)
     if (delta < 0.0f)
         return false;
 
-    float dist = (-b - MathSqrt(delta)) / (2.0f * a);
+    float dist = (-b - MathSqrt(delta)) / (a * 2.0f);
 
     if (dist < 0.0f)
         return false;
@@ -109,7 +109,7 @@ bool Raycast(Vector3 from, Vector3 dir, Sphere sphere, float* outDistance, Vecto
     if (delta < 0.0f)
         return false;
 
-    float dist = (-b - MathSqrt(delta)) / (2.0f * a);
+    float dist = (-b - MathSqrt(delta)) / (a * 2.0f);
 
     if (dist < 0.0f)
         return false;
