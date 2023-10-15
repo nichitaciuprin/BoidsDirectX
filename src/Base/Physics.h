@@ -65,27 +65,52 @@ Vector3 AABBShortPathIn(const AABB* aabb, Vector3 point)
     else if (point.z > AABBMaxZ(aabb)) result.z = AABBMaxZ(aabb) - point.z;
     return result;
 }
-bool InsideOrTouching(Vector3 point, Sphere sphere)
+bool InsideSphere(Vector3 point, Sphere sphere)
 {
-    return Vector3Length(point-sphere.position) <= sphere.radius;
+    auto diff = point - sphere.position;
+    return Vector3LengthSquared(diff) <= sphere.radius * sphere.radius;
 }
-Vector3 ClosesSurfacePoint(Vector3 point, Sphere sphere)
+bool Raycast(Vector3 origin, Vector3 dirNorm, Sphere sphere, float* outDistance, Vector3* outPoint, Vector3* outNormal)
 {
-    auto diff = point-sphere.position;
-    auto dir = Vector3Normalize(diff);
-    auto dist = Vector3Length(diff);
-    if (dist < sphere.radius)
-        return dir* sphere.radius;
-    return sphere.position+dir*dist;
-}
-bool Raycast(Vector3 origin, Vector3 dirNorm, Sphere sphere)
-{
-    Vector3 diff1 = origin - sphere.position;
+    Vector3 v1 = sphere.position - origin;
 
-    Vector3 projected = dirNorm * Vector3Dot(dirNorm, diff1);
-    Vector3 diff2 = projected - diff1;
+    float v2Length = Vector3Dot(dirNorm, v1);
 
-    return Vector3LengthSquared(diff2) > sphere.radius * sphere.radius
+    // if (v2Length < 0) return false; // sphere is behind
+
+    Vector3 v2 = dirNorm * v2Length;
+    Vector3 v3 = v2 - v1;
+
+    float v3LengthSquared = Vector3LengthSquared(v3);
+    float radiusSquared = sphere.radius * sphere.radius;
+
+    if (v3LengthSquared > radiusSquared) return false; // no intersection
+
+    float offset = MathSqrt(radiusSquared - v3LengthSquared);
+
+    float dist1 = v2Length - offset;
+    float dist2 = v2Length + offset;
+
+    Vector3 point1 = origin + dirNorm * dist1;
+    Vector3 point2 = origin + dirNorm * dist2;
+
+    Vector3 normal1 = point1 - sphere.position;
+    Vector3 normal2 = point2 - sphere.position;
+
+    normal1 = Vector3Normalize(normal1);
+    normal2 = Vector3Normalize(normal2);
+
+    Vector3Print(point1);
+    Vector3Print(point2);
+
+    cout << dist1 << endl;
+    cout << dist2 << endl;
+
+    *outDistance = dist1;
+    *outPoint = point1;
+    *outNormal = normal1;
+
+    return true;
 }
 bool Raycast2(Vector3 origin, Vector3 dirNorm, Sphere sphere, float* outDistance, Vector3* outPoint, Vector3* outNormal)
 {
@@ -94,7 +119,7 @@ bool Raycast2(Vector3 origin, Vector3 dirNorm, Sphere sphere, float* outDistance
     float b = Vector3Dot(dirNorm, diff) * 2;
     float c = Vector3LengthSquared(diff) - (sphere.radius * sphere.radius);
 
-    float delta = b * b - 4.0f * c;
+    float delta = b * b - 4 * c;
 
     if (delta < 0)
         return false;
@@ -113,6 +138,3 @@ bool Raycast2(Vector3 origin, Vector3 dirNorm, Sphere sphere, float* outDistance
 
     return true;
 }
-// bool RaycastLine(Vector3 start, Vector3 end, Sphere sphere)
-// {
-// }
