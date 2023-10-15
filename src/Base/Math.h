@@ -153,7 +153,7 @@ inline float Vector3Length(Vector3 v)
 {
     return MathSqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
-inline float Vector3LengthNoRoot(Vector3 v)
+inline float Vector3LengthSquared(Vector3 v)
 {
     return v.x*v.x + v.y*v.y + v.z*v.z;
 }

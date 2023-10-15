@@ -1,3 +1,5 @@
+// https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection.html
+
 #pragma once
 
 struct AABB
@@ -76,69 +78,33 @@ Vector3 ClosesSurfacePoint(Vector3 point, Sphere sphere)
         return dir* sphere.radius;
     return sphere.position+dir*dist;
 }
-bool Raycast(Vector3 origin, Vector3 direction, Sphere sphere)
+bool Raycast(Vector3 origin, Vector3 dirNorm, Sphere sphere)
+{
+    Vector3 diff1 = origin - sphere.position;
+
+    Vector3 projected = dirNorm * Vector3Dot(dirNorm, diff1);
+    Vector3 diff2 = projected - diff1;
+
+    return Vector3LengthSquared(diff2) > sphere.radius * sphere.radius
+}
+bool Raycast2(Vector3 origin, Vector3 dirNorm, Sphere sphere, float* outDistance, Vector3* outPoint, Vector3* outNormal)
 {
     Vector3 diff = origin - sphere.position;
 
-    float a = Vector3LengthNoRoot(direction);
-    float b = Vector3Dot(direction, diff) * 2.0f;
-    float c = Vector3LengthNoRoot(diff) - (sphere.radius * sphere.radius);
+    float b = Vector3Dot(dirNorm, diff) * 2;
+    float c = Vector3LengthSquared(diff) - (sphere.radius * sphere.radius);
 
-    float delta = b * b - 4.0f * a * c;
+    float delta = b * b - 4.0f * c;
 
-    if (delta < 0.0f)
+    if (delta < 0)
         return false;
 
-    float dist = (-b - MathSqrt(delta)) / (a * 2.0f);
+    float dist = (-b - MathSqrt(delta)) / 2;
 
-    if (dist < 0.0f)
+    if (dist < 0)
         return false;
 
-    return true;
-}
-bool RaycastLine(Vector3 start, Vector3 end, Sphere sphere)
-{
-    Vector3 diff = start - sphere.position;
-    Vector3 direction = end - start;
-
-    float a = Vector3LengthNoRoot(direction);
-    float b = Vector3Dot(direction, diff) * 2.0f;
-    float c = Vector3LengthNoRoot(diff) - (sphere.radius * sphere.radius);
-
-    float delta = b * b - 4.0f * a * c;
-
-    if (delta < 0.0f)
-        return false;
-
-    float dist = (-b - MathSqrt(delta)) / (a * 2.0f);
-
-    if (dist < 0.0f)
-        return false;
-
-    if (dist > MathSqrt(a))
-        return false;
-
-    return true;
-}
-bool Raycast(Vector3 origin, Vector3 direction, Sphere sphere, float* outDistance, Vector3* outPoint, Vector3* outNormal)
-{
-    Vector3 diff = origin - sphere.position;
-
-    float a = Vector3LengthNoRoot(direction);
-    float b = Vector3Dot(direction, diff) * 2.0f;
-    float c = Vector3LengthNoRoot(diff) - (sphere.radius * sphere.radius);
-
-    float delta = b * b - 4.0f * a * c;
-
-    if (delta < 0.0f)
-        return false;
-
-    float dist = (-b - MathSqrt(delta)) / (a * 2.0f);
-
-    if (dist < 0.0f)
-        return false;
-
-    Vector3 point = origin + direction * dist;
+    Vector3 point = origin + dirNorm * dist;
     Vector3 normal = point - sphere.position;
 
     *outDistance = dist;
@@ -147,3 +113,6 @@ bool Raycast(Vector3 origin, Vector3 direction, Sphere sphere, float* outDistanc
 
     return true;
 }
+// bool RaycastLine(Vector3 start, Vector3 end, Sphere sphere)
+// {
+// }
