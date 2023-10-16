@@ -111,12 +111,12 @@ public:
         }
         else if (dx < dy)
         {
-            int err = -dy / 2;
+            int err = dy / 2;
             for (int i = 0; i < dy; i++)
             {
                 SetPixel(x0, y0, pixel);
-                if (err > -dx) { err -= dy; x0 += sx; }
-                               { err += dx; y0 += sy; }
+                if (err < dx) { err += dy; x0 += sx; }
+                              { err -= dx; y0 += sy; }
             }
         }
         else
