@@ -75,23 +75,19 @@ bool RaycastFull1(Vector3 origin, Vector3 dirNorm, Sphere sphere)
     // TODO must be tested
 
     Vector3 v1 = sphere.position - origin;
-
     float v2Length = Vector3Dot(dirNorm, v1);
-
     Vector3 v2 = dirNorm * v2Length;
     Vector3 v3 = v2 - v1;
-
     float v3LengthSquared = Vector3LengthSquared(v3);
     float radiusSquared = sphere.radius * sphere.radius;
 
-    if (v3LengthSquared > radiusSquared) return false; // no intersection
+    // no intersection
+    if (v3LengthSquared > radiusSquared) return false;
 
     float offset = MathSqrt(radiusSquared - v3LengthSquared);
 
     float dist1 = v2Length - offset;
     float dist2 = v2Length + offset;
-
-    // if (dist1 < 0) return false;
 
     Vector3 point1 = origin + dirNorm * dist1;
     Vector3 point2 = origin + dirNorm * dist2;
@@ -109,20 +105,17 @@ bool RaycastFull2(Vector3 origin, Vector3 dirNorm, Sphere sphere)
     // TODO must be tested
 
     Vector3 diff = origin - sphere.position;
-
     float b = Vector3Dot(dirNorm, diff) * 2;
     float c = Vector3LengthSquared(diff) - (sphere.radius * sphere.radius);
-
     float deltaSquared = b * b - 4 * c;
 
-    if (deltaSquared < 0) return false; // no intersection
+    // no intersection
+    if (deltaSquared < 0) return false;
 
     float delta = MathSqrt(delta);
 
     float dist1 = (-b - delta) / 2;
     float dist2 = (-b + delta) / 2;
-
-    // if (dist1 < 0) return false;
 
     Vector3 point1 = origin + dirNorm * dist1;
     Vector3 point2 = origin + dirNorm * dist2;
