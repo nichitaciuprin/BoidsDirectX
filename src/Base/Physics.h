@@ -112,7 +112,7 @@ bool RaycastFull2(Vector3 origin, Vector3 dirNorm, Sphere sphere)
     // no intersection
     if (deltaSquared < 0) return false;
 
-    float delta = MathSqrt(delta);
+    float delta = MathSqrt(deltaSquared);
 
     float dist1 = (-b - delta) / 2;
     float dist2 = (-b + delta) / 2;
