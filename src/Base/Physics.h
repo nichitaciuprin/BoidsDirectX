@@ -185,7 +185,7 @@ bool LineSegmentIntersection(Vector3 start, Vector3 end, Sphere sphere)
     // all points behind
     if (maxDist < 0) return false;
 
-    // segment is too short
+    // segment is short
     if (Vector3LengthSquared(dir) < maxDist * maxDist) return false;
 
     return true;
