@@ -79,6 +79,7 @@ public:
         int dy = abs(y1 - y0);
         int sx = x0 < x1 ? 1 : -1;
         int sy = y0 < y1 ? 1 : -1;
+
         int err = (dx > dy ? dx : -dy) / 2;
         int err2;
 
@@ -89,6 +90,43 @@ public:
             err2 = err;
             if (err2 > -dx) { err -= dy; x0 += sx; }
             if (err2 <  dy) { err += dx; y0 += sy; }
+        }
+    }
+    void DrawLine2(int x0, int y0, int x1, int y1, Pixel pixel)
+    {
+        int dx = abs(x1 - x0);
+        int dy = abs(y1 - y0);
+        int sx = x0 < x1 ? 1 : -1;
+        int sy = y0 < y1 ? 1 : -1;
+
+        if (dx > dy)
+        {
+            int err = dx / 2;
+            for (int i = 0; i < dx; i++)
+            {
+                SetPixel(x0, y0, pixel);
+                if (err < dy) { err += dx; y0 += sy; }
+                              { err -= dy; x0 += sx; }
+            }
+        }
+        else if (dx < dy)
+        {
+            int err = -dy / 2;
+            for (int i = 0; i < dy; i++)
+            {
+                SetPixel(x0, y0, pixel);
+                if (err > -dx) { err -= dy; x0 += sx; }
+                               { err += dx; y0 += sy; }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < dx; i++)
+            {
+                SetPixel(x0, y0, pixel);
+                x0 += sx;
+                y0 += sy;
+            }
         }
     }
 
