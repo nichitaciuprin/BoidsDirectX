@@ -16,20 +16,15 @@ void main2()
 
         auto time = (float)clock() / 4000;
 
-        Camera camera = { Vector3Zero(), time, 0 };
+        Camera camera = { { 0, 1.50f, 0 }, time, 0 };
         auto view = MatrixView(&camera);
 
+        for (int x = -5; x < 5; x++)
+        for (int z = -5; z < 5; z++)
         {
-            Vector3 position = { 0, 0, 0 };
+            Vector3 position = { (float)x, -0.5f, (float)z };
             Vector3 rotation = { 0, 0, 0 };
-            Vector3 scale = { 1, 1, 4 };
-            auto world = MatrixWorld(position, rotation, scale);
-            bitmap->DrawCube(world * view);
-        }
-        {
-            Vector3 position = { 0, 0, 0 };
-            Vector3 rotation = { 0, 90, 0 };
-            Vector3 scale = { 1, 1, 4 };
+            Vector3 scale = { 1, 1, 1 };
             auto world = MatrixWorld(position, rotation, scale);
             bitmap->DrawCube(world * view);
         }

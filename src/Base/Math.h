@@ -48,14 +48,6 @@ inline int MathSign(float value)
     if (value < 0) { return -1; }
                      return  0;
 }
-inline float MathSin(float f)
-{
-    return sinf(f);
-}
-inline float MathCos(float f)
-{
-    return cosf(f);
-}
 inline int MathMin(int v1, int v2)
 {
     return min(v1,v2);
@@ -63,6 +55,12 @@ inline int MathMin(int v1, int v2)
 inline int MathMax(int v1, int v2)
 {
     return max(v1,v2);
+}
+inline int MathClamp(int value, int min, int max)
+{
+    if (value < min) { return min; };
+    if (value > max) { return max; };
+                       return value;
 }
 inline float MathMin(float value1, float value2)
 {
@@ -86,11 +84,13 @@ inline float MathClamp(float value, float min, float max)
     if (value > max) { return max; };
                        return value;
 }
-inline int MathClamp(int value, int min, int max)
+inline float MathSin(float f)
 {
-    if (value < min) { return min; };
-    if (value > max) { return max; };
-                       return value;
+    return sinf(f);
+}
+inline float MathCos(float f)
+{
+    return cosf(f);
 }
 inline float MathInverseLerp(float x, float y, float value)
 {
@@ -260,6 +260,12 @@ inline Vector3 Vector3Cross(Vector3 a, Vector3 b)
         a.x * b.y - a.y * b.x
     };
 }
+inline bool Vector3TriangleIsClockwise(Vector3 p1, Vector3 p2, Vector3 p3)
+{
+    auto v1 = p2 - p1;
+    auto v2 = p3 - p1;
+    return v1.x * v2.y - v1.y * v2.x > 0;
+}
 inline Vector3 Vector3MoveTowards(Vector3 fromVector, Vector3 toVector, float delta)
 {
     if (fromVector == toVector) return fromVector;
@@ -403,7 +409,6 @@ inline Matrix MatrixTranslate(Vector3 v)
         v.x, v.y, v.z, 1
     };
 }
-
 inline Matrix MatrixRotateX(float rad)
 {
     float sin = sinf(rad);

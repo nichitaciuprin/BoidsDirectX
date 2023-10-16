@@ -71,7 +71,7 @@ public:
         int outX1, outY1;
         ToScreenSpace(v0, &outX0, &outY0);
         ToScreenSpace(v1, &outX1, &outY1);
-        DrawLine(outX0, outY0, outX1, outY1, pixel);
+        DrawLine2(outX0, outY0, outX1, outY1, pixel);
     }
     void DrawLine(int x0, int y0, int x1, int y1, Pixel pixel)
     {
