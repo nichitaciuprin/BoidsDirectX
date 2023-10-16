@@ -74,26 +74,26 @@ bool RaycastFull1(Vector3 origin, Vector3 dirNorm, Sphere sphere)
 {
     // TODO must be tested
 
-    Vector3 v1 = sphere.position - origin;
-    float v2Length = Vector3Dot(dirNorm, v1);
-    Vector3 v2 = dirNorm * v2Length;
-    Vector3 v3 = v2 - v1;
-    float v3LengthSquared = Vector3LengthSquared(v3);
-    float radiusSquared = sphere.radius * sphere.radius;
+    auto v1 = sphere.position - origin;
+    auto v2Length = Vector3Dot(dirNorm, v1);
+    auto v2 = dirNorm * v2Length;
+    auto v3 = v2 - v1;
+    auto v3LengthSquared = Vector3LengthSquared(v3);
+    auto radiusSquared = sphere.radius * sphere.radius;
 
     // no intersection
     if (v3LengthSquared > radiusSquared) return false;
 
-    float offset = MathSqrt(radiusSquared - v3LengthSquared);
+    auto offset = MathSqrt(radiusSquared - v3LengthSquared);
 
-    float dist1 = v2Length - offset;
-    float dist2 = v2Length + offset;
+    auto dist1 = v2Length - offset;
+    auto dist2 = v2Length + offset;
 
-    Vector3 point1 = origin + dirNorm * dist1;
-    Vector3 point2 = origin + dirNorm * dist2;
+    auto point1 = origin + dirNorm * dist1;
+    auto point2 = origin + dirNorm * dist2;
 
-    Vector3 normal1 = point1 - sphere.position;
-    Vector3 normal2 = point2 - sphere.position;
+    auto normal1 = point1 - sphere.position;
+    auto normal2 = point2 - sphere.position;
 
     normal1 = Vector3Normalize(normal1);
     normal2 = Vector3Normalize(normal2);
@@ -104,24 +104,24 @@ bool RaycastFull2(Vector3 origin, Vector3 dirNorm, Sphere sphere)
 {
     // TODO must be tested
 
-    Vector3 diff = origin - sphere.position;
-    float b = Vector3Dot(dirNorm, diff) * 2;
-    float c = Vector3LengthSquared(diff) - (sphere.radius * sphere.radius);
-    float deltaSquared = b * b - 4 * c;
+    auto diff = origin - sphere.position;
+    auto b = Vector3Dot(dirNorm, diff) * 2;
+    auto c = Vector3LengthSquared(diff) - (sphere.radius * sphere.radius);
+    auto deltaSquared = b * b - 4 * c;
 
     // no intersection
     if (deltaSquared < 0) return false;
 
-    float delta = MathSqrt(deltaSquared);
+    auto delta = MathSqrt(deltaSquared);
 
-    float dist1 = (-b - delta) / 2;
-    float dist2 = (-b + delta) / 2;
+    auto dist1 = (-b - delta) / 2;
+    auto dist2 = (-b + delta) / 2;
 
-    Vector3 point1 = origin + dirNorm * dist1;
-    Vector3 point2 = origin + dirNorm * dist2;
+    auto point1 = origin + dirNorm * dist1;
+    auto point2 = origin + dirNorm * dist2;
 
-    Vector3 normal1 = point1 - sphere.position;
-    Vector3 normal2 = point2 - sphere.position;
+    auto normal1 = point1 - sphere.position;
+    auto normal2 = point2 - sphere.position;
 
     normal1 = Vector3Normalize(normal1);
     normal2 = Vector3Normalize(normal2);
@@ -133,24 +133,24 @@ bool Raycast(Vector3 origin, Vector3 dirNorm, Sphere sphere, float* outDistance,
     // TODO must be tested
     // Assuming the origin is outside the sphere
 
-    Vector3 v1 = sphere.position - origin;
-    float v2Length = Vector3Dot(dirNorm, v1);
+    auto v1 = sphere.position - origin;
+    auto v2Length = Vector3Dot(dirNorm, v1);
 
     // sphere is behind
     if (v2Length < 0) return false;
 
-    Vector3 v2 = dirNorm * v2Length;
-    Vector3 v3 = v2 - v1;
-    float v3LengthSquared = Vector3LengthSquared(v3);
-    float radiusSquared = sphere.radius * sphere.radius;
+    auto v2 = dirNorm * v2Length;
+    auto v3 = v2 - v1;
+    auto v3LengthSquared = Vector3LengthSquared(v3);
+    auto radiusSquared = sphere.radius * sphere.radius;
 
     // no intersection
     if (v3LengthSquared > radiusSquared) return false;
 
-    float offset = MathSqrt(radiusSquared - v3LengthSquared);
-    float dist = v2Length - offset;
-    Vector3 point = origin + dirNorm * dist;
-    Vector3 normal = point - sphere.position;
+    auto offset = MathSqrt(radiusSquared - v3LengthSquared);
+    auto dist = v2Length - offset;
+    auto point = origin + dirNorm * dist;
+    auto normal = point - sphere.position;
     normal = Vector3Normalize(normal);
 
     *outDistance = dist;
@@ -163,24 +163,24 @@ bool LineSegmentIntersection(Vector3 start, Vector3 end, Sphere sphere)
 {
     // TODO must be tested
 
-    Vector3 origin = start;
-    Vector3 dir = end - start;
-    Vector3 dirNorm = Vector3Normalize(dir);
+    auto origin = start;
+    auto dir = end - start;
+    auto dirNorm = Vector3Normalize(dir);
 
-    Vector3 v1 = sphere.position - origin;
-    float v2Length = Vector3Dot(dirNorm, v1);
-    Vector3 v2 = dirNorm * v2Length;
-    Vector3 v3 = v2 - v1;
-    float v3LengthSquared = Vector3LengthSquared(v3);
-    float radiusSquared = sphere.radius * sphere.radius;
+    auto v1 = sphere.position - origin;
+    auto v2Length = Vector3Dot(dirNorm, v1);
+    auto v2 = dirNorm * v2Length;
+    auto v3 = v2 - v1;
+    auto v3LengthSquared = Vector3LengthSquared(v3);
+    auto radiusSquared = sphere.radius * sphere.radius;
 
     // no intersection
     if (v3LengthSquared > radiusSquared) return false;
 
-    float offset = MathSqrt(radiusSquared - v3LengthSquared);
-    float dist1 = v2Length - offset;
-    float dist2 = v2Length + offset;
-    float maxDist = MathMax(dist1, dist2);
+    auto offset = MathSqrt(radiusSquared - v3LengthSquared);
+    auto dist1 = v2Length - offset;
+    auto dist2 = v2Length + offset;
+    auto maxDist = MathMax(dist1, dist2);
 
     // all points behind
     if (maxDist < 0) return false;
