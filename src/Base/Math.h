@@ -264,7 +264,8 @@ inline bool Vector3TriangleIsClockwise(Vector3 p1, Vector3 p2, Vector3 p3)
 {
     auto v1 = p2 - p1;
     auto v2 = p3 - p1;
-    return v1.x * v2.y - v1.y * v2.x > 0;
+    auto crossZ = v1.x * v2.y - v1.y * v2.x;
+    return crossZ < 0;
 }
 inline Vector3 Vector3MoveTowards(Vector3 fromVector, Vector3 toVector, float delta)
 {
@@ -636,6 +637,19 @@ bool ClipLineByZ(Vector3& v0, Vector3& v1)
     if (v0.z < 0 && v1.z > 0) { v0 += (v0 - v1) * v0.z / (v1.z - v0.z); v0.z = 0; return true; }
     if (v1.z < 0 && v0.z > 0) { v1 += (v1 - v0) * v1.z / (v0.z - v1.z); v1.z = 0; return true; }
     return true;
+}
+void ClipLineByZ3(Vector3& v0, Vector3& v1, bool& include)
+{
+    // TODO optimise conditions
+    float nearZ = 0.1f;
+    v0.z -= nearZ;
+    v1.z -= nearZ;
+    if      (v0.z < 0 && v1.z < 0) {                                                   include = false; }
+    else if (v0.z < 0 && v1.z > 0) { v0 += (v0 - v1) * v0.z / (v1.z - v0.z); v0.z = 0; include = true;  }
+    else if (v1.z < 0 && v0.z > 0) { v1 += (v1 - v0) * v1.z / (v0.z - v1.z); v1.z = 0; include = true;  }
+    else                           {                                                   include = true;  }
+    v0.z += nearZ;
+    v1.z += nearZ;
 }
 int PointState(float x, float y)
 {

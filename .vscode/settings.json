@@ -80,7 +80,8 @@
         "latch": "cpp",
         "semaphore": "cpp",
         "ranges": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "fstream": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

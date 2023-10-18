@@ -11,14 +11,13 @@ void main2()
 
     while (BitmapWindow1::Exists())
     {
-        CheckFPS();
+        // CheckFPS();
         bitmap->Fill(BLACK);
 
-        auto time = (float)clock() / 4000;
+        // auto time = (float)clock() / 4000;
 
         // Camera camera = { Vector3Zero(), time, 0 };
         // auto view = MatrixView(&camera);
-
         // {
         //     Vector3 position = { 0, 0, 0 };
         //     Vector3 rotation = { 0, 0, 0 };
@@ -34,19 +33,27 @@ void main2()
         //     bitmap->DrawCube(world * view);
         // }
 
-        Camera camera = { { 0, 1.50f, 0 }, time, 0 };
+        auto time = (float)clock() / 40;
+        Camera camera = { 0, 0, 0 };
         auto view = MatrixView(&camera);
-
-        Vector3 rotation = { 0, 0, 0 };
+        Vector3 position = { 0, 0, 2 };
+        Vector3 rotation = { 0, time, 0 };
         Vector3 scale = { 1, 1, 1 };
+        auto world = MatrixWorld(position, rotation, scale);
+        bitmap->DrawCube2(world * view);
 
-        for (int x = -5; x < 5; x++)
-        for (int z = -5; z < 5; z++)
-        {
-            Vector3 position = { (float)x, -0.5f, (float)z };
-            auto world = MatrixWorld(position, rotation, scale);
-            bitmap->DrawCube(world * view);
-        }
+        // Camera camera = { { 0, 1.50f, 0 }, time, 0 };
+        // auto view = MatrixView(&camera);
+        // Vector3 rotation = { 0, 0, 0 };
+        // Vector3 scale = { 1, 1, 1 };
+
+        // for (int x = -5; x < 5; x++)
+        // for (int z = -5; z < 5; z++)
+        // {
+        //     Vector3 position = { (float)x, -0.5f, (float)z };
+        //     auto world = MatrixWorld(position, rotation, scale);
+        //     bitmap->DrawCube2(world * view);
+        // }
 
         bitmap->DrawBorder(GREEN);
         BitmapWindow1::SetPixels(bitmap);
