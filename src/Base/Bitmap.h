@@ -1,5 +1,7 @@
 #pragma once
 
+// http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html
+
 typedef uint32_t Pixel;
 
 const Pixel BLACK = 0x00000000;
