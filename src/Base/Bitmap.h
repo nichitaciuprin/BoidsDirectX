@@ -56,26 +56,47 @@ public:
 
     void DrawTriangle(Vector3 p0, Vector3 p1, Vector3 p2, Pixel pixel)
     {
-        Vector3 v1, v2 = p1;
-        Vector3 v3, v4 = p2;
-        Vector3 v0, v5 = p0;
-        bool include1, include2, include3;
-        ClipLineByZ3(v0, v1, include1);
-        ClipLineByZ3(v2, v3, include2);
-        ClipLineByZ3(v4, v5, include3);
-        auto includeCount = include1 + include2 + include3;
-        if (includeCount == 0) return;
-        if (includeCount == 3)
+        Vector3 v1 = p0; Vector3 v2 = p1;
+        Vector3 v3 = p1; Vector3 v4 = p2;
+        Vector3 v5 = p2; Vector3 v0 = p0;
+
+        bool include0; ProjectLine(v1, v2, include0);
+        bool include1; ProjectLine(v3, v4, include1);
+        bool include2; ProjectLine(v5, v0, include2);
+
+        bool includeAll = include0 && include1 && include2;
+
+        if (!includeAll) return;
+
+        if (includeAll)
         {
-            if (p0.z != 0) p0 /= p0.z;
-            if (p1.z != 0) p1 /= p1.z;
-            if (p2.z != 0) p2 /= p2.z;
-            DrawTriangleProjected(p0, p1, p2, pixel);
+            if (!Vector3TriangleIsClockwise(v1, v3, v5)) return;
+            DrawLineProjected(v1, v2, pixel);
+            DrawLineProjected(v3, v4, pixel);
+            DrawLineProjected(v5, v0, pixel);
             return;
         }
-        if (include1) { if (v0.z != 0) v0 /= v0.z; if (v1.z != 0) v0 /= v1.z; }
-        if (include2) { if (v2.z != 0) v0 /= v2.z; if (v3.z != 0) v0 /= v3.z; }
-        if (include3) { if (v4.z != 0) v0 /= v4.z; if (v5.z != 0) v0 /= v5.z; }
+        // if (!include0)
+        // {
+        //     if (!Vector3TriangleIsClockwise(v3, v4, v0)) return;
+        //     DrawLineProjected(v3, v4, pixel);
+        //     DrawLineProjected(v5, v0, pixel);
+        //     return;
+        // }
+        // if (!include1)
+        // {
+        //     if (!Vector3TriangleIsClockwise(v1, v2, v0)) return;
+        //     DrawLineProjected(v1, v2, pixel);
+        //     DrawLineProjected(v5, v0, pixel);
+        //     return;
+        // }
+        // if (!include2)
+        // {
+        //     if (!Vector3TriangleIsClockwise(v1, v2, v4)) return;
+        //     DrawLineProjected(v1, v2, pixel);
+        //     DrawLineProjected(v3, v4, pixel);
+        //     return;
+        // }
     }
     void DrawTriangleProjected(Vector3 p0, Vector3 p1, Vector3 p2, Pixel pixel)
     {
@@ -110,6 +131,18 @@ public:
         if (v0.z != 0) v0 /= v0.z;
         if (v1.z != 0) v1 /= v1.z;
         DrawLineProjected(v0, v1, pixel);
+    }
+    void ProjectLine(Vector3& v0, Vector3& v1, bool& include)
+    {
+        float nearZ = 0.1f;
+        v0.z -= nearZ;
+        v1.z -= nearZ;
+        include = ClipLineByZ(v0, v1);
+        if (!include) return;
+        v0.z += nearZ;
+        v1.z += nearZ;
+        if (v0.z != 0) v0 /= v0.z;
+        if (v1.z != 0) v1 /= v1.z;
     }
     void DrawLineProjected(Vector3 v0, Vector3 v1, Pixel pixel)
     {
@@ -234,28 +267,28 @@ public:
         for (int i = 0; i < 8; i++)
             vertexData[i] *= modelView;
 
-        // for (int i = 0; i < 12; i++)
-        // {
-        //     auto i0 = indexData[i][0];
-        //     auto i1 = indexData[i][1];
-        //     auto i2 = indexData[i][2];
-        //     DrawTriangle(vertexData[i0], vertexData[i1], vertexData[i2]);
-        // }
-
-        for (int i = 1; i < 12; i++)
+        for (int i = 0; i < 12; i++)
         {
             auto i0 = indexData[i][0];
             auto i1 = indexData[i][1];
             auto i2 = indexData[i][2];
-            DrawTriangle(vertexData[i0], vertexData[i1], vertexData[i2], BLUE);
-        }
-
-        {
-            auto i0 = indexData[0][0];
-            auto i1 = indexData[0][1];
-            auto i2 = indexData[0][2];
             DrawTriangle(vertexData[i0], vertexData[i1], vertexData[i2], RED);
         }
+
+        // for (int i = 1; i < 12; i++)
+        // {
+        //     auto i0 = indexData[i][0];
+        //     auto i1 = indexData[i][1];
+        //     auto i2 = indexData[i][2];
+        //     DrawTriangle(vertexData[i0], vertexData[i1], vertexData[i2], BLUE);
+        // }
+
+        // {
+        //     auto i0 = indexData[0][0];
+        //     auto i1 = indexData[0][1];
+        //     auto i2 = indexData[0][2];
+        //     DrawTriangle(vertexData[i0], vertexData[i1], vertexData[i2], RED);
+        // }
     }
     void ToScreenSpace(Vector3 point, int* outX, int* outY)
     {
