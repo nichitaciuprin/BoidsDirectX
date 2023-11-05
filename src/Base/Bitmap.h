@@ -98,28 +98,6 @@ public:
         //     return;
         // }
     }
-    void DrawTriangleProjected(Vector3 p0, Vector3 p1, Vector3 p2, Pixel pixel)
-    {
-        if (!Vector3TriangleIsClockwise(p0, p1, p2)) return;
-        DrawLineProjected(p0, p1, pixel);
-        DrawLineProjected(p1, p2, pixel);
-        DrawLineProjected(p2, p0, pixel);
-    }
-    void DrawShape3(Vector3 p0, Vector3 p1, Vector3 p2, Pixel pixel)
-    {
-        if (!Vector3TriangleIsClockwise(p0, p1, p2)) return;
-        DrawLineProjected(p0, p1, pixel);
-        DrawLineProjected(p1, p2, pixel);
-        DrawLineProjected(p2, p0, pixel);
-    }
-    void DrawShape4(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, Pixel pixel)
-    {
-        if (!Vector3TriangleIsClockwise(p0, p1, p2)) return;
-        DrawLineProjected(p0, p1, pixel);
-        DrawLineProjected(p1, p2, pixel);
-        DrawLineProjected(p2, p3, pixel);
-        DrawLineProjected(p3, p0, pixel);
-    }
     void DrawLine(Vector3 v0, Vector3 v1, Pixel pixel)
     {
         float nearZ = 0.1f;
