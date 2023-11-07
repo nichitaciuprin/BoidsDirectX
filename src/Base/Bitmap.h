@@ -175,14 +175,26 @@ public:
         }
     }
 
-    void DrawHalfTriangle(int xTop, int yTop, int size, int left, int right, Pixel pixel)
+    // void DrawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, Pixel pixel)
+    // {
+    //     bitmap->DrawHalfTriangle(xTop, yTop, size, left, right, GREEN);
+    // }
+
+    void DrawTriangleTopHalf(int xTop, int yTop, int size, int xLeft, int xRight, Pixel pixel)
     {
         int sizeHalf = size / 2;
+
         int errLeft = sizeHalf;
         int errRight = sizeHalf;
 
         int xLeft = xTop;
         int xRight = xTop;
+
+        left = abs(left);
+        right = abs(right);
+
+        int dirLeft = left < xTop ? -1 : 1;
+        int dirRight = xTop < right ? 1 : -1;
 
         for (int i = 0; i < size; i++)
         {
@@ -196,12 +208,12 @@ public:
             if (errLeft < 0)
             {
                 errLeft += size;
-                xLeft--;
+                xLeft += dirLeft;
             }
             if (errRight < 0)
             {
                 errRight += size;
-                xRight++;
+                xRight += dirRight;
             }
         }
     }
