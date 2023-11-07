@@ -10,6 +10,11 @@ const Pixel RED   = 0x00FF0000;
 const Pixel GREEN = 0x0000FF00;
 const Pixel BLUE  = 0x000000FF;
 
+struct Vector3Int
+{
+    int x, y, z;
+};
+
 class Bitmap
 {
 public:
@@ -131,6 +136,7 @@ public:
         ToScreenSpace(v1, &outX1, &outY1);
         DrawLine(outX0, outY0, outX1, outY1, pixel);
     }
+
     void DrawLine(int x0, int y0, int x1, int y1, Pixel pixel)
     {
         int dx = abs(x1 - x0);
@@ -167,6 +173,43 @@ public:
                 y0 += sy;
             }
         }
+    }
+
+    void DrawHalfTriangle(int xTop, int yTop, int size, int left, int right, Pixel pixel)
+    {
+        int sizeHalf = size / 2;
+        int errLeft = sizeHalf;
+        int errRight = sizeHalf;
+
+        int xLeft = xTop;
+        int xRight = xTop;
+
+        for (int i = 0; i < size; i++)
+        {
+            DrawHorizontalLine(yTop, xLeft, xRight, pixel);
+
+            yTop++;
+
+            errLeft -= left;
+            errRight -= right;
+
+            if (errLeft < 0)
+            {
+                errLeft += size;
+                xLeft--;
+            }
+            if (errRight < 0)
+            {
+                errRight += size;
+                xRight++;
+            }
+        }
+    }
+
+    inline void DrawHorizontalLine(int y, int xLeft, int xRight, Pixel pixel)
+    {
+        for (int i = xLeft; i < xRight; i++)
+            SetPixel(i, y, pixel);
     }
 
     void DrawCube(Matrix modelView)
