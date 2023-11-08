@@ -48,6 +48,12 @@ inline int MathSign(float value)
     if (value < 0) { return -1; }
                      return  0;
 }
+// inline int MathSign(int value)
+// {
+//     if (value > 0) { return  1; }
+//     if (value < 0) { return -1; }
+//                      return  0;
+// }
 inline int MathMin(int v1, int v2)
 {
     return min(v1,v2);

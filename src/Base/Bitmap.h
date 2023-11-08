@@ -141,38 +141,44 @@ public:
     {
         int dx = abs(x1 - x0);
         int dy = abs(y1 - y0);
+
         int sx = x0 < x1 ? 1 : -1;
         int sy = y0 < y1 ? 1 : -1;
 
-        if (dx > dy)
-        {
-            int err = dx / 2;
-            for (int i = 0; i < dx; i++)
-            {
-                SetPixel(x0, y0, pixel);
-                if (err < dy) { err += dx; y0 += sy; }
-                              { err -= dy; x0 += sx; }
-            }
-        }
-        else if (dx < dy)
-        {
-            int err = dy / 2;
-            for (int i = 0; i < dy; i++)
-            {
-                SetPixel(x0, y0, pixel);
-                if (err < dx) { err += dy; x0 += sx; }
-                              { err -= dx; y0 += sy; }
-            }
-        }
-        else
-        {
-            for (int i = 0; i < dx; i++)
-            {
-                SetPixel(x0, y0, pixel);
-                x0 += sx;
-                y0 += sy;
-            }
-        }
+        #define DRAW(MAX, MIN, AXIS1, AXIS2, VAL1, VAL2)  \
+        int err = MAX / 2;                                \
+        for (int i = 0; i < MAX; i++)                     \
+        {                                                 \
+            SetPixel(x0, y0, pixel);                      \
+            if (err < MIN) { err += MAX; AXIS1 += VAL1; } \
+                           { err -= MIN; AXIS2 += VAL2; } \
+        }                                                 \
+
+        if (dx > dy) { DRAW(dx, dy, y0, x0, sy, sx); }
+        else         { DRAW(dy, dx, x0, y0, sx, sy); }
+
+        #undef DRAW
+
+        // if (dx > dy)
+        // {
+        //     int err = dx / 2;
+        //     for (int i = 0; i < dx; i++)
+        //     {
+        //         SetPixel(x0, y0, pixel);
+        //         if (err < dy) { err += dx; y0 += sy; }
+        //                       { err -= dy; x0 += sx; }
+        //     }
+        // }
+        // else
+        // {
+        //     int err = dy / 2;
+        //     for (int i = 0; i < dy; i++)
+        //     {
+        //         SetPixel(x0, y0, pixel);
+        //         if (err < dx) { err += dy; x0 += sx; }
+        //                       { err -= dx; y0 += sy; }
+        //     }
+        // }
     }
 
     // void DrawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, Pixel pixel)
@@ -193,50 +199,124 @@ public:
         //    /    \
         //  1 ------ 2
 
-        // int sizeHalf = size / 2;
+        int dy = y1 - y0;
 
-        // int errLeft = sizeHalf;
-        // int errRight = sizeHalf;
+        int dx1 = abs(x1 - x0);
+        int dx2 = abs(x2 - x0);
 
-        // int xLeft = xTop;
-        // int xRight = xTop;
+        int x1ErrMax;
+        int x1ErrMin;
+        int x2ErrMax;
+        int x2ErrMin;
 
-        // left = abs(left);
-        // right = abs(right);
+        if (dy < dx1)
+        {
+            x1ErrMin = dy;
+            x1ErrMax = dx1;
+        }
+        else
+        {
+            x1ErrMin = dx1;
+            x1ErrMax = dy;
+        }
+        if (dy < dx2)
+        {
+            x2ErrMin = dy;
+            x2ErrMax = dx2;
+        }
+        else
+        {
+            x2ErrMin = dx2;
+            x2ErrMax = dy;
+        }
 
-        // int dirLeft = left < xTop ? -1 : 1;
-        // int dirRight = xTop < right ? 1 : -1;
+        int errLeft = x1ErrMax / 2;
+        int errRight = x2ErrMax / 2;
 
-        // for (int i = 0; i < size; i++)
+        int dirLeft  = x0 - x1 > 0 ? -1 :  1;
+        int dirRight = x0 - x2 > 0 ? -1 :  1;
+
+        x1 = x0;
+        x2 = x0;
+
+        for (int i = 0; i < dy; i++)
+        {
+            DrawHorizontalLine(y0, x1, x2, pixel);
+
+            y0++;
+
+            errLeft -= x1ErrMin;
+            errRight -= x2ErrMin;
+
+            if (errLeft < 0)
+            {
+                errLeft += x1ErrMax;
+                x1 += dirLeft;
+            }
+            if (errRight < 0)
+            {
+                errRight += x2ErrMax;
+                x2 += dirRight;
+            }
+        }
+    }
+
+    void DrawTriangleBottom(int x0, int y0, int x1, int y1, int x2, int y2, Pixel pixel)
+    {
+        //  1 ------ 2
+        //    \    /
+        //     \  /
+        //      \/
+        //      0
+
+        // int dy = y0 - y1;
+
+        // int dx1 = abs(x1 - x0);
+        // int dx2 = abs(x2 - x0);
+
+        // int x1ErrMax;
+        // int x1ErrMin;
+        // bool x1Horizontal;
+
+        // if (dy < dx1)
         // {
-        //     DrawHorizontalLine(yTop, xLeft, xRight, pixel);
+        //     x1Horizontal = true;
+        // }
+        // else
+        // {
+        //     x1Horizontal = false;
+        // }
 
-        //     yTop++;
+        // int errLeft = x1ErrMax / 2;
+        // int errRight = x2ErrMax / 2;
 
-        //     errLeft -= left;
-        //     errRight -= right;
+        // int dirLeft  = x0 - x1 > 0 ? -1 :  1;
+        // int dirRight = x0 - x2 > 0 ? -1 :  1;
+
+        // x1 = x0;
+        // x2 = x0;
+
+        // for (int i = 0; i < dy; i++)
+        // {
+        //     DrawHorizontalLine(y0, x1, x2, pixel);
+
+        //     y0--;
+
+        //     errLeft -= x1ErrMin;
+        //     errRight -= x2ErrMin;
 
         //     if (errLeft < 0)
         //     {
-        //         errLeft += size;
-        //         xLeft += dirLeft;
+        //         errLeft += x1ErrMax;
+        //         x1 += dirLeft;
         //     }
         //     if (errRight < 0)
         //     {
-        //         errRight += size;
-        //         xRight += dirRight;
+        //         errRight += x2ErrMax;
+        //         x2 += dirRight;
         //     }
         // }
     }
-
-    // void DrawTriangleBottom(int x0, int y0, int x1, int y1, int x2, int y2, Pixel pixel)
-    // {
-    //     //  1 ------ 2
-    //     //    \    /
-    //     //     \  /
-    //     //      \/
-    //     //      0
-    // }
 
     // void DrawTriangleTopHalf(int xTop, int yTop, int size, int xLeft, int xRight, Pixel pixel)
     // {
@@ -278,8 +358,9 @@ public:
 
     inline void DrawHorizontalLine(int y, int xLeft, int xRight, Pixel pixel)
     {
-        for (int i = xLeft; i < xRight; i++)
-            SetPixel(i, y, pixel);
+        int count = xRight - xLeft + 1;
+        for (int i = 0; i < count; i++)
+            SetPixel(xLeft + i, y, pixel);
     }
 
     void DrawCube(Matrix modelView)
