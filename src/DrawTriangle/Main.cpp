@@ -26,7 +26,7 @@ void main2()
             int x0 = 200; int y0 = 50;
             int x1 = 150; int y1 = 100;
             int x2 = 225; int y2 = 100;
-            // bitmap->DrawTriangleTop(x0, y0, x1, y1, x2, y2, GREEN);
+            bitmap->DrawTriangleTop(x0, y0, x1, y1, x2, y2, GREEN);
         }
         {
             int x0 = 250; int y0 = 150;

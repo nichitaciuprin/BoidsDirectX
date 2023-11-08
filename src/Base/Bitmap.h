@@ -201,40 +201,17 @@ public:
 
         int dy = y1 - y0;
 
-        int dx1 = abs(x1 - x0);
-        int dx2 = abs(x2 - x0);
+        int x1Diff = x0 - x1;
+        int x2Diff = x2 - x0;
 
-        int x1ErrMax;
-        int x1ErrMin;
-        int x2ErrMax;
-        int x2ErrMin;
+        int x1Length = abs(x1Diff);
+        int x2Length = abs(x2Diff);
 
-        if (dy < dx1)
-        {
-            x1ErrMin = dy;
-            x1ErrMax = dx1;
-        }
-        else
-        {
-            x1ErrMin = dx1;
-            x1ErrMax = dy;
-        }
-        if (dy < dx2)
-        {
-            x2ErrMin = dy;
-            x2ErrMax = dx2;
-        }
-        else
-        {
-            x2ErrMin = dx2;
-            x2ErrMax = dy;
-        }
+        int x1Dir = x1Diff > 0 ? -1 :  1;
+        int x2Dir = x2Diff > 0 ?  1 : -1;
 
-        int errLeft = x1ErrMax / 2;
-        int errRight = x2ErrMax / 2;
-
-        int dirLeft  = x0 - x1 > 0 ? -1 :  1;
-        int dirRight = x0 - x2 > 0 ? -1 :  1;
+        int x1Err = dy / 2;
+        int x2Err = dy / 2;
 
         x1 = x0;
         x2 = x0;
@@ -245,19 +222,11 @@ public:
 
             y0++;
 
-            errLeft -= x1ErrMin;
-            errRight -= x2ErrMin;
+            x1Err -= x1Length;
+            x2Err -= x2Length;
 
-            if (errLeft < 0)
-            {
-                errLeft += x1ErrMax;
-                x1 += dirLeft;
-            }
-            if (errRight < 0)
-            {
-                errRight += x2ErrMax;
-                x2 += dirRight;
-            }
+            while (x1Err < 0) { x1Err += dy; x1 += x1Dir; }
+            while (x2Err < 0) { x2Err += dy; x2 += x2Dir; }
         }
     }
 
@@ -277,8 +246,8 @@ public:
         int x1Length = abs(x1Diff);
         int x2Length = abs(x2Diff);
 
-        int x1Dir = x1Diff > 0 ? -1 : 1;
-        int x2Dir = x2Diff > 0 ? 1 : -1;
+        int x1Dir = x1Diff > 0 ? -1 :  1;
+        int x2Dir = x2Diff > 0 ?  1 : -1;
 
         int x1Err = dy / 2;
         int x2Err = dy / 2;
