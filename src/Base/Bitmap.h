@@ -163,14 +163,17 @@ public:
     // void DrawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, Pixel pixel)
     // {
     //     bitmap->DrawHalfTriangle(xTop, yTop, size, left, right, GREEN);
+    //     int x3 = FindPointX3(x0, y0, x1, y1, x2, y2);
+    //     int y3 = y1;
     // }
 
-    // void DrawTriangle2(int xTop, int yTop, int xMiddle, int yMiddle, int xBottom, int yBottom, Pixel pixel)
-    // {
-    //     int duno = yMiddle - yTop
-    // }
+    void DrawTriangle2(int xTop, int yTop, int xMiddle1, int yMiddle1, int xBottom, int yBottom, Pixel pixel)
+    {
+        int xMiddle2 = FindPointX3(xTop, yTop, xMiddle1, yMiddle1, xBottom, yBottom);
+        int y3 = y1;
+    }
 
-    int FindPointX3(int x0, int y0, int x1, int y1, int x2, int y2)
+    int FindPointXMiddle2(int x0, int y0, int x1, int y1, int x2, int y2)
     {
         UNREFERENCED_PARAMETER(x1);
         return x0 + ((y1 - y0) / (y2 - y0)) * (x2 - x0);
