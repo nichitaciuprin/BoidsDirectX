@@ -243,8 +243,8 @@ public:
             x1Err -= x1Length;
             x2Err -= x2Length;
 
-            while (x1Err < 0) { x1Err += dy; x1 += x1Dir; }
-            while (x2Err < 0) { x2Err += dy; x2 += x2Dir; }
+            while (x1Err <= 0) { x1Err += dy; x1 += x1Dir; }
+            while (x2Err <= 0) { x2Err += dy; x2 += x2Dir; }
         }
     }
 

@@ -34,6 +34,11 @@ void main2()
             int x2 = 225; int y2 = 100;
             bitmap->DrawTriangleBottom(x0, y0, x1, y1, x2, y2, GREEN);
         }
+        {
+            int x1 = 150; int y1 = 100;
+            int x2 = 225; int y2 = 100;
+            bitmap->DrawHorizontalLine(y1, x1, x2, GREEN);
+        }
 
         bitmap->DrawBorder(GREEN);
         BitmapWindow1::SetPixels(bitmap);
