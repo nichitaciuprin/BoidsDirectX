@@ -180,43 +180,101 @@ public:
     //     bitmap->DrawHalfTriangle(xTop, yTop, size, left, right, GREEN);
     // }
 
-    void DrawTriangleTopHalf(int xTop, int yTop, int size, int xLeft, int xRight, Pixel pixel)
+    // void DrawTriangle2(int xTop, int yTop, int xMiddle, int yMiddle, int xBottom, int yBottom, Pixel pixel)
+    // {
+    //     bitmap->DrawHalfTriangle(xTop, yTop, size, left, right, GREEN);
+    // }
+
+    void DrawTriangleTop(int x0, int y0, int x1, int y1, int x2, int y2, Pixel pixel)
     {
-        int sizeHalf = size / 2;
+        //      0
+        //      /\
+        //     /  \
+        //    /    \
+        //  1 ------ 2
 
-        int errLeft = sizeHalf;
-        int errRight = sizeHalf;
+        // int sizeHalf = size / 2;
 
-        int xLeft = xTop;
-        int xRight = xTop;
+        // int errLeft = sizeHalf;
+        // int errRight = sizeHalf;
 
-        left = abs(left);
-        right = abs(right);
+        // int xLeft = xTop;
+        // int xRight = xTop;
 
-        int dirLeft = left < xTop ? -1 : 1;
-        int dirRight = xTop < right ? 1 : -1;
+        // left = abs(left);
+        // right = abs(right);
 
-        for (int i = 0; i < size; i++)
-        {
-            DrawHorizontalLine(yTop, xLeft, xRight, pixel);
+        // int dirLeft = left < xTop ? -1 : 1;
+        // int dirRight = xTop < right ? 1 : -1;
 
-            yTop++;
+        // for (int i = 0; i < size; i++)
+        // {
+        //     DrawHorizontalLine(yTop, xLeft, xRight, pixel);
 
-            errLeft -= left;
-            errRight -= right;
+        //     yTop++;
 
-            if (errLeft < 0)
-            {
-                errLeft += size;
-                xLeft += dirLeft;
-            }
-            if (errRight < 0)
-            {
-                errRight += size;
-                xRight += dirRight;
-            }
-        }
+        //     errLeft -= left;
+        //     errRight -= right;
+
+        //     if (errLeft < 0)
+        //     {
+        //         errLeft += size;
+        //         xLeft += dirLeft;
+        //     }
+        //     if (errRight < 0)
+        //     {
+        //         errRight += size;
+        //         xRight += dirRight;
+        //     }
+        // }
     }
+
+    // void DrawTriangleBottom(int x0, int y0, int x1, int y1, int x2, int y2, Pixel pixel)
+    // {
+    //     //  1 ------ 2
+    //     //    \    /
+    //     //     \  /
+    //     //      \/
+    //     //      0
+    // }
+
+    // void DrawTriangleTopHalf(int xTop, int yTop, int size, int xLeft, int xRight, Pixel pixel)
+    // {
+    //     int sizeHalf = size / 2;
+
+    //     int errLeft = sizeHalf;
+    //     int errRight = sizeHalf;
+
+    //     int xLeft = xTop;
+    //     int xRight = xTop;
+
+    //     left = abs(left);
+    //     right = abs(right);
+
+    //     int dirLeft = left < xTop ? -1 : 1;
+    //     int dirRight = xTop < right ? 1 : -1;
+
+    //     for (int i = 0; i < size; i++)
+    //     {
+    //         DrawHorizontalLine(yTop, xLeft, xRight, pixel);
+
+    //         yTop++;
+
+    //         errLeft -= left;
+    //         errRight -= right;
+
+    //         if (errLeft < 0)
+    //         {
+    //             errLeft += size;
+    //             xLeft += dirLeft;
+    //         }
+    //         if (errRight < 0)
+    //         {
+    //             errRight += size;
+    //             xRight += dirRight;
+    //         }
+    //     }
+    // }
 
     inline void DrawHorizontalLine(int y, int xLeft, int xRight, Pixel pixel)
     {

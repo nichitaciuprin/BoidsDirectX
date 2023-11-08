@@ -23,12 +23,11 @@ void main2()
 
         // bitmap->DrawTriangle(x0, y0, x1, y1, x2, y2, GREEN);
 
-        int xTop = 200;
-        int yTop = 50;
-        int size = 100;
-        int left = 50;
-        int right = -50;
-        bitmap->DrawTriangleTopHalf(xTop, yTop, size, left, right, GREEN);
+        int x0 = 200; int y0 = 50;
+        int x1 = 150; int y1 = 100;
+        int x2 = 250; int y2 = 200;
+
+        bitmap->DrawTriangleTop(x0, y0, x1, y1, x2, y2, GREEN);
 
         bitmap->DrawBorder(GREEN);
         BitmapWindow1::SetPixels(bitmap);
