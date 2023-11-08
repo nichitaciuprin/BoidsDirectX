@@ -167,8 +167,14 @@ public:
 
     // void DrawTriangle2(int xTop, int yTop, int xMiddle, int yMiddle, int xBottom, int yBottom, Pixel pixel)
     // {
-    //     bitmap->DrawHalfTriangle(xTop, yTop, size, left, right, GREEN);
+    //     int duno = yMiddle - yTop
     // }
+
+    int FindPointX3(int x0, int y0, int x1, int y1, int x2, int y2)
+    {
+        UNREFERENCED_PARAMETER(x1);
+        return x0 + ((y1 - y0) / (y2 - y0)) * (x2 - x0);
+    }
 
     void DrawTriangleTop(int x0, int y0, int x1, int y1, int x2, int y2, Pixel pixel)
     {
