@@ -160,17 +160,89 @@ public:
         #undef DRAW
     }
 
-    // void DrawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, Pixel pixel)
-    // {
-    //     bitmap->DrawHalfTriangle(xTop, yTop, size, left, right, GREEN);
-    //     int x3 = FindPointX3(x0, y0, x1, y1, x2, y2);
-    //     int y3 = y1;
-    // }
-
-    void DrawTriangle2(int xTop, int yTop, int xMiddle1, int yMiddle1, int xBottom, int yBottom, Pixel pixel)
+    void ScreenSpaceDrawTriangle(Vector3 p0, Vector3 p1, Vector3 p2, Pixel pixel)
     {
-        int xMiddle2 = FindPointX3(xTop, yTop, xMiddle1, yMiddle1, xBottom, yBottom);
-        int y3 = y1;
+        // Vector3* top    = &p2;
+        // Vector3* middle = &p1;
+        // Vector3* bottom = &p0;
+
+        // if (top->y    < middle->y) swap(top,    middle);
+        // if (middle->y < bottom->y) swap(middle, bottom);
+        // if (top->y    < middle->y) swap(top,    middle);
+
+        cout << 
+
+        if (p2.y < p1.y) swap(p2, p1);
+        if (p1.y < p0.y) swap(p1, p0);
+        if (p2.y < p1.y) swap(p2, p1);
+
+        DrawTriangle2(p2.x, p2.y, p1.x, p1.y, p0.x, p0.y, pixel);
+    }
+
+    void DrawTriangle2(int xTop, int yTop, int xMiddle, int yMiddle, int xBottom, int yBottom, Pixel pixel)
+    {
+        int dy = yBottom - yTop;
+        int dx = abs(xTop - xBottom);
+        int dir = xTop < xBottom ? 1 : -1;
+        int err = dy / 2;
+
+        int dy1 = yMiddle - yTop;
+        int dy2 = yBottom - yMiddle;
+
+        // int dx = abs(x1 - x0);
+        // int dy = abs(y1 - y0);
+
+        // int sx = x0 < x1 ? 1 : -1;
+        // int sy = y0 < y1 ? 1 : -1;
+
+        // int x1Diff = x0 - x1;
+        // int x2Diff = x2 - x0;
+
+        // int x1Length = abs(x1Diff);
+        // int x2Length = abs(x2Diff);
+
+        // int x1Dir = x1Diff > 0 ? -1 :  1;
+        // int x2Dir = x2Diff > 0 ?  1 : -1;
+
+        int x1 = xTop;
+        int x2 = xTop;
+
+        cout << dy << endl;
+
+        {
+            // int x1Err = dy1 / 2;
+            // int x2Err = dy1 / 2;
+
+            // int dx = abs(x1 - x0);
+            // int dy = abs(y1 - y0);
+
+            for (int i = 0; i < dy1; i++)
+            {
+                DrawHorizontalLine(yTop, x1, x2, pixel);
+                yTop++;
+
+                // x1Err -= x1Length;
+                // x2Err -= x2Length;
+
+                // while (x1Err < 0) { x1Err += dy; x1 += x1Dir; }
+                // while (x2Err < 0) { x2Err += dy; x2 += x2Dir; }
+            }
+        }
+        {
+            {
+                DrawHorizontalLine(yTop, x1, x2, pixel);
+                yTop++;
+            }
+        }
+        {
+            for (int i = 0; i < dy2; i++)
+            {
+                DrawHorizontalLine(yTop, x1, x2, pixel);
+                yTop++;
+            }
+        }
+
+
     }
 
     int FindPointXMiddle2(int x0, int y0, int x1, int y1, int x2, int y2)
@@ -178,6 +250,36 @@ public:
         UNREFERENCED_PARAMETER(x1);
         return x0 + ((y1 - y0) / (y2 - y0)) * (x2 - x0);
     }
+
+    // void DrawTriangleTop(int x0, int y0, int x1, int y1, int x2, int y2, Pixel pixel)
+    // {
+    //     int dx = abs(x1 - x0);
+    //     int dy = abs(y1 - y0);
+
+    //     int sx = x0 < x1 ? 1 : -1;
+    //     int sy = y0 < y1 ? 1 : -1;
+
+    //     if (dx > dy)
+    //     {
+    //         int err = dx / 2;
+    //         for (int i = 0; i < dx; i++)
+    //         {
+    //             SetPixel(x0, y0, pixel);
+    //             if (err < dy) { err += dx; y0 += sy; }
+    //                           { err -= dy; x0 += sx; }
+    //         }
+    //     }
+    //     else
+    //     {
+    //         int err = dy / 2;
+    //         for (int i = 0; i < dy; i++)
+    //         {
+    //             SetPixel(x0, y0, pixel);
+    //             if (err < dx) { err += dy; x0 += sx; }
+    //                           { err -= dx; y0 += sy; }
+    //         }
+    //     }
+    // }
 
     void DrawTriangleTop(int x0, int y0, int x1, int y1, int x2, int y2, Pixel pixel)
     {

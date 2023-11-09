@@ -31,6 +31,10 @@ struct Vector4
 {
     float x, y, z, w;
 };
+struct Vector2Int
+{
+    int x, y;
+};
 struct Matrix
 {
     float m[4][4];
